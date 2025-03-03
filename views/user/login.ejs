@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f4f4f9;
+        }
+
+        form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        form h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #777; 
+            font-size: 1.2rem;
+            user-select: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            background: #007bff;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .google-tag {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 1px solid #ccc;
+            color: #555;
+            padding: 0.8rem;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: background 0.3s, border-color 0.3s;
+            font-weight: bold;
+        }
+
+        .google-tag:hover {
+            background: #f4f4f9;
+            border-color: #999;
+        }
+
+        .google-tag span {
+            font-size: 1rem;
+            color: #4285F4;
+            margin-left: 10px;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .signup-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: red;
+            font-size: 0.75rem;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .forgot-password a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <form action="/login" method="post" id="login-form">
+        <h2>Login</h2>
+        <% if (locals.message && message.length > 0) { %>
+            <div id="errorMessage" style="color: red; text-align: center; font-weight: bold; margin-bottom: 1rem;">
+                <%= message %>
+            </div>
+        <% } %>
+        
+        <label for="email">Email Address</label>
+        <div id="error-email" class="error-message"></div>
+        <input type="email" id="email" name="email" placeholder="Enter your email address">
+        
+        <label for="password">Password</label>
+        <div id="error-password" class="error-message"></div>
+        <div class="input-container">
+            <input type="password" id="password" name="password" placeholder="Enter your password">
+            <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
+        </div>
+        
+        <div class="forgot-password">
+            <a href="/forgotPassword">Forgot Password?</a>
+        </div>
+        
+        <button type="submit">Login</button>
+        
+        <a href="/auth/google" class="google-tag">
+            Login with <span>Google</span>
+        </a>
+        
+        <div class="signup-link">
+            Don't have an account? <a href="/signup">Sign Up</a>
+        </div>
+    </form>
+
+    <script>
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const errorEmail = document.getElementById('error-email');
+        const errorPassword = document.getElementById('error-password');
+        const form = document.getElementById('login-form');
+
+        function emailValidate() {
+            const emailVal = email.value;
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            
+            if (emailVal.trim() === "") {
+                errorEmail.innerHTML = "Please enter your email";
+                return false;
+            } else if (!emailPattern.test(emailVal)) {
+                errorEmail.innerHTML = "Please enter a valid email address";
+                return false;
+            } else {
+                errorEmail.innerHTML = "";
+                return true;
+            }
+        }
+
+        function passwordValidate() {
+            const passwordVal = password.value;
+            
+            if (passwordVal.trim() === "") {
+                errorPassword.innerHTML = "Please enter your password";
+                return false;
+            } else {
+                errorPassword.innerHTML = "";
+                return true;
+            }
+        }
+
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.querySelector('.toggle-password');
+
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.textContent = '👁️‍🗨️'; 
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.textContent = '👁️';
+            }
+        }
+
+        form.addEventListener('submit', function (e) {
+            let isValid = true;
+
+            if (!emailValidate()) isValid = false;
+            if (!passwordValidate()) isValid = false;
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+        
+        setTimeout(() => {
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorMessage) {
+                errorMessage.style.display = 'none';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

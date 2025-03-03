@@ -1,0 +1,519 @@
+<%- include("../../views/partials/user/header") %>
+
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+
+.breadcrumb-wrap {
+    background: transparent;
+    padding: 15px 0;
+    margin-bottom: 20px;
+}
+
+.breadcrumb a {
+    color: #555;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.breadcrumb a:hover {
+    color: #ff3f6c;
+}
+
+.breadcrumb span {
+    margin: 0 5px;
+    color: #999;
+}
+
+
+.product-detail {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+
+.detail-gallery {
+    position: relative;
+    padding: 30px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-image-container {
+    position: relative;
+    height: 450px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.product-image-container img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    cursor: zoom-in;
+}
+
+
+.magnifier {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    background-repeat: no-repeat;
+    pointer-events: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    display: none;
+}
+
+
+.slider-nav-thumbnails {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.slider-nav-thumbnails img {
+    width: 70px;
+    height: 70px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+    object-fit: cover;
+}
+
+.slider-nav-thumbnails img:hover, .slider-nav-thumbnails img.active {
+    border-color: #ff3f6c;
+    transform: translateY(-2px);
+}
+
+
+.detail-info {
+    padding: 40px 30px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-title {
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #212121;
+}
+
+.product-description {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+
+.price-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.product-price {
+    font-size: 26px;
+    font-weight: 600;
+    color: #212121;
+}
+
+.product-price strike {
+    color: #999;
+    font-size: 18px;
+    font-weight: normal;
+    margin-right: 10px;
+}
+
+.discount-badge {
+    background-color: #ff3f6c;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+
+.product-meta {
+    margin-bottom: 25px;
+    color: #616161;
+    font-size: 14px;
+}
+
+
+.size-selector {
+    margin-bottom: 25px;
+}
+
+.size-selector p {
+    font-size: 16px;
+    margin-bottom: 15px;
+    font-weight: 500;
+    color: #212121;
+}
+
+.size-button {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.size-button:hover {
+    border-color: #ff3f6c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+}
+
+.size-button.active, .size-button.selected {
+    background: #ff3f6c;
+    color: #fff;
+    border-color: #ff3f6c;
+    font-weight: 500;
+    margin-top: 0;
+}
+
+.size-button:disabled {
+    background-color: #f5f5f5;
+    color: #bdbdbd;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
+}
+
+
+.button-add-to-cart {
+    background: #ff3f6c;
+    color: #fff;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(255, 63, 108, 0.2);
+    width: 100%;
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.button-add-to-cart:hover {
+    background: #ff527b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 63, 108, 0.3);
+}
+
+.button-add-to-cart i {
+    font-size: 18px;
+}
+
+
+@media (max-width: 768px) {
+    .product-image-container {
+        height: 350px;
+    }
+    
+    .detail-info {
+        padding: 25px 20px;
+    }
+}
+</style>
+
+<main class="main">
+    <div class="container">
+        <div class="breadcrumb-wrap">
+            <div class="breadcrumb">
+                <a href="#" rel="nofollow">Home</a>
+                <span>&gt;</span>
+                <a href="#">Fashion</a>
+                <span>&gt;</span>
+                Product Detail Page
+            </div>
+        </div>
+        <div class="product-detail">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="detail-gallery">
+                        <div class="product-image-container" id="product-image-container">
+                            <img id="main-product-image" src="/uploads/product-images/<%= product.productImage[0] %>" alt="<%= product.productName %>">
+                            <div id="magnifier" class="magnifier"></div>
+                        </div>
+                        <div class="slider-nav-thumbnails">
+                            <% for (let i = 0; i < product.productImage.length; i++) { %>
+                                <img class="thumbnail <%= i === 0 ? 'active' : '' %>" 
+                                     src="/uploads/product-images/<%= product.productImage[i] %>" 
+                                     alt="thumbnail" 
+                                     data-src="/uploads/product-images/<%= product.productImage[i] %>">
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-info">
+                        <h2 class="product-title"><%= product.productName %></h2>
+                        <p class="product-description"><%= product.description %></p>
+                        
+                        <!-- Price section with discount -->
+                        <div class="price-container">
+                            <div class="product-price">
+                                <strike>₹<%= product.regularPrice %></strike>
+                                ₹<%= product.salePrice %>
+                            </div>
+                            <!-- <% const discount = Math.round((product.regularPrice - product.salePrice) / product.regularPrice * 100); %>
+                            <div class="discount-badge"><%= discount %>% OFF</div> -->
+                        </div>
+                        
+                        <!-- Category info -->
+                        <p>Category: <%= product.category.name %></p>
+                        
+                        <!-- Size selector -->
+                      
+<div class="size-selector" id="product-size">
+    <p>Select Size:</p>
+    <div>
+      <% sizes.forEach(sizeObj => { %>
+        <button class="size-button" 
+                data-size="<%= sizeObj.size %>"
+                data-quantity="<%= sizeObj.quantity %>"
+                <%= sizeObj.quantity <= 0 ? 'disabled' : '' %>>
+          <%= sizeObj.size %> 
+          (<span class="size-quantity"><%= sizeObj.quantity %></span> available)
+        </button>
+      <% }) %>
+    </div>
+  </div>
+                        
+                        
+                        <!-- Add to cart button with icon -->
+                        <button class="button-add-to-cart" onclick="addToCart('<%= product._id %>', document.querySelector('.size-button.selected')?.getAttribute('data-size'))">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let selectedSize = null; 
+    const sizeButtons = document.querySelectorAll(".size-button");
+
+    
+    sizeButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            sizeButtons.forEach(btn => {
+                btn.classList.remove("selected");
+                btn.classList.remove("active");
+            });
+
+            this.classList.add("selected");
+            this.classList.add("active");
+
+            selectedSize = this.getAttribute("data-size");
+        });
+    });
+
+    
+    window.addToCart = async function (productId, size) {
+        if (!size) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: 'Please select a size before adding to cart!',
+                confirmButtonColor: '#ff3f6c'
+            });
+            return;
+        }
+
+        console.log("Adding to cart:", productId, "Size:", size);
+
+        try {
+            const response = await fetch('/add-to-cart', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId, size: size })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+
+                const sizeButton = document.querySelector(`.size-button[data-size="${size}"]`);
+  if (sizeButton) {
+    const quantitySpan = sizeButton.querySelector('.size-quantity');
+    let currentQuantity = parseInt(quantitySpan.textContent);
+    
+    
+    currentQuantity -= 1;
+    quantitySpan.textContent = currentQuantity;
+
+    
+    if (currentQuantity <= 0) {
+      sizeButton.disabled = true;
+      sizeButton.classList.remove('selected', 'active');
+    }
+  }
+
+  
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: result.message || 'Product added to the cart successfully!',
+                    confirmButtonColor: '#ff3f6c'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: result.message || 'Error while adding the product to the cart!',
+                    confirmButtonColor: '#ff3f6c'
+                });
+            }
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: 'Something went wrong. Please try again.',
+                confirmButtonColor: '#ff3f6c'
+            });
+        }
+    };
+
+    
+    const productImage = document.getElementById("main-product-image");
+    const magnifier = document.getElementById("magnifier");
+    const productImageContainer = document.getElementById("product-image-container");
+
+    
+    function updateMagnifierBackground(src) {
+       
+        const img = new Image();
+        img.src = src;
+        img.onload = function() {
+            const naturalWidth = this.naturalWidth;
+            const naturalHeight = this.naturalHeight;
+            
+            
+            const bgSize = `${naturalWidth * 2}px ${naturalHeight * 2}px`
+            magnifier.style.backgroundImage = url('${src}');
+            magnifier.style.backgroundSize = bgSize;
+        };
+    }
+
+    
+    updateMagnifierBackground(productImage.src);
+
+   
+    productImageContainer.addEventListener("mousemove", function(e) {
+        const rect = productImageContainer.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        
+       
+        magnifier.style.display = "block";
+        
+        
+        magnifier.style.left = `${mouseX - 75}px`;
+        magnifier.style.top = `${mouseY - 75}px`;
+        
+      
+        const xPercentage = (mouseX / rect.width) * 100;
+        const yPercentage = (mouseY / rect.height) * 100;
+        
+       
+        magnifier.style.backgroundPosition = `${xPercentage}% ${yPercentage}%`;
+    });
+
+   
+    productImageContainer.addEventListener("mouseleave", function() {
+        magnifier.style.display = "none";
+    });
+
+   
+    document.querySelectorAll(".thumbnail").forEach(thumbnail => {
+        thumbnail.addEventListener("click", function() {
+           
+            document.querySelectorAll(".thumbnail").forEach(thumb => {
+                thumb.classList.remove("active");
+            });
+            
+            
+            this.classList.add("active");
+            
+            
+            const newImageSrc = this.getAttribute("data-src");
+            productImage.src = newImageSrc;
+            
+            
+            updateMagnifierBackground(newImageSrc);
+        });
+    });
+});
+
+function decreaseQuantity() {
+    const quantityInput = document.getElementById("quantity");
+    let quantity = parseInt(quantityInput.value);
+    if (quantity > 1) {
+        quantityInput.value = quantity - 1;
+    }
+}
+
+function increaseQuantity() {
+    const quantityInput = document.getElementById("quantity");
+    let quantity = parseInt(quantityInput.value);
+    const maxStock = parseInt(quantityInput.getAttribute("max"));
+    if (quantity < maxStock) {
+        quantityInput.value = quantity + 1;
+    }
+}
+</script>
+
+<%- include("../../views/partials/user/footer") %>

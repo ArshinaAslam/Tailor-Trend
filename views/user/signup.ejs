@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f4f4f9;
+        }
+
+        form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        form h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #777; 
+            font-size: 1.2rem;
+            user-select: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            background: #007bff;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .google-tag {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 1px solid #ccc;
+            color: #555;
+            padding: 0.8rem;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-top: 1rem;
+            cursor: pointer;
+            transition: background 0.3s, border-color 0.3s;
+            font-weight: bold;
+        }
+
+        .google-tag:hover {
+            background: #f4f4f9;
+            border-color: #999;
+        }
+
+        .google-tag span {
+            font-size: 1rem;
+            color: #4285F4; 
+            margin-left: 10px;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .login-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            color: red;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <form action="/signup" method="post" id="form">
+        <h2>Sign Up</h2>
+        <% if (locals.message && message.length > 0) { %>
+            <div id="errorMessage" style="color: red; text-align: center; font-weight: bold; margin-bottom: 1rem;">
+                <%= message %>
+            </div>
+        <% } %>
+        
+        <label for="fullname">Full Name</label>
+        <div id="error1" class="error-message"></div>
+        <input type="text" id="name" name="name" placeholder="Enter your full name">
+        
+        <label for="email">Email Address</label>
+        <div id="error2" class="error-message"></div>
+        <input type="email" id="email" name="email" placeholder="Enter your email address">
+        
+        <label for="phone">Phone Number</label>
+        <div id="error3" class="error-message"></div>
+        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+        
+        <label for="password">Password</label>
+        <div id="error4" class="error-message"></div>
+        <div class="input-container">
+            <input type="password" id="password" name="password" placeholder="Enter your password">
+            <span class="toggle-password" onclick="togglePassword('password', 'eye1')">👁️</span>
+        </div>
+        
+        <label for="confirm-password">Confirm Password</label>
+        <div id="error5" class="error-message"></div>
+        <div class="input-container">
+            <input type="password" id="confirm-password" name="cPassword" placeholder="Re-enter your password">
+            <span class="toggle-password" onclick="togglePassword('confirm-password', 'eye2')">👁️</span>
+        </div>
+        
+        <button type="submit">Sign Up</button>
+        
+        <a href="/auth/google" class="google-tag">
+            Sign Up with <span>Google</span>
+        </a>
+
+        <div class="login-link">
+            Already Registered? <a href="/login">Log in</a>
+        </div>
+    </form>
+
+    <script>
+        const name = document.getElementById('name');
+        const email = document.getElementById('email');
+        const phone = document.getElementById('phone');
+        const password = document.getElementById('password');
+        const cPassword = document.getElementById('confirm-password');
+
+        const error1 = document.getElementById('error1');
+        const error2 = document.getElementById('error2');
+        const error3 = document.getElementById('error3');
+        const error4 = document.getElementById('error4');
+        const error5 = document.getElementById('error5');
+        const form = document.getElementById('form');
+
+        function nameValidateChecking() {
+            const nameVal = name.value;
+            const namePattern = /^[A-Za-z\s]+$/;
+
+            if (nameVal.trim() === "") {
+                error1.style.display = "block";
+                error1.innerHTML = "Please enter a valid name";
+                return false;
+            } else if (!namePattern.test(nameVal)) {
+                error1.style.display = "block";
+                error1.innerHTML = "Name can only contain alphabets and spaces";
+                return false;
+            } else {
+                error1.style.display = "none";
+                error1.innerHTML = "";
+                return true;
+            }
+        }
+
+        function emailValidateChecking() {
+            const emailVal = email.value;
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+            if (emailVal.trim() === "") {
+                error2.style.display = "block";
+                error2.innerHTML = "Please enter your email";
+                return false;
+            } else if (!emailPattern.test(emailVal)) {
+                error2.style.display = "block";
+                error2.innerHTML = "Please enter a valid email address";
+                return false;
+            } else {
+                error2.style.display = "none";
+                error2.innerHTML = "";
+                return true;
+            }
+        }
+
+        function phoneValidateChecking() {
+            const phoneVal = phone.value;
+            const phonePattern = /^[0-9]{10}$/;
+
+            if (phoneVal.trim() === "") {
+                error3.style.display = "block";
+                error3.innerHTML = "Please enter your phone number";
+                return false;
+            } else if (!phonePattern.test(phoneVal)) {
+                error3.style.display = "block";
+                error3.innerHTML = "Enter a valid 10-digit phone number";
+                return false;
+            } else {
+                error3.style.display = "none";
+                error3.innerHTML = "";
+                return true;
+            }
+        }
+
+        function passwordValidateChecking() {
+            const passwordVal = password.value;
+            const cPasswordVal = cPassword.value;
+            const uppercase = /[A-Z]/;
+            const lowercase = /[a-z]/;
+            const digit = /\d/;
+            const specialChar = /[@#$%^&*!]/;
+
+            if (passwordVal.length < 8) {
+                error4.style.display = "block";
+                error4.innerHTML = "Password must be at least 8 characters long";
+                return false;
+            } else if (!uppercase.test(passwordVal)) {
+                error4.style.display = "block";
+                error4.innerHTML = "Password must contain at least one uppercase letter (A-Z)";
+                return false;
+            } else if (!lowercase.test(passwordVal)) {
+                error4.style.display = "block";
+                error4.innerHTML = "Password must contain at least one lowercase letter (a-z)";
+                return false;
+            } else if (!digit.test(passwordVal)) {
+                error4.style.display = "block";
+                error4.innerHTML = "Password must contain at least one number (0-9)";
+                return false;
+            } else if (!specialChar.test(passwordVal)) {
+                error4.style.display = "block";
+                error4.innerHTML = "Password must contain at least one special character (@#$%^&*!)";
+                return false;
+            } else {
+                error4.style.display = "none";
+                error4.innerHTML = "";
+            }
+
+            if (passwordVal !== cPasswordVal) {
+                error5.style.display = "block";
+                error5.innerHTML = "Passwords do not match";
+                return false;
+            } else {
+                error5.style.display = "none";
+                error5.innerHTML = "";
+                return true;
+            }
+        }
+
+        function togglePassword(fieldId) {
+            const passwordField = document.getElementById(fieldId);
+            const toggleIcon = document.querySelector(`[onclick="togglePassword('${fieldId}')"]`);
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleIcon.textContent = "👁️‍🗨️"; 
+            } else {
+                passwordField.type = "password";
+                toggleIcon.textContent = "👁️"; 
+            }
+        }
+
+        form.addEventListener('submit', function (e) {
+            let isValid = true;
+
+            if (!nameValidateChecking()) isValid = false;
+            if (!emailValidateChecking()) isValid = false;
+            if (!phoneValidateChecking()) isValid = false;
+            if (!passwordValidateChecking()) isValid = false;
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+        setTimeout(() => {
+            const errorMessage = document.getElementById('errorMessage');
+            if (errorMessage) {
+                errorMessage.style.display = 'none';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<%- include("../../views/partials/admin/header") %>
+
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
+  <style>
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+    }
+    .form-label {
+      margin-bottom: 8px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .d-grid {
+      margin-top: 20px;
+    }
+    .btn-primary, .btn-secondary {
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      color: white;
+      border: none;
+    }
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+    .btn-secondary:hover {
+      background-color: #545b62;
+    }
+    .error-message {
+      color: red;
+    }
+  </style>
+  <title>Edit Category</title>
+  <link rel="stylesheet" href="/css/style.css"> 
+</head>
+
+<body>
+  <div class="container">
+    <h2 class="text-center">Edit Category</h2>
+    <form id="editCategoryForm" method="post" onsubmit="return editFormSubmit(event)">
+      <input type="hidden" name="id" value="<%= category._id %>" />
+      
+      <div class="mb-4">
+        <label for="product_name" class="form-label">Name</label>
+        <input type="text" name="name" placeholder="Enter category name" class="form-control" id="product_name" value="<%= category.name %>" />
+        <div id="name-error" class="error-message"></div>
+      </div>
+      
+      <div class="mb-4">
+        <label for="descriptionId" class="form-label">Description</label>
+        <textarea placeholder="Enter category description" name="description" class="form-control" id="descriptionId"><%= category.description %></textarea>
+        <div id="description-error" class="error-message"></div>
+      </div>
+      
+      <div class="d-grid">
+        <button class="btn btn-primary" type="submit">Update Category</button>
+        <a href="/admin/category" class="btn btn-secondary mt-3">Back</a>
+      </div>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+  <script>
+    function editFormSubmit(event) {
+      event.preventDefault();
+      if (!validateForm()) {
+          return;
+      }
+      const id = document.querySelector('input[name="id"]').value;
+      const name = document.getElementById("product_name").value.trim();
+      const description = document.getElementById("descriptionId").value.trim();
+  
+      fetch(`/admin/editCategory/${id}`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ name, description })
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              Swal.fire({
+                  icon: "success",
+                  title: "Success",
+                  text: data.message
+              }).then(() => {
+                  window.location.href = "/admin/category";
+              });
+          } else {
+              throw new Error(data.error || "Failed to edit category");
+          }
+      })
+      .catch(error => {
+          Swal.fire({
+              icon: "error",
+              title: "Oops",
+              text: error.message
+          });
+      });
+    }
+    
+    function validateForm() {
+      clearErrorMessages();
+      const name = document.getElementById("product_name").value.trim();
+      const description = document.getElementById("descriptionId").value.trim();
+      let isValid = true;
+  
+      if (name === "") {
+          displayErrorMessage("name-error", "Please enter a name");
+          isValid = false;
+      } else if (!/^[a-zA-Z\s]+$/.test(name)) {
+          displayErrorMessage("name-error", "Category name should contain only alphabets");
+          isValid = false;
+      }
+  
+      if (description === "") {
+          displayErrorMessage("description-error", "Please enter a description");
+          isValid = false;
+      }
+  
+      return isValid;
+    }
+    
+    function displayErrorMessage(elementId, message) {
+      const errorElement = document.getElementById(elementId);
+      errorElement.innerText = message;
+      errorElement.style.display = "block";
+    }
+    
+    function clearErrorMessages() {
+      document.querySelectorAll(".error-message").forEach(el => {
+          el.innerText = "";
+          el.style.display = "none";
+      });
+    }
+  </script>
+</body>
+
+<%- include("../../views/partials/admin/footer") %>

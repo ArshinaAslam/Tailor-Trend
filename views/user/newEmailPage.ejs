@@ -1,0 +1,192 @@
+
+
+<style>
+    .auth-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        padding: 2rem;
+    }
+
+    .auth-card {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        width: 100%;
+        max-width: 440px;
+        padding: 2.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .auth-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .auth-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2d3436;
+        margin-bottom: 2rem;
+        text-align: center;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .form-control-modern {
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 0.875rem 1.25rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        height: 48px;
+        width: 100%;
+    }
+
+    .form-control-modern:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    }
+
+    .btn-primary-modern {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        border: none;
+        border-radius: 8px;
+        padding: 0.875rem 1.25rem;
+        font-size: 1rem;
+        font-weight: 600;
+        height: 48px;
+        transition: all 0.3s ease;
+        letter-spacing: 0.5px;
+        width: 100%;
+    }
+
+    .btn-primary-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .error-message {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: none;
+    }
+
+    .input-invalid {
+        border-color: #ef4444 !important;
+    }
+
+    .input-invalid:focus {
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+    }
+
+    .artwork-container {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .artwork {
+        width: 120px;
+        height: 120px;
+        background: #eef2ff;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .artwork svg {
+        width: 60px;
+        height: 60px;
+        color: #6366f1;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .action-group {
+        margin-top: 0.5rem;
+    }
+
+    @media (max-width: 576px) {
+        .auth-container {
+            padding: 1rem;
+        }
+        
+        .auth-card {
+            padding: 1.5rem;
+        }
+
+        .auth-title {
+            font-size: 1.5rem;
+        }
+
+        .form-control-modern,
+        .btn-primary-modern {
+            height: 44px;
+        }
+    }
+</style>
+
+<section class="auth-container">
+    <div class="auth-card">
+        <div class="artwork-container">
+            <div class="artwork">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                </svg>
+            </div>
+        </div>
+        
+        <h2 class="auth-title">Update Email Address</h2>
+        
+        <form method="post" action="/updateEmail" onsubmit="return validateEmailForm()">
+            <div class="form-group">
+                <input 
+                    class="form-control form-control-modern" 
+                    name="newEmail" 
+                    placeholder="Enter new email address" 
+                    type="email" 
+                    id="email"
+                    autocomplete="off"
+                >
+                <div class="error-message" id="email-error"></div>
+            </div>
+            
+            <div class="action-group">
+                <button type="submit" class="btn btn-primary-modern">
+                    Continue to Verification
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<script>
+    function validateEmailForm() {
+        const emailInput = document.getElementById('email');
+        const emailError = document.getElementById('email-error');
+        const emailValue = emailInput.value.trim();
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+        emailError.style.display = 'block';
+
+        if (emailValue === '') {
+            emailError.textContent = 'Please enter your new email address';
+            emailInput.classList.add('input-invalid');
+            return false;
+        } else if (!emailPattern.test(emailValue)) {
+            emailError.textContent = 'Please enter a valid email address';
+            emailInput.classList.add('input-invalid');
+            return false;
+        } else {
+            emailError.textContent = '';
+            emailError.style.display = 'none';
+            emailInput.classList.remove('input-invalid');
+            return true;
+        }
+    }
+</script>
+
