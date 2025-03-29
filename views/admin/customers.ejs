@@ -46,19 +46,18 @@
         <div class="d-flex justify-content-center mt-3">
             <nav>
                 <ul class="pagination">
-                    <!-- Previous Button -->
+                
                     <li class="page-item <%= currentPage <= 1 ? 'disabled' : '' %>">
                         <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= search %>">Previous</a>
                     </li>
         
-                    <!-- Page Numbers -->
                     <% for(let i = 1; i <= totalPages; i++) { %>
                         <li class="page-item <%= i === currentPage ? 'active' : '' %>">
                             <a class="page-link" href="?page=<%= i %>&search=<%= search %>"><%= i %></a>
                         </li>
                     <% } %>
         
-                    <!-- Next Button -->
+                    
                     <li class="page-item <%= currentPage >= totalPages ? 'disabled' : '' %>">
                         <a class="page-link" href="?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
                     </li>

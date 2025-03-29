@@ -1,0 +1,655 @@
+<%- include("../../views/partials/admin/header") %>
+
+<style>
+   
+    .modal-dialog {
+      max-width: 500px;
+    }
+    
+    .modal-header {
+      border-bottom: 1px solid #dee2e6;
+      background-color: #f8f9fa;
+    }
+    
+    .modal-footer {
+      border-top: 1px solid #dee2e6;
+      background-color: #f8f9fa;
+    }
+    
+   
+    .form-control:focus {
+      border-color: #80bdff;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .invalid-feedback {
+      display: none;
+      color: #dc3545;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    
+    .is-invalid {
+      border-color: #dc3545;
+    }
+    
+    
+    .table th {
+      font-weight: 500;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 0.25rem;
+    }
+    
+    
+    .btn-outline-primary {
+      border-color: #007bff;
+      color: #007bff;
+      font-size: 0.875rem;
+    }
+    
+    .btn-outline-primary:hover {
+      background-color: #007bff;
+      color: white;
+    }
+    
+    .btn-outline-danger {
+      border-color: #dc3545;
+      color: #dc3545;
+      font-size: 0.875rem;
+    }
+    
+    .btn-outline-danger:hover {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .search-container {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .search-container input {
+        padding: 6px 12px;
+        border-radius: 4px;
+        border: 1px solid #ced4da;
+    }
+  
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 5px;
+        margin-top: 20px;
+    }
+    
+    .pagination a, .pagination span {
+        padding: 8px 12px;
+        border: 1px solid #007bff;
+        border-radius: 4px;
+        text-decoration: none;
+        color: #007bff;
+    }
+    
+    .pagination span {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .pagination a:hover {
+        background-color: #f1f1f1;
+    }
+    
+    @media (max-width: 768px) {
+      .modal-dialog {
+        margin: 0.5rem;
+      }
+    }
+  </style>
+  
+
+  <section class="content-main">
+    <div class="container py-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Coupons</h2>
+        <div class="d-flex gap-3">
+          <!-- Search Form -->
+          <form action="/admin/coupon" method="GET" class="search-container">
+            <input type="text" name="search" placeholder="Search coupons" value="<%= search || '' %>" class="form-control" />
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+          <!-- Add Coupon Button -->
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCouponModal">
+            <span class="me-2">+</span>Add Coupon
+          </button>
+        </div>
+      </div>
+    
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+               
+               
+              <tr>
+                <th>Name</th>
+                <th>Created On</th>
+                <th>Expire On</th>
+                <th>Offer Price</th>
+                <th>Minimum Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+               
+            </thead>
+            <tbody>
+                <%for(let i=0;i<coupons.length;i++){%>
+
+              <tr>
+                <td><%=coupons[i].name%></td>
+                <td><%=new Date(coupons[i].createdOn).toLocaleDateString('en-US')%></td>
+                <td><%=new Date(coupons[i].expireOn).toLocaleDateString('en-US')%></td>
+                <td><%=coupons[i].offerPrice%></td>
+                <td><%=coupons[i].minimumPrice%></td>
+                <td>
+                    <%=coupons[i].isList%>
+                  <!-- <span class="badge bg-success">Active</span> -->
+                </td>
+                <td>
+                  <div class="btn-group" role="group">
+                    <a href="/admin/editCoupon?id=<%=coupons[i]._id%>" class="btn btn-sm btn-outline-primary">
+                      Edit
+                    </a>
+                    <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('<%=coupons[i]._id%>')">
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <%}%>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <% if (currentPage > 1) { %>
+      <a href="?page=<%= currentPage - 1 %><%= search ? '&search=' + search : '' %>">« Previous</a>
+    <% } %>
+    
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <% if (i === currentPage) { %>
+        <span><%= i %></span>
+      <% } else { %>
+        <a href="?page=<%= i %><%= search ? '&search=' + search : '' %>"><%= i %></a>
+      <% } %>
+    <% } %>
+    
+    <% if (currentPage < totalPages) { %>
+      <a href="?page=<%= Number(currentPage) + 1 %><%= search ? '&search=' + search : '' %>">Next »</a>
+    <% } %>
+  </div>
+  
+  <!-- Add Coupon Modal -->
+  <div class="modal fade" id="addCouponModal" tabindex="-1" aria-labelledby="addCouponModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addCouponModalLabel">Add New Coupon</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" >
+          <form method="post" action="/admin/createCoupon" id="couponForm" onsubmit="return validateForm()">
+            <div class="mb-3">
+              <label for="coupon-name" class="form-label">Coupon Name</label>
+              
+              <input
+                type="text"
+                id="coupon-name"
+                name="couponName"
+                placeholder="Enter coupon name"
+                class="form-control"
+              />
+              <div id="error-coupon-name" class="invalid-feedback"></div>
+            </div>
+
+            <div class="mb-3">
+              <label for="startingDate" class="form-label">Start Date</label>
+              <input
+                type="date"
+                name="startDate"
+                class="form-control"
+                required
+                id="startingDate"
+              />
+              <div id="error-start-date" class="invalid-feedback"></div>
+            </div>
+
+            <div class="mb-3">
+              <label for="expiringDate" class="form-label">End Date</label>
+              <input
+                type="date"
+                name="endDate"
+                class="form-control"
+                id="expiringDate"
+                required
+              />
+              <div id="error-end-date" class="invalid-feedback"></div>
+            </div>
+
+            <div class="mb-3">
+              <label for="offer-price" class="form-label">Offer Price</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input
+                  type="number"
+                  name="offerPrice"
+                  placeholder="Enter amount"
+                  class="form-control"
+                  min="0"
+                />
+              </div>
+              <div id="error-offer-price" class="invalid-feedback"></div>
+            </div>
+
+            <div class="mb-3">
+              <label for="minimum-price" class="form-label">Minimum Price</label>
+              <div class="input-group">
+                <span class="input-group-text">$</span>
+                <input
+                  type="number"
+                  name="minimumPrice"
+                  placeholder="Enter amount"
+                  class="form-control"
+                  min="0"
+                />
+              </div>
+              <div id="error-minimum-price" class="invalid-feedback"></div>
+            </div>
+            
+            <div id="err-msg" class="text-danger mt-2"></div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="submitForm()">Add Coupon</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> 
+<!-- 
+<script>
+  function submitForm() {
+    if (validateForm()) {
+      document.getElementById('couponForm').submit();
+    }
+  }
+
+  function validateForm() {
+    // Reset previous error messages
+    document.querySelectorAll(".invalid-feedback").forEach(element => {
+      element.innerHTML = "";
+      element.style.display = "none";
+    });
+    
+    // Reset invalid classes
+    document.querySelectorAll(".is-invalid").forEach(element => {
+      element.classList.remove("is-invalid");
+    });
+    
+    let isValid = true;
+    
+    // Get form values
+    const sDate = document.getElementById("startingDate").value;
+    const eDate = document.getElementById("expiringDate").value;
+    const sDateObj = new Date(sDate);
+    const eDateObj = new Date(eDate);
+    const todayDateObj = new Date();
+    todayDateObj.setHours(0, 0, 0, 0);
+
+    // Validate dates
+    if (sDateObj > eDateObj) {
+      document.getElementById("error-end-date").innerHTML = "End date must be after the start date";
+      document.getElementById("error-end-date").style.display = "block";
+      document.getElementById("expiringDate").classList.add("is-invalid");
+      isValid = false;
+    }
+
+    if (sDateObj < todayDateObj) {
+      document.getElementById("error-start-date").innerHTML = "Start date must be today or a future date";
+      document.getElementById("error-start-date").style.display = "block";
+      document.getElementById("startingDate").classList.add("is-invalid");
+      isValid = false;
+    }
+
+    // Validate coupon name
+    const name = document.getElementById("coupon-name").value;
+    const nameRegex = /^[A-Za-z0-9]{1,50}$/;
+
+    if (!nameRegex.test(name)) {
+      document.getElementById("error-coupon-name").innerHTML = "Coupon name must be alphanumeric and 1-50 characters";
+      document.getElementById("error-coupon-name").style.display = "block";
+      document.getElementById("coupon-name").classList.add("is-invalid");
+      isValid = false;
+    }
+
+    // Validate prices
+    const offerPriceInput = document.getElementsByName("offerPrice")[0];
+    const minimumPriceInput = document.getElementsByName("minimumPrice")[0];
+
+    const offerPrice = offerPriceInput.value.trim() !== "" ? parseFloat(offerPriceInput.value) : NaN;
+    const minimumPrice = minimumPriceInput.value.trim() !== "" ? parseFloat(minimumPriceInput.value) : NaN;
+
+    if (isNaN(offerPrice) || isNaN(minimumPrice)) {
+      document.getElementById("error-offer-price").innerHTML = "Please enter valid numeric values for prices";
+      document.getElementById("error-offer-price").style.display = "block";
+      offerPriceInput.classList.add("is-invalid");
+      isValid = false;
+    } else if (offerPrice >= minimumPrice) {
+      document.getElementById("error-offer-price").innerHTML = "Offer price must be less than minimum price";
+      document.getElementById("error-offer-price").style.display = "block";
+      offerPriceInput.classList.add("is-invalid");
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+
+  function setDefaultStartDate(){
+    const today = new Date()
+    const year = today.getFullYear()
+    let month = (today.getMonth()+1).toString().padStart(2,"0")
+    let day = today.getDate().toString().padStart(2,"0")
+    document.getElementById('startingDate').value = `${year}-${month}-${day}`
+  }
+
+  document.getElementById('addCouponModal').addEventListener('shown.bs.modal', function () {
+  setDefaultStartDate();
+});
+ 
+
+  function confirmDelete(couponId) {
+    Swal.fire({
+      title: "Delete Coupon?",
+      text: "This action cannot be undone",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteCoupon(couponId);
+      }
+    });
+  }
+
+  function deleteCoupon(couponId) {
+    $.ajax({
+      url: `/admin/deleteCoupon?id=${couponId}`,
+      method: "GET",
+      success: function() {
+        Swal.fire({
+          icon: "success",
+          title: "Deleted",
+          text: "Coupon has been successfully removed",
+          // confirmButtonText: "OK"
+        }).then(() => {
+          window.location.reload();
+        });
+      },
+      error: function() {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to delete coupon. Please try again."
+        });
+      }
+    });
+  }
+
+
+</script> -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> <!-- Add jQuery if not already included -->
+
+<script>
+function submitForm() {
+  if (validateForm()) {
+  
+    const formData = {
+      couponName: document.getElementById('coupon-name').value.trim(),
+      startDate: document.getElementById('startingDate').value,
+      endDate: document.getElementById('expiringDate').value,
+      offerPrice: document.getElementsByName('offerPrice')[0].value,
+      minimumPrice: document.getElementsByName('minimumPrice')[0].value
+    };
+
+    $.ajax({
+      url: '/admin/createCoupon',
+      method: 'POST',
+      data: formData, 
+      success: function (response) {
+        if (response.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: response.message,
+            confirmButtonColor: '#007bff',
+          }).then(() => {
+            window.location.href = '/admin/coupon'; 
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: response.message || 'Failed to create coupon',
+            confirmButtonColor: '#dc3545',
+          });
+        }
+      },
+      error: function (xhr) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: xhr.responseJSON?.message || 'Something went wrong while creating the coupon',
+          confirmButtonColor: '#dc3545',
+        });
+      }
+    });
+  }
+}
+  function validateForm() {
+   
+    document.querySelectorAll(".invalid-feedback").forEach(element => {
+    element.innerHTML = "";
+    element.style.display = "none";
+  });
+  document.querySelectorAll(".is-invalid").forEach(element => {
+    element.classList.remove("is-invalid");
+  });
+
+  let isValid = true;
+
+    
+    const sDate = document.getElementById("startingDate").value;
+    const eDate = document.getElementById("expiringDate").value;
+    const sDateObj = new Date(sDate);
+    const eDateObj = new Date(eDate);
+    const todayDateObj = new Date();
+    todayDateObj.setHours(0, 0, 0, 0);
+
+    
+    const name = document.getElementById("coupon-name").value.trim();
+  const nameRegex = /^[A-Za-z0-9]{1,50}$/;
+  if (!name || !nameRegex.test(name)) {
+    document.getElementById("error-coupon-name").innerHTML = "Coupon name is required and must be alphanumeric (1-50 characters)";
+    document.getElementById("error-coupon-name").style.display = "block";
+    document.getElementById("coupon-name").classList.add("is-invalid");
+    isValid = false;
+  }
+
+   
+    if (!sDate || isNaN(sDateObj.getTime())) {
+      document.getElementById("error-start-date").innerHTML = "Start date is required";
+      document.getElementById("error-start-date").style.display = "block";
+      document.getElementById("startingDate").classList.add("is-invalid");
+      isValid = false;
+    } else if (sDateObj < todayDateObj) {
+      document.getElementById("error-start-date").innerHTML = "Start date must be today or a future date";
+      document.getElementById("error-start-date").style.display = "block";
+      document.getElementById("startingDate").classList.add("is-invalid");
+      isValid = false;
+    }
+
+   
+    if (!eDate || isNaN(eDateObj.getTime())) {
+      document.getElementById("error-end-date").innerHTML = "End date is required";
+      document.getElementById("error-end-date").style.display = "block";
+      document.getElementById("expiringDate").classList.add("is-invalid");
+      isValid = false;
+    } else if (sDateObj > eDateObj) {
+      document.getElementById("error-end-date").innerHTML = "End date must be after the start date";
+      document.getElementById("error-end-date").style.display = "block";
+      document.getElementById("expiringDate").classList.add("is-invalid");
+      isValid = false;
+    }
+
+    // Validate prices
+    const offerPriceInput = document.getElementsByName("offerPrice")[0];
+    const minimumPriceInput = document.getElementsByName("minimumPrice")[0];
+    const offerPrice = offerPriceInput.value.trim() !== "" ? parseFloat(offerPriceInput.value) : NaN;
+    const minimumPrice = minimumPriceInput.value.trim() !== "" ? parseFloat(minimumPriceInput.value) : NaN;
+
+    if (isNaN(offerPrice) || isNaN(minimumPrice)) {
+      document.getElementById("error-offer-price").innerHTML = "Please enter valid numeric values for prices";
+      document.getElementById("error-offer-price").style.display = "block";
+      offerPriceInput.classList.add("is-invalid");
+      isValid = false;
+    } else if (offerPrice >= minimumPrice) {
+      document.getElementById("error-offer-price").innerHTML = "Offer price must be less than minimum price";
+      document.getElementById("error-offer-price").style.display = "block";
+      offerPriceInput.classList.add("is-invalid");
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  
+  function setDefaultStartDate() {
+  const today = new Date();
+  const year = today.getFullYear();
+  let month = (today.getMonth() + 1).toString().padStart(2, "0");
+  let day = today.getDate().toString().padStart(2, "0");
+  document.getElementById('startingDate').value = `${year}-${month}-${day}`; // Fix: use backticks
+}
+  document.getElementById('addCouponModal').addEventListener('shown.bs.modal', function () {
+    setDefaultStartDate();
+  });
+
+  function confirmDelete(couponId) {
+    Swal.fire({
+      title: "Delete Coupon?",
+      text: "This action cannot be undone",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc3545",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        deleteCoupon(couponId);
+      }
+    });
+  }
+
+  function deleteCoupon(couponId) {
+    $.ajax({
+      url: `/admin/deleteCoupon?id=${couponId}`,
+      method: "GET",
+      success: function () {
+        Swal.fire({
+          icon: "success",
+          title: "Deleted",
+          text: "Coupon has been successfully removed",
+        }).then(() => {
+          window.location.reload();
+        });
+      },
+      error: function () {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to delete coupon. Please try again."
+        });
+      }
+    });
+  }
+
+  let searchTimer;
+const searchInput = document.querySelector('input[name="search"]');
+
+searchInput.addEventListener('input', function(e) {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    const searchTerm = e.target.value;
+    fetchResults(searchTerm);
+  }, 300);
+});
+
+function fetchResults(searchTerm) {
+  $.ajax({
+    url: '/admin/coupon',
+    method: 'GET',
+    data: { 
+      search: searchTerm,
+      ajax: true
+    },
+    success: function(response) {
+      $('.card-body').html($(response).find('.card-body').html());
+      $('.pagination').html($(response).find('.pagination').html());
+    }
+  });
+}
+
+
+$(document).on('click', '.pagination a', function(e) {
+  e.preventDefault();
+  const url = new URL(this.href);
+  const page = url.searchParams.get('page');
+  const search = url.searchParams.get('search');
+  
+  $.ajax({
+    url: '/admin/coupon',
+    method: 'GET',
+    data: { 
+      page: page,
+      search: search,
+      ajax: true
+    },
+    success: function(response) {
+      $('.card-body').html($(response).find('.card-body').html());
+      $('.pagination').html($(response).find('.pagination').html());
+    }
+  });
+});
+
+
+</script>
+
+<%- include("../../views/partials/admin/footer") %>

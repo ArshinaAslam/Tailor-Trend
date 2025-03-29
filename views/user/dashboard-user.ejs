@@ -1,0 +1,202 @@
+<%- include("../../views/partials/user/header") %>
+<style>
+  .text-danger {
+    display: none;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+</style>
+
+<main class="main">
+  <div class="breadcrumb-wrap">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/" rel="nofollow">Home</a>
+        <span></span> Profile <span></span> Account
+      </div>
+    </div>
+  </div>
+
+  <section class="py-4">
+    <div class="dashboard-container">
+    
+      <%- include("../../views/partials/user/profile-sidebar") %>
+
+     
+      <div class="content-area">
+      
+        <div id="dashboard">
+          <div class="card profile-card">
+            <div class="card-header">
+              <h5 class="mb-0">User Profile</h5>
+            </div>
+            <div class="card-body">
+              <div class="profile-avatar">
+                <%= user.name.charAt(0) %>
+              </div>
+              <div class="profile-info">
+                <h3><%= user.name %></h3>
+                <p><i class="fi-rs-phone"></i><%= user.phone %></p>
+                <p><i class="fi-rs-envelope"></i><%= user.email %></p>
+                <a class="btn btn-primary mt-3" onclick="editProfile()">Edit Profile</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+       
+<div id="editProfile" style="display: none;">
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">Edit Profile</h5>
+    </div>
+    <div class="card-body">
+      <form id="editProfileForm">
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <span class="text-danger" id="nameError" style="display: none;">Name cannot be empty!</span>
+          <input type="text" name="name" class="form-control" value="<%= user.name %>" >
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" value="<%= user.email %>" readonly>
+          <a href="/updateEmail" class="btn btn-primary mt-2">Edit Email</a>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <span class="text-danger" id="phoneError" style="display: none;">Phone cannot be empty!</span>
+          <input type="tel" name="phone" class="form-control" value="<%= user.phone %>" >
+        </div>
+        <div class="form-group">
+          <%if(!user.googleId){%>
+            <a href="/updatePassword" class="btn btn-primary">Edit Password</a>
+          <%}%>
+        </div>
+        <div class="d-flex mt-3">
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <button type="button" class="btn btn-danger ml-2" onclick="cancelEdit()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include("../../views/partials/user/footer") %>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+  
+  function editProfile() {
+    document.getElementById('dashboard').style.display = "none";
+    document.getElementById('editProfile').style.display = "block";
+
+   
+    
+    document.querySelector('#editProfileForm input[name="name"]').value = "<%= user.name %>";
+    document.querySelector('#editProfileForm input[name="phone"]').value = "<%= user.phone %>";
+    
+    document.getElementById('nameError').style.display = 'none';
+    document.getElementById('phoneError').style.display = 'none';
+  }
+
+  function cancelEdit() {
+    document.getElementById('editProfile').style.display = "none";
+    document.getElementById('dashboard').style.display = "block";
+  }
+
+  
+  document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+
+
+    
+    const nameError = document.getElementById('nameError');
+    const phoneError = document.getElementById('phoneError');
+    
+ 
+    nameError.style.display = 'none';
+    phoneError.style.display = 'none';
+    
+    
+    let hasError = false;
+    if (!data.name.trim()) {
+      nameError.style.display = 'block';
+      hasError = true;
+    }
+    if (!data.phone.trim()) {
+      phoneError.style.display = 'block';
+      hasError = true;
+    }
+    
+    if (hasError) {
+      return;
+    }
+
+    const nameRegex = /^[A-Za-z\s]+$/;
+    const phoneRegex = /^\d{10}$/;
+    
+    if (!nameRegex.test(data.name)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Name',
+        text: 'Name should only contain alphabets and spaces!'
+      });
+      return;
+    }
+
+    if (!phoneRegex.test(data.phone)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Phone',
+        text: 'Phone number must be 10 digits!'
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch('/updateUserDetails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Profile Updated!',
+          text: result.message,
+        }).then(() => {
+          window.location.reload(); 
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Update Failed',
+          text: result.message || 'Failed to update profile!',
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred. Please try again!',
+      });
+    }
+  });
+</script>

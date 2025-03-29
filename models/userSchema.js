@@ -34,8 +34,6 @@ const userSchema = new Schema({
     password : {
         type : String ,
         required : false ,
-
-
     },
 
     isBlocked : {
@@ -52,13 +50,6 @@ const userSchema = new Schema({
         type : Schema.Types.ObjectId ,
         ref : "Cart"
     }],
-
-    
-
-    // wallet : {
-    //     type : Schema.Types.ObjectId ,
-        
-    // } ,
 
     wallet: {
         type: Number, 

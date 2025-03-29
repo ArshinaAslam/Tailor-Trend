@@ -273,6 +273,23 @@ button:active {
 }
 
 
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-badge.success {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.danger {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
 @media (max-width: 640px) {
   .container {
     padding: 1rem;
@@ -291,185 +308,211 @@ button:active {
 </style>
 
 
-
 <body>
-    
-        <div class="container">
-            <h1>Order Details</h1>
-            
-            <div class="order-grid">
-                <div class="order-details">
-                    <div class="order-meta">
-                        <div class="meta-item">
-                            <span class="label">Order ID:</span>
-                            <span class="value"><%= order.orderid %></span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="label">Total Amount:</span>
-                            <span class="value">₹<%= order.finalAmount %></span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="label">Payment Method:</span>
-                            <span class="value"><%= order.paymentMethod %></span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="label">Order Date:</span>
-                            <span class="value"><%= new Date(order.createdOn).toLocaleDateString() %></span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="label">Status:</span>
-                            <select id="status-<%= order._id %>" 
-                                    onchange="updateStatus('<%= order._id %>')" 
-                                     <%= order.status === 'Delivered' ? 'disabled' : '' %>>  
-                                <option value="Pending" <%= order.status === 'Pending' ? 'selected' : '' %>>Pending</option>
-                                <option value="Pending" <%= order.status === 'Return requested' ? 'selected' : '' %>>Return requested</option>
-                                <option value="Processing" <%= order.status === 'Processing' ? 'selected' : '' %>>Processing</option>
-                                <option value="Shipped" <%= order.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
-                                <option value="Delivered" <%= order.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
-                                <option value="Cancelled" <%= order.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
-                            </select>
-                        </div>                                              
-                    </div>
-                </div>
-                
-                <div class="shipping-address">
-                    <h2>Shipping Address</h2>
-                    <% if (address) { %>
-                        <p><strong>Name:</strong> <%= address.name %></p>
-                        <p><strong>Type:</strong> <%= address.addressType %></p>
-                        <p><strong>Landmark:</strong> <%= address.landMark %></p>
-                        <p><strong>City:</strong> <%= address.city %>, <%= address.state %> - <%= address.pincode %></p>
-                        <p><strong>Phone:</strong> <%= address.phone %></p>
-                        <p><strong>Alternate Phone:</strong> <%= address.altPhone %></p>
-                    <% } else { %>
-                        <p style="color: red;">Address not available</p>
-                    <% } %>
-                </div>
-            </div>
-
-
-            <div class="order-items">
-              <h2>Order Items</h2>
-              <% order.orderitems.forEach(item => { %>
-                <div class="item-card">
-                  <div class="item-details">
-                    <h3>Product ID: <%= item.productId.name %></h3>
-                    <p class="label">Quantity: <%= item.quantity %></p>
-                    <p class="label">Price per Unit: ₹<%= item.price %></p>
+  <div class="container">
+      <h1>Order Details</h1>
+      
+      <div class="order-grid">
+          <div class="order-details">
+              <div class="order-meta">
+                  <div class="meta-item">
+                      <span class="label">Order ID:</span>
+                      <span class="value"><%= order.orderid %></span>
                   </div>
-                </div>
-              <% }) %>
-            
-              <% if (order.status === 'Return requested' && order.returnRequest.status === 'pending') { %>
-                <div class="return-request-section">
-                  <h4>Return Request Details</h4>
-                  <p><strong>Return Reason:</strong> <%= order.returnRequest.reason %></p>
-                  <p><strong>Request Date:</strong> <%= new Date(order.returnRequest.requestedAt).toLocaleDateString() %></p>
-                  <div class="return-actions">
-                    <button 
-                      class="btn btn-success approve-return-btn"
-                      onclick="handleReturn('<%= order._id %>', 'Approved')">
-                      Approve Return
-                    </button>
-                    <button 
-                      class="btn btn-danger reject-return-btn"
-                      onclick="handleReturn('<%= order._id %>', 'Rejected')">
-                      Reject Return
-                    </button>
+                  <div class="meta-item">
+                      <span class="label">Total Amount:</span>
+                      <span class="value">₹<%= order.totalPrice %></span>
+                      <span class="label">Discount</span>
+                      <span class="value">₹<%= order.discount %></span>
+                      <span class="label">Final Amount</span>
+                      <span class="value">₹<%= order.finalAmount %></span>
                   </div>
-                </div>
+                  <div class="meta-item">
+                      <span class="label">Payment Method:</span>
+                      <span class="value"><%= order.paymentMethod %></span>
+                  </div>
+                  <div class="meta-item">
+                      <span class="label">Order Date:</span>
+                      <span class="value"><%= new Date(order.createdOn).toLocaleDateString() %></span>
+                  </div>
+              </div>
+          </div>
+          
+          <div class="shipping-address">
+              <h2>Shipping Address</h2>
+              <% if (address) { %>
+                  <p><strong>Name:</strong> <%= address.name %></p>
+                  <p><strong>Type:</strong> <%= address.addressType %></p>
+                  <p><strong>Landmark:</strong> <%= address.landMark %></p>
+                  <p><strong>City:</strong> <%= address.city %>, <%= address.state %> - <%= address.pincode %></p>
+                  <p><strong>Phone:</strong> <%= address.phone %></p>
+                  <p><strong>Alternate Phone:</strong> <%= address.altPhone %></p>
+              <% } else { %>
+                  <p style="color: red;">Address not available</p>
               <% } %>
-            </div>
-            
-                   
-        </div>
-    
+          </div>
+      </div>
+
+      <div class="order-items">
+          <h2>Order Items</h2>
+          <table class="table">
+              <thead>
+                  <tr>
+                      <th>Product ID</th>
+                      <th>Image</th>
+                      <th>Product Name</th>
+                      <th>Size</th>
+                      <th>Unit Price</th>
+                      <th>Quantity</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                      <th>Return Details</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <% order.orderitems.forEach(item => { %>
+                      <tr>
+                          <td><%= item.productId._id %></td>
+                          <td>
+                              <img src="/uploads/product-images/<%= item.productId.productImage[0] %>"
+                                  style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;" />
+                          </td>
+                          <td><%= item.productId.productName %></td>
+                          <td><%= item.size %></td>
+                          <td>₹<%= item.price %></td>
+                          <td><%= item.quantity %></td>
+                          <td>
+                              ₹<%= (parseInt(item.price) * parseInt(item.quantity)).toLocaleString() %>
+                          </td>
+                          <td>
+                              <select id="status-<%= order._id %>-<%= item.productId._id %>" 
+                                      onchange="updateItemStatus('<%= order._id %>', '<%= item.productId._id %>', '<%= item.size %>')" 
+                                      <%= item.status === 'Delivered' || item.status === 'Returned' ? 'disabled' : '' %>>
+                                  <option value="Pending" <%= item.status === 'Pending' ? 'selected' : '' %>>Pending</option>
+                                  <option value="Processing" <%= item.status === 'Processing' ? 'selected' : '' %>>Processing</option>
+                                  <option value="Shipped" <%= item.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>
+                                  <option value="Delivered" <%= item.status === 'Delivered' ? 'selected' : '' %>>Delivered</option>
+                                  <option value="Cancelled" <%= item.status === 'Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                  <% if (item.status === 'Return requested') { %>
+                                      <option value="Return requested" selected>Return requested</option>
+                                  <% } %>
+                              </select>
+                          </td>
+                          <td>
+                              <% if (item.status === 'Return requested' && item.returnRequest.status === 'pending') { %>
+                                  <div class="return-request-section">
+                                      <strong>Return Reason:</strong> <%= item.returnRequest.reason %><br>
+                                      <strong>Request Date:</strong> <%= new Date(item.returnRequest.requestedAt).toLocaleDateString() %><br>
+                                      <div class="return-actions">
+                                          <button 
+                                              class="btn btn-success approve-return-btn"
+                                              onclick="handleReturn('<%= order._id %>', 'Approved','<%= item.productId._id %>','<%= item.size %>')">
+                                              Approve
+                                          </button>
+                                          <button 
+                                              class="btn btn-danger reject-return-btn"
+                                              onclick="handleReturn('<%= order._id %>', 'Rejected','<%= item.productId._id %>','<%= item.size %>')">
+                                              Reject
+                                          </button>
+                                      </div>
+                                  </div>
+                              <% } else if (item.status === 'Returned') { %>
+                                  <div class="status-badge" style="background-color: var(--success-color);">
+                                      Return request approved
+                                  </div>
+                              <% } else if (item.returnRequest && item.returnRequest.status === 'rejected') { %>
+                                  <div class="status-badge" style="background-color: var(--danger-color);">
+                                      Return request rejected
+                                  </div>
+                              <% } %>
+                          </td>
+                      </tr>
+                  <% }) %>
+              </tbody>
+          </table>
+      </div>
+  </div>
 </body>
 
-
 <script>
-    const finalAmount = '<%= order.finalAmount %>'
-
-    async function handleReturn(orderId, status) {
-  const finalAmount = '<%= order.finalAmount %>';
-
-  const response = await fetch('/admin/handleReturn', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ orderId, status, finalAmount })
-  });
-
-  const result = await response.json();
-
-  if (result.success) {
-    Swal.fire({
-      icon: 'success',
-      title: 'Success!',
-      text: result.message,
-      confirmButtonColor: '#28a745',
-      timer: 3000,
-      showConfirmButton: false,
-      toast: true,
-      position: 'top-end'
-    }).then(() => {
-      window.location.reload();
-    });
-  } else {
-    Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: result.message || 'Error while processing the return!',
-      confirmButtonColor: '#dc3545'
-    });
-  }
-}
-
-
-
-    async function updateStatus(orderId) {
-  const newStatus = document.getElementById(`status-${orderId}`).value;
-  console.log('newstatus is:',newStatus)
-
-  console.log('order id: ', orderId);
-  
-  
-  try {
-    const response = await fetch(`/admin/update-status/${orderId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ status: newStatus })
-    });
-
-    const result = await response.json();
-    
-    if (result.success) {
-      Swal.fire({
-        icon: 'success',
-        title: 'Status Updated!',
-        text: 'Order status has been updated successfully',
+  async function handleReturn(orderId, status, productId, size) {
+      const response = await fetch('/admin/handleReturn', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ orderId, status, productId, size })
       });
-      
-      
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Update Failed',
-        text: result.message,
-      });
-    }
-  } catch (error) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Failed to update status',
-    });
-  }
-}
 
+      const result = await response.json();
+
+      if (result.success) {
+          Swal.fire({
+              icon: 'success',
+              title: 'Success!',
+              text: result.message,
+              confirmButtonColor: '#28a745',
+              timer: 3000,
+              showConfirmButton: false,
+              toast: true,
+              position: 'top-end'
+          }).then(() => {
+              window.location.reload();
+          });
+      } else {
+          Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: result.message || 'Error while processing the return!',
+              confirmButtonColor: '#dc3545'
+          });
+      }
+  }
+
+  async function updateItemStatus(orderId, productId, size) {
+      const selectElement = document.getElementById(`status-${orderId}-${productId}`);
+      const newStatus = selectElement.value;
+
+      try {
+          const response = await fetch(`/admin/update-item-status/${orderId}`, {  // Changed to use orderId in URL
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ 
+                  status: newStatus,
+                  productId: productId,
+                  size: size
+              })
+          });
+
+          const result = await response.json();
+          
+          if (result.success) {
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Status Updated!',
+                  text: 'Item status has been updated successfully',
+                  timer: 2000,
+                  showConfirmButton: false
+              }).then(() => {
+                  window.location.reload();
+              });
+          } else {
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Update Failed',
+                  text: result.message,
+              });
+          }
+      } catch (error) {
+          Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to update status',
+          });
+      }
+  }
 </script>
 
 <%- include("../../views/partials/admin/footer") %>

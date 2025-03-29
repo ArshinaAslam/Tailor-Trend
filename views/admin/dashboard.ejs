@@ -1,146 +1,926 @@
 <%- include("../../views/partials/admin/header") %>
+<title>Dashboard</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <style>
-           
-   .breadcrumb {
-        display: flex;
-        align-items: center;
-        font-size: 14px;
-        background-color: #F9FAFB;
-        padding: 10px 16px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-    }
 
-    .breadcrumb a {
-        color: #4B5563;
-        text-decoration: none;
-        margin-right: 8px;
-        font-weight: 500;
-    }
+body {
+  background: linear-gradient(135deg, #f0f2f5 0%, #e9ecef 100%);
+  font-family: 'Poppins', sans-serif;
+  color: #2c3e50;
+  margin: 0;
+  padding: 0;
+}
 
-    .breadcrumb a:hover {
-        text-decoration: underline;
-    }
+.dashboard-container {
+  padding: 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
 
-    .breadcrumb span {
-        color: #9CA3AF; 
-        margin-right: 8px;
-    }
+.dashboard-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: #1a202c;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+}
+
+
+.stats-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 1.25rem 1.5rem;
+  color: #4a5568;
+  background: linear-gradient(90deg, #f7fafc 0%, #edf2f7 100%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.card-body {
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.card-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.card-percentage {
+  font-size: 0.95rem;
+  color: #718096;
+  font-weight: 500;
+}
+
+.icon-container {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  transition: transform 0.3s ease;
+}
+
+.stats-card:hover .icon-container {
+  transform: scale(1.1);
+}
+
+.icon {
+  font-size: 1.75rem;
+}
+
+
+.bg-light-blue { background: linear-gradient(135deg, #e6f0ff 0%, #d1e3ff 100%); }
+.bg-light-green { background: linear-gradient(135deg, #e6fff4 0%, #d1fae5 100%); }
+.bg-light-yellow { background: linear-gradient(135deg, #fff7e6 0%, #ffedd5 100%); }
+.bg-light-red { background: linear-gradient(135deg, #ffeeee 0%, #ffdede 100%); }
+.bg-light-purple { background: linear-gradient(135deg, #f3e8ff 0%, #e9d8fd 100%); }
+
+.icon-blue { background: #3b82f6; color: #ffffff; }
+.icon-green { background: #10b981; color: #ffffff; }
+.icon-yellow { background: #f59e0b; color: #ffffff; }
+.icon-red { background: #ef4444; color: #ffffff; }
+.icon-purple { background: #8b5cf6; color: #ffffff; }
+
+
+.filters-section {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.btn-filter {
+  padding: 0.75rem 1.25rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #4a5568;
+  transition: all 0.3s ease;
+}
+
+.btn-filter:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.btn-filter.active {
+  background: #1a202c;
+  color: #ffffff;
+  border-color: #1a202c;
+}
+
+.date-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.date-input {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  color: #4a5568;
+  background: #fafafa;
+  transition: border-color 0.3s ease;
+  width: 140px;
+}
+
+.date-input:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.date-separator {
+  font-size: 0.9rem;
+  color: #718096;
+  font-weight: 500;
+}
+
+.report-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.report-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.excel-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: none;
+}
+
+.excel-btn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.pdf-btn {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  border: none;
+}
+
+.pdf-btn:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+.report-btn i {
+  font-size: 1rem;
+}
+
+
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95rem;
+}
+
+.data-table th {
+  background: #f8fafc;
+  color: #64748b;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  padding: 1.25rem;
+  letter-spacing: 0.05em;
+  text-align: left;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.data-table td {
+  padding: 1.25rem;
+  border-bottom: 1px solid #edf2f7;
+  color: #2d3748;
+}
+
+.data-table tbody tr {
+  transition: background 0.3s ease;
+}
+
+.data-table tbody tr:hover {
+  background: #f1f5f9;
+}
+
+.table-container {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  margin-bottom: 2.5rem;
+}
+
+.table-header {
+  padding: 1.75rem;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.table-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0;
+}
+
+
+.chart-container {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2.5rem;
+  padding: 2rem;
+}
+
+.chart-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 300px;
+}
+
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1.5rem;
+  }
+
+  .chart-container {
+    padding: 1.5rem;
+  }
+
+  .chart-wrapper {
+    height: 250px;
+  }
+}
+
+@media (max-width: 576px) {
+  .report-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .report-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .filters-section .row {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .btn-filter {
+    flex: 1 1 45%;
+  }
+
+  .date-input-group {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .date-input {
+    width: 100%;
+  }
+
+  .sales-btn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: #ffffff;
+  border: none;
+}
+
+.sales-btn:hover {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+}
+}
 </style>
-<section class="p-6 bg-gray-100 min-h-screen">
-    <!-- Dashboard Header -->
-    <div class="flex justify-between items-center mb-6">
-     <!-- Breadcrumb -->
-<div class="breadcrumb">
-    <a href="/admin">Dashboard</a>
+
+<div class="dashboard-container">
+  <!-- Dashboard Header -->
+  <div class="row">
+    <div class="col-md-8">
+      <h1 class="dashboard-title">Dashboard</h1>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="row">
+    <div class="col-12">
+      <div class="filters-section">
+        <div class="row align-items-center">
+          <!-- Filter Buttons -->
+          <div class="col-md-4 mb-3 mb-md-0">
+            <div class="btn-group" role="group">
+              <% ['all', '1day', '1week', '1month'].forEach(period => { %>
+                <button type="button" class="btn btn-filter <%= data.selectedPeriod === period ? 'active' : '' %>" data-period="<%= period %>">
+                  <%= period === 'all' ? 'All Time' : period.replace('1', '1 ') %>
+                </button>
+              <% }); %>
+            </div>
+          </div>
+
+          <!-- Date Range and Reports -->
+          <!-- <div class="col-md-8 text-end">
+            <div class="date-input-group">
+              <input type="date" class="form-control date-input" value="<%= data.startDate %>">
+              <span class="date-separator">to</span>
+              <input type="date" class="form-control date-input" value="<%= data.endDate %>">
+            </div>
+            <div class="report-buttons">
+              <button class="report-btn excel-btn">
+                <i class="fas fa-file-excel"></i> Excel Report
+              </button>
+              <button class="report-btn pdf-btn">
+                <i class="fas fa-file-pdf"></i> PDF Report
+              </button>
+            </div>
+          </div> -->
+
+          <!-- Date Range and Reports -->
+<div class="col-md-8 text-end">
+  <div class="date-input-group">
+    <input type="date" class="form-control date-input" value="<%= data.startDate %>">
+    <span class="date-separator">to</span>
+    <input type="date" class="form-control date-input" value="<%= data.endDate %>">
+  </div>
+  <div class="report-buttons">
+    <button class="report-btn sales-btn">
+      <i class="fas fa-chart-line"></i> Sales Report
+    </button>
+    <button class="report-btn excel-btn">
+      <i class="fas fa-file-excel"></i> Excel Report
+    </button>
+    <button class="report-btn pdf-btn">
+      <i class="fas fa-file-pdf"></i> PDF Report
+    </button>
+  </div>
 </div>
-        <a href="#" class="flex items-center bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600">
-            <i class='bx bxs-cloud-download mr-2'></i> Download PDF
-        </a>
+        </div>
+      </div>
     </div>
+  </div>
 
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div class="flex items-center p-5 bg-white rounded-lg shadow-md">
-            <i class='bx bxs-calendar-check text-4xl text-blue-500'></i>
-            <div class="ml-4">
-                <h3 class="text-2xl font-bold">1020</h3>
-                <p class="text-gray-600">New Orders</p>
-            </div>
+  <!-- Sales Overview Charts -->
+  <h2 class="section-title">Sales Overview</h2>
+  <div class="row mb-4">
+    <div class="col-lg-6 mb-4">
+      <div class="chart-container">
+        <h3 class="chart-title">Monthly Sales</h3>
+        <div class="chart-wrapper">
+          <canvas id="salesChart"></canvas>
         </div>
-        <div class="flex items-center p-5 bg-white rounded-lg shadow-md">
-            <i class='bx bxs-group text-4xl text-green-500'></i>
-            <div class="ml-4">
-                <h3 class="text-2xl font-bold">2834</h3>
-                <p class="text-gray-600">Visitors</p>
-            </div>
-        </div>
-        <div class="flex items-center p-5 bg-white rounded-lg shadow-md">
-            <i class='bx bxs-dollar-circle text-4xl text-yellow-500'></i>
-            <div class="ml-4">
-                <h3 class="text-2xl font-bold">$2543</h3>
-                <p class="text-gray-600">Total Sales</p>
-            </div>
-        </div>
+      </div>
     </div>
+    <div class="col-lg-6 mb-4">
+      <div class="chart-container">
+        <h3 class="chart-title">Order Status Distribution</h3>
+        <div class="chart-wrapper">
+          <canvas id="orderStatusChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
 
-   
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <!-- Sales -->
+  <div class="row mb-4" id="sales-orders-overview">
+    <% const stats = [
+      { title: 'Total Sales', value: data.totalSales, growth: data.totalSalesGrowth, icon: 'fas fa-chart-line', color: 'green' },
+      { title: 'Total Orders', value: data.totalOrders, icon: 'fas fa-shopping-bag', color: 'blue' },
+      { title: 'Cancelled Orders', value: data.cancelledOrders, extra: '₹' + data.cancelledAmount.toLocaleString() + ' (' + data.cancelledPercentage + '%)', icon: 'fas fa-times-circle', color: 'red' },
+      { title: 'Pending Orders', value: data.pendingOrders, extra: '₹' + data.pendingAmount.toLocaleString() + ' (' + data.pendingPercentage + '%)', icon: 'fas fa-clock', color: 'yellow' }
+    ]; %>
+
+    <% stats.forEach(stat => { %>
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stats-card bg-light-<%= stat.color %>">
+          <div class="card-header"><%= stat.title %></div>
+          <div class="card-body">
+            <div>
+              <h2 class="card-value" data-field="<%= stat.title.toLowerCase().replace(' ', '-') %>">
+                <%= stat.title === 'Total Sales' ? '₹' + stat.value.toLocaleString() : stat.value.toLocaleString() %>
+              </h2>
+              <% if (stat.extra) { %>
+                <span class="card-percentage" data-field="<%= stat.title.toLowerCase().replace(' ', '-') %>-extra"><%= stat.extra %></span>
+              <% } %>
+            </div>
+            <div class="icon-container icon-<%= stat.color %>">
+              <i class="<%= stat.icon %> icon"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+
+  <!-- Order Status -->
+  <div class="row mb-4" id="order-status">
+    <% const orderStatus = [
+      { title: 'Processing Orders', value: data.processingOrders, extra: '₹' + data.processingAmount.toLocaleString() + ' (' + data.processingPercentage + '%)', icon: 'fas fa-truck', color: 'blue' },
+      { title: 'Delivered Orders', value: data.deliveredOrders, extra: '₹' + data.deliveredAmount.toLocaleString() + ' (' + data.deliveredPercentage + '%)', icon: 'fas fa-check-circle', color: 'green' },
+      { title: 'Total Users', value: data.totalUsers, extra: 'Active users', icon: 'fas fa-users', color: 'purple' }
+    ]; %>
+
+    <% orderStatus.forEach(status => { %>
+      <div class="col-lg-4 col-md-4 mb-4">
+        <div class="stats-card bg-light-<%= status.color %>">
+          <div class="card-header"><%= status.title %></div>
+          <div class="card-body">
+            <div>
+              <h2 class="card-value" data-field="<%= status.title.toLowerCase().replace(' ', '-') %>">
+                <%= status.value.toLocaleString() %>
+              </h2>
+              <% if (status.extra) { %>
+                <span class="card-percentage" data-field="<%= status.title.toLowerCase().replace(' ', '-') %>-extra"><%= status.extra %></span>
+              <% } %>
+            </div>
+            <div class="icon-container icon-<%= status.color %>">
+              <i class="<%= status.icon %> icon"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+
+  <!-- Discounts & Coupons -->
+  <div class="row mb-4" id="discounts-coupons">
+    <% const couponStats = [
+      { title: 'Total Discounts', value: '₹' + data.totalDiscounts.toLocaleString(), extra: data.discountPercentage + '% of total sales', icon: 'fas fa-tags', color: 'purple' },
+      { title: 'Active Coupons', value: data.activeCoupons, extra: 'Currently Active', icon: 'fas fa-ticket-alt', color: 'green' },
+      { title: 'Expired Coupons', value: data.expiredCoupons, extra: 'Inactive', icon: 'fas fa-ban', color: 'red' },
+      { title: 'Coupon Usage', value: data.totalCouponUsage, extra: 'Orders with coupons', icon: 'fas fa-percentage', color: 'blue' }
+    ]; %>
+
+    <% couponStats.forEach(coupon => { %>
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stats-card bg-light-<%= coupon.color %>">
+          <div class="card-header"><%= coupon.title %></div>
+          <div class="card-body">
+            <div>
+              <h2 class="card-value" data-field="<%= coupon.title.toLowerCase().replace(' ', '-') %>">
+                <%= coupon.value %>
+              </h2>
+              <span class="card-percentage" data-field="<%= coupon.title.toLowerCase().replace(' ', '-') %>-extra"><%= coupon.extra %></span>
+            </div>
+            <div class="icon-container icon-<%= coupon.color %>">
+              <i class="<%= coupon.icon %> icon"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+
+  <!-- Top 10 Best Selling Products -->
+  <h2 class="section-title">Best Selling Products (Top 10)</h2>
+  <div class="table-container mb-4">
+    <div class="table-header">
+      <h3 class="table-title">Products Performance</h3>
+    </div>
+    <div class="table-body">
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Category</th>
+              <th>Total Quantity Sold</th>
+              <th>Total Revenue</th>
+              <th>Order Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% topProducts.forEach(product => { %>
+              <tr>
+                <td><%= product.productName %></td>
+                <td><%= product.categoryInfo.name %></td>
+                <td><%= product.totalQuantitySold.toLocaleString() %></td>
+                <td>₹<%= product.totalRevenue.toLocaleString() %></td>
+                <td><%= product.orderCount.toLocaleString() %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top 5 Best-Selling Categories -->
+  <h2 class="section-title">Top 5 Best-Selling Categories</h2>
+  <div class="table-container mb-4">
+    <div class="table-header">
+      <h3 class="table-title">Category Performance</h3>
+    </div>
+    <div class="table-body">
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Category Name</th>
+              <th>Total Quantity Sold</th>
+              <th>Total Revenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% topCategories.forEach(category => { %>
+              <tr>
+                <td><%= category.categoryInfo.name %></td>
+                <td><%= category.totalQuantitySold.toLocaleString() %></td>
+                <td>₹<%= category.totalRevenue.toLocaleString() %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+ <script>
+ 
+let salesChartInstance = null;
+let orderStatusChartInstance = null;
+
+function updateDashboard(data) {
+  
+  const formatNumber = (value, isCurrency = false) => {
+    return (value ?? 0).toLocaleString() + (isCurrency ? '' : ''); 
+  };
+
+  
+  document.querySelector('[data-field="total-sales"]').textContent = `₹${formatNumber(data.totalSales)}`;
+  document.querySelector('[data-field="total-orders"]').textContent = formatNumber(data.totalOrders);
+  document.querySelector('[data-field="cancelled-orders"]').textContent = formatNumber(data.cancelledOrders);
+  document.querySelector('[data-field="cancelled-orders-extra"]').textContent = `₹${formatNumber(data.cancelledAmount)} (${formatNumber(data.cancelledPercentage)}%)`;
+  document.querySelector('[data-field="pending-orders"]').textContent = formatNumber(data.pendingOrders);
+  document.querySelector('[data-field="pending-orders-extra"]').textContent = `₹${formatNumber(data.pendingAmount)} (${formatNumber(data.pendingPercentage)}%)`;
+
+ 
+  document.querySelector('[data-field="processing-orders"]').textContent = formatNumber(data.processingOrders);
+  document.querySelector('[data-field="processing-orders-extra"]').textContent = `₹${formatNumber(data.processingAmount)} (${formatNumber(data.processingPercentage)}%)`;
+  document.querySelector('[data-field="delivered-orders"]').textContent = formatNumber(data.deliveredOrders);
+  document.querySelector('[data-field="delivered-orders-extra"]').textContent = `₹${formatNumber(data.deliveredAmount)} (${formatNumber(data.deliveredPercentage)}%)`;
+  document.querySelector('[data-field="total-users"]').textContent = formatNumber(data.totalUsers);
+
+  
+  document.querySelector('[data-field="total-discounts"]').textContent = `₹${formatNumber(data.totalDiscounts)}`;
+  document.querySelector('[data-field="total-discounts-extra"]').textContent = `${formatNumber(data.discountPercentage)}% of total sales`;
+  document.querySelector('[data-field="active-coupons"]').textContent = formatNumber(data.activeCoupons);
+  document.querySelector('[data-field="expired-coupons"]').textContent = formatNumber(data.expiredCoupons);
+  document.querySelector('[data-field="coupon-usage"]').textContent = formatNumber(data.totalCouponUsage);
+}
+
+function updateCharts(monthlySales, orderStatusDistribution) {
+  const orderStatuses = ['Pending', 'Processing', 'Delivered', 'Cancelled', 'Returned'];
+  const salesColors = {
+    'Pending': 'rgba(245, 158, 11, 0.6)',    // Yellow
+    'Processing': 'rgba(59, 130, 246, 0.6)', // Blue
+    'Delivered': 'rgba(16, 185, 129, 0.6)',  // Green
+    'Cancelled': 'rgba(239, 68, 68, 0.6)',   // Red
+    'Returned': 'rgba(139, 92, 246, 0.6)'    // Purple
+  };
+
+  // Aggregate sales by status, including Returned
+  const statusSalesData = orderStatuses.map(status => {
+    const matchingStatus = orderStatusDistribution.find(item => 
+      item.status.toLowerCase() === status.toLowerCase()
+    );
+    return matchingStatus ? matchingStatus.amount || 0 : 0;
+  });
+
+  // Filter out statuses with zero sales and their corresponding data
+  const filteredStatuses = orderStatuses.filter((status, index) => statusSalesData[index] > 0);
+  const filteredSalesData = statusSalesData.filter(amount => amount > 0);
+  const filteredColors = filteredStatuses.map(status => salesColors[status]);
+  const filteredBorderColors = filteredStatuses.map(status => salesColors[status].replace('0.6)', '1)'));
+
+  if (salesChartInstance) salesChartInstance.destroy();
+  salesChartInstance = new Chart(document.getElementById('salesChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: filteredStatuses, // Use filtered statuses
+      datasets: [{
+        label: 'Sales Amount (₹)',
+        data: filteredSalesData, // Use filtered sales data
+        backgroundColor: filteredColors,
+        borderColor: filteredBorderColors,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { 
+          beginAtZero: true, 
+          title: { 
+            display: true, 
+            text: 'Sales Amount (₹)' 
+          },
+          ticks: {
+            callback: function(value) {
+              return '₹' + value.toLocaleString();
+            }
+          }
+        },
+        x: { 
+          title: { 
+            display: true, 
+            text: 'Order Status' 
+          } 
+        }
+      },
+      plugins: { 
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `₹${context.parsed.y.toLocaleString()}`;
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Update Order Status Distribution pie chart to include Returned
+  const orderLabels = orderStatusDistribution.map(item => item.status || 'Unknown');
+  const orderData = orderStatusDistribution.map(item => parseInt(item.count) || 0);
+
+  if (orderStatusChartInstance) orderStatusChartInstance.destroy();
+  orderStatusChartInstance = new Chart(document.getElementById('orderStatusChart').getContext('2d'), {
+    type: 'pie',
+    data: {
+      labels: orderLabels,
+      datasets: [{
+        data: orderData,
+        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'], // Added purple for Returned
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right' }
+      }
+    }
+  });
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const filterButtons = document.querySelectorAll('.btn-filter');
+  filterButtons.forEach(button => {
+    button.addEventListener('click', async () => {
+      const period = button.dataset.period;
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+
+      try {
+       
+        Swal.fire({
+          title: 'Loading...',
+          text: 'Fetching dashboard data',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+        const response = await fetch(`/admin/dashboard?period=${period}`, {
+          method: 'GET',
+          headers: { 
+            'Content-Type': 'application/json', 
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest' 
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const responseData = await response.json();
         
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold">Recent Orders</h3>
-                <div class="flex space-x-3 text-gray-500">
-                    <i class='bx bx-search cursor-pointer hover:text-gray-700'></i>
-                    <i class='bx bx-filter cursor-pointer hover:text-gray-700'></i>
-                </div>
-            </div>
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-gray-100">
-                        <th class="p-3">User</th>
-                        <th class="p-3">Date Order</th>
-                        <th class="p-3">Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="border-b">
-                        <td class="p-3 flex items-center">
-                            <img src="img/people.png" class="w-8 h-8 rounded-full mr-3">
-                            <p>John Doe</p>
-                        </td>
-                        <td class="p-3">01-10-2021</td>
-                        <td class="p-3"><span class="px-3 py-1 text-sm text-white bg-green-500 rounded">Completed</span></td>
-                    </tr>
-                    <tr class="border-b">
-                        <td class="p-3 flex items-center">
-                            <img src="img/people.png" class="w-8 h-8 rounded-full mr-3">
-                            <p>John Doe</p>
-                        </td>
-                        <td class="p-3">01-10-2021</td>
-                        <td class="p-3"><span class="px-3 py-1 text-sm text-white bg-yellow-500 rounded">Pending</span></td>
-                    </tr>
-                    <tr class="border-b">
-                        <td class="p-3 flex items-center">
-                            <img src="img/people.png" class="w-8 h-8 rounded-full mr-3">
-                            <p>John Doe</p>
-                        </td>
-                        <td class="p-3">01-10-2021</td>
-                        <td class="p-3"><span class="px-3 py-1 text-sm text-white bg-blue-500 rounded">Processing</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        
+        if (!responseData || !responseData.data) {
+          throw new Error('Invalid data structure returned from server');
+        }
 
-        <!-- To-Do List -->
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold">Todos</h3>
-                <div class="flex space-x-3 text-gray-500">
-                    <i class='bx bx-plus cursor-pointer hover:text-gray-700'></i>
-                    <i class='bx bx-filter cursor-pointer hover:text-gray-700'></i>
-                </div>
-            </div>
-            <ul class="space-y-3">
-                <li class="flex justify-between p-3 bg-gray-100 rounded shadow">
-                    <p>Todo Item 1</p>
-                    <i class='bx bx-dots-vertical-rounded text-gray-500 cursor-pointer'></i>
-                </li>
-                <li class="flex justify-between p-3 bg-gray-100 rounded shadow">
-                    <p>Todo Item 2</p>
-                    <i class='bx bx-dots-vertical-rounded text-gray-500 cursor-pointer'></i>
-                </li>
-                <li class="flex justify-between p-3 bg-gray-100 rounded shadow">
-                    <p>Todo Item 3</p>
-                    <i class='bx bx-dots-vertical-rounded text-gray-500 cursor-pointer'></i>
-                </li>
-                <li class="flex justify-between p-3 bg-gray-100 rounded shadow">
-                    <p>Todo Item 4</p>
-                    <i class='bx bx-dots-vertical-rounded text-gray-500 cursor-pointer'></i>
-                </li>
-            </ul>
-        </div>
-    </div>
-</section>
+      
+        Swal.close();
+        
+       
+        updateDashboard(responseData.data);
+     
+        updateCharts(
+          responseData.monthlySales || [], 
+          responseData.orderStatusDistribution || []
+        );
+        
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        Swal.fire('Error', `Unable to load dashboard data: ${error.message}`, 'error');
+      }
+    });
+  });
+});
 
-<%- include("../../views/partials/admin/footer") %>
+const excelButton = document.querySelector('.excel-btn');
+excelButton.addEventListener('click', async () => {
+  try {
+    const activeFilter = document.querySelector('.btn-filter.active');
+    const period = activeFilter ? activeFilter.dataset.period : 'all';
+    const startDate = document.querySelector('.date-input:first-child').value;
+    const endDate = document.querySelector('.date-input:last-child').value;
+
+    const response = await fetch(`/admin/exportExcel?period=${period}&startDate=${startDate}&endDate=${endDate}`, {
+      method: 'GET'
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json(); 
+      throw new Error(`HTTP error! Status: ${response.status} - ${errorData.details || 'No details provided'}`);
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Dashboard_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+
+    Swal.fire('Success', 'Excel report downloaded successfully!', 'success');
+  } catch (error) {
+    console.error('Error generating Excel report:', error);
+    Swal.fire('Error', `Unable to generate Excel report: ${error.message}`, 'error');
+  }
+});
+
+
+const pdfButton = document.querySelector('.pdf-btn');
+pdfButton.addEventListener('click', async () => {
+  try {
+    const activeFilter = document.querySelector('.btn-filter.active');
+    const period = activeFilter ? activeFilter.dataset.period : 'all';
+    const startDate = document.querySelector('.date-input:first-child').value;
+    const endDate = document.querySelector('.date-input:last-child').value;
+
+    const response = await fetch(`/admin/exportPdf?period=${period}&startDate=${startDate}&endDate=${endDate}`, {
+      method: 'GET'
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json(); 
+      throw new Error(`HTTP error! Status: ${response.status} - ${errorData.details || 'No details provided'}`);
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Orders_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+
+    Swal.fire('Success', 'PDF report downloaded successfully!', 'success');
+  } catch (error) {
+    console.error('Error generating PDF report:', error);
+    Swal.fire('Error', `Unable to generate PDF report: ${error.message}`, 'error');
+  }
+});
+
+
+const salesButton = document.querySelector('.sales-btn');
+salesButton.addEventListener('click', async () => {
+  try {
+    const activeFilter = document.querySelector('.btn-filter.active');
+    const period = activeFilter ? activeFilter.dataset.period : 'all';
+    const startDate = document.querySelector('.date-input:first-child').value;
+    const endDate = document.querySelector('.date-input:last-child').value;
+
+    // Optional: Show a loading indicator before redirecting
+    Swal.fire({
+      title: 'Loading...',
+      text: 'Generating Sales Report',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    // Redirect to the sales report page with query parameters
+    window.location.href = `/admin/sales-report?period=${period}&startDate=${startDate}&endDate=${endDate}`;
+  } catch (error) {
+    console.error('Error redirecting to sales report:', error);
+    Swal.fire('Error', `Unable to load sales report: ${error.message}`, 'error');
+  }
+});
+
+
+
+const initialData = {
+  totalSales: Number('<%= data.totalSales %>') || 0,
+  totalOrders: Number('<%= data.totalOrders %>') || 0,
+  cancelledOrders: Number('<%= data.cancelledOrders %>') || 0,
+  cancelledAmount: Number('<%= data.cancelledAmount %>') || 0,
+  cancelledPercentage: Number('<%= data.cancelledPercentage %>') || 0,
+  pendingOrders: Number('<%= data.pendingOrders %>') || 0,
+  pendingAmount: Number('<%= data.pendingAmount %>') || 0,
+  pendingPercentage: Number('<%= data.pendingPercentage %>') || 0,
+  processingOrders: Number('<%= data.processingOrders %>') || 0,
+  processingAmount: Number('<%= data.processingAmount %>') || 0,
+  processingPercentage: Number('<%= data.processingPercentage %>') || 0,
+  deliveredOrders: Number('<%= data.deliveredOrders %>') || 0,
+  deliveredAmount: Number('<%= data.deliveredAmount %>') || 0,
+  deliveredPercentage: Number('<%= data.deliveredPercentage %>') || 0,
+  totalUsers: Number('<%= data.totalUsers %>') || 0,
+  totalDiscounts: Number('<%= data.totalDiscounts %>') || 0,
+  discountPercentage: Number('<%= data.discountPercentage %>') || 0,
+  activeCoupons: Number('<%= data.activeCoupons %>') || 0,
+  expiredCoupons: Number('<%= data.expiredCoupons %>') || 0,
+  totalCouponUsage: Number('<%= data.totalCouponUsage %>') || 0,
+  monthlySales: JSON.parse('<%- JSON.stringify(monthlySales) %>') || [],
+  orderStatusDistribution: JSON.parse('<%- JSON.stringify(orderStatusDistribution) %>') || []
+};
+
+updateDashboard(initialData);
+updateCharts(initialData.monthlySales, initialData.orderStatusDistribution);
+ </script>
+
+
+
+<%- include("../../views/partials/admin/footer") %>

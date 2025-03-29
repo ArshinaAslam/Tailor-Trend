@@ -353,7 +353,7 @@
                     <input type="text" placeholder="Type here" name="productName" class="form-control" id="product_name">
                     <div id="productName-error" class="error-message"></div>
                 </div>
-                <div class="col-lg-4 mb-4">
+                <!-- <div class="col-lg-4 mb-4">
                     <label class="form-label">Brand</label>
                     <select class="form-select" name="brand">
                     <% for(let i = 0 ; i < brand.length ; i++){ %>
@@ -361,7 +361,7 @@
                     <% } %>
                     </select>
                     <div id="brand-error" class="error-message"></div>
-                </div>
+                </div> -->
                 <div class="mb-4">
                     <label class="form-label">Full description</label>
                     <textarea placeholder="Type here" id="descriptionid" name="description" class="form-control" rows="4"></textarea>
@@ -399,11 +399,11 @@
                         <div class="mb-4">
                             <label class="form-label">Size & Quantity</label>
                             <div class="d-flex flex-column gap-2">
-                                <input type="number" placeholder="S" name="sizeQuantity[S]" class="form-control size-input" min="1" required>
-                                <input type="number" placeholder="M" name="sizeQuantity[M]" class="form-control size-input" min="1" required>
-                                <input type="number" placeholder="L" name="sizeQuantity[L]" class="form-control size-input" min="1" required>
-                                <input type="number" placeholder="XL" name="sizeQuantity[XL]" class="form-control size-input" min="1" required>
-                                <input type="number" placeholder="XXL" name="sizeQuantity[XXL]" class="form-control size-input" min="1" required>
+                                S :<input type="number" placeholder="S" name="sizeQuantity[S]" class="form-control size-input" min="1" required>
+                                M :<input type="number" placeholder="M" name="sizeQuantity[M]" class="form-control size-input" min="1" required>
+                                L :<input type="number" placeholder="L" name="sizeQuantity[L]" class="form-control size-input" min="1" required>
+                                XL :<input type="number" placeholder="XL" name="sizeQuantity[XL]" class="form-control size-input" min="1" required>
+                                XXL :<input type="number" placeholder="XXL" name="sizeQuantity[XXL]" class="form-control size-input" min="1" required>
                             </div>
                             <div id="size-error" class="error-message"></div>
                             <!-- <button id="submitBtn" type="button">Submit</button> Ensure button exists -->
@@ -427,7 +427,7 @@
                     </div>
                     </div>
                 </div>
-                <!-- Reordered Image Upload Section -->
+              
                 <div class="card mb-2">
                     <div class="card-header">
                     <h4>Choose images</h4>
@@ -439,12 +439,12 @@
                     <button type="button" id="saveButton" class="save-button">Save</button>
                     
                     <div class="card-body">
-                    <!-- 3. Added images container -->
+                    
                     <div class="border row mb-3">
                         <div id="addedImagesContainer" class="thumbnails-container"></div>
                     </div>
                     
-                    <!-- 4. Add image button -->
+                    
                     <div class="text-center">
                         <button type="button" class="add-image-btn" onclick="document.getElementById('imageInput').click()">Add Image</button>
                         <input type="file" id="imageInput" style="display: none;" accept="image/png, image/jpeg, image/jpg" onchange="handleImageUpload(event)">
@@ -464,53 +464,9 @@
         </div>
     </section>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js" integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         let cropper;
-        
-        
-//         function validateAndSubmit() {
-//     if (validateForm()) {
-//       const form = document.forms[0];
-//       const formData = new FormData(form);
-
-//       fetch('/admin/AddProducts', {
-//         method: 'POST',
-//         body: formData,
-//       })
-//         .then(response => response.json())
-//         .then(data => {
-//           if (data.success) {
-           
-//             Swal.fire({
-//               icon: 'success',
-//               title: 'Success!',
-//               text: data.message,
-//               showConfirmButton: false,
-//               timer: 2000
-//             }).then(() => {
-//               window.location.href='/admin/products'; 
-//             });
-//           } else {
-           
-//             Swal.fire({
-//               icon: 'error',
-//               title: 'Oops...',
-//               text: data.message
-//             });
-//           }
-//         })
-//         .catch(error => {
-//           console.error('Error:', error);
-//           Swal.fire({
-//             icon: 'error',
-//             title: 'Error!',
-//             text: 'Something went wrong. Please try again later.'
-//           });
-//         });
-//     }
-//   }
   
 
 function validateAndSubmit() {
@@ -802,7 +758,7 @@ function validateAndSubmit() {
 
 <script>
 document.getElementById("submitBtn").addEventListener("click", function () {
-    let inputs = document.querySelectorAll(".form-control"); // Select inputs properly
+    let inputs = document.querySelectorAll(".form-control"); 
     let errorDiv = document.getElementById("size-error");
     let isValid = false;
     let quantities = {};

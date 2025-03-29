@@ -76,12 +76,11 @@ const loadAddProduct = async (req,res)=>{
 }
 
 
-
 const addProduct = async (req, res) => {
   try {
       const products = req.body;
 
-      console.log('product data: ', products);
+    
 
       const productExist = await Product.findOne({ productName: products.productName });
 
@@ -154,7 +153,7 @@ const addProduct = async (req, res) => {
                  });
              }
      
-             console.log("Parsed Sizes:", sizes);
+             
 
       
       const newProduct = new Product({
@@ -163,7 +162,8 @@ const addProduct = async (req, res) => {
           brand: products.brand,
           category: categoryId._id,
           regularPrice: products.regularPrice,
-          salePrice: products.salePrice,
+        //   salePrice: products.salePrice,
+        salePrice: products.regularPrice,
           createdOn: new Date(),
           
           sizes: sizes, 
@@ -212,11 +212,41 @@ const addProduct = async (req, res) => {
     }
 
   }
-  const getEditProduct = async (req, res) => {
+//   const getEditProduct = async (req, res) => {
+//     try {
+//         const id = req.query.id;
+//         const successMessage = req.query.successMessage || null;
+//         const product = await Product.findOne({ _id: id }).populate('category'); 
+//         const category = await Category.find({});
+//         const brand = await Brand.find({});
+
+//         if (!product) {
+//             return res.redirect('/admin/products');
+//         }
+
+//         const productImages = product.productImage.map(image => `/uploads/product-images/${image}`);
+
+//         res.render('editProduct', {
+//             product: product,
+//             cat: category,
+//             brand: brand,
+//             productImages: productImages,
+//             errorMessage: null,
+//             successMessage: successMessage,
+//             selectedCategory: product.category ? product.category.name : '' 
+//         });
+
+//     } catch (error) {
+//         console.error(error);
+//         res.redirect('/pageError');
+//     }
+// };
+  
+const getEditProduct = async (req, res) => {
     try {
         const id = req.query.id;
         const successMessage = req.query.successMessage || null;
-        const product = await Product.findOne({ _id: id }).populate('category'); 
+        const product = await Product.findOne({ _id: id }).populate('category'); // Populate the category field
         const category = await Category.find({});
         const brand = await Brand.find({});
 
@@ -233,7 +263,7 @@ const addProduct = async (req, res) => {
             productImages: productImages,
             errorMessage: null,
             successMessage: successMessage,
-            selectedCategory: product.category ? product.category.name : '' 
+            selectedCategory: product.category ? product.category.name : '' // Pass the selected category name
         });
 
     } catch (error) {
@@ -241,57 +271,134 @@ const addProduct = async (req, res) => {
         res.redirect('/pageError');
     }
 };
-  
 
 
 
-  const editProduct = async (req, res) => {
+//   const editProduct = async (req, res) => {
 
+//     try {
+//         console.log('Received request:', req.body, req.files);
+
+//         const id = req.params.id;
+//         const product = await Product.findById(id);
+//         if (!product) {
+//             return res.status(404).json({ success: false, message: 'Product not found' });
+//         }
+
+//         const data = req.body;
+//         const categoryId = await Category.findOne({ name: data.category });
+//         if (!categoryId) {
+//             return res.status(400).json({ success: false, message: `Category '${data.category}' not found.` });
+//         }
+
+        
+//         let imageUrls = product.images; 
+//         if (req.files && req.files.length > 0) {
+//             imageUrls = req.files.map(file => file.path);
+//         }
+
+       
+//         const updatedProduct = await Product.findByIdAndUpdate(
+//             id,
+//             {
+//                 productName: data.name,
+//                 description: data.description,
+//                 brand: data.brand,
+//                 category: categoryId._id,
+//                 regularPrice: data.price,
+//                 salePrice: data.saleprice,
+//                 quantity: data.quantity,
+//                 size: data.size,
+//                 color: data.color,
+//                 images: imageUrls, 
+//                 status: data.status || 'Available'
+//             },
+//             { new: true }
+//         );
+
+//         if (!updatedProduct) {
+//             return res.status(400).json({ success: false, message: 'Failed to update product' });
+//         }
+
+//         res.status(200).json({ success: true, message: 'product updated successfully!' })
+
+//     } catch (error) {
+//         console.error("Error updating product:", error);
+//         return res.status(500).json({ error: 'Internal server error' });
+//     }
+// };
+
+const editProduct = async (req, res) => {
     try {
-        console.log('Received request:', req.body, req.files);
-
         const id = req.params.id;
-        const product = await Product.findById(id);
+       
+        const {
+            name,
+            description,
+            price,
+            saleprice,
+            color,
+            category,
+            sizeQuantities
+            
+           
+        } = req.body;
+        console.log("sizeQuantities:", sizeQuantities);
+
+        const sizes = JSON.parse(sizeQuantities);
+
+        console.log("size:", sizes)
+        const product = await Product.findOne({ _id: id });
+        const newImages= req.files
+        console.log("new images is ",newImages)
+
+      
+
         if (!product) {
             return res.status(404).json({ success: false, message: 'Product not found' });
         }
 
-        const data = req.body;
-        const categoryId = await Category.findOne({ name: data.category });
-        if (!categoryId) {
-            return res.status(400).json({ success: false, message: `Category '${data.category}' not found.` });
+        let images = [...product.productImage,];
+
+       
+       
+        if (req.body.editedImages) {
+            const base64Data = req.body.editedImages;
+            const matches = base64Data.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
+            
+            if (matches && matches.length === 3) {
+                const buffer = Buffer.from(matches[2], 'base64');
+                const filename = Date.now() + '-' + Math.round(Math.random() * 1E9) + '.jpg';
+                const imagePath = path.join('public', 'uploads', 'product-images', filename);
+
+                await fs.promises.writeFile(imagePath, buffer);
+                images.push(filename);
+            }
         }
 
-        
-        let imageUrls = product.images; 
-        if (req.files && req.files.length > 0) {
-            imageUrls = req.files.map(file => file.path);
+
+
+        const categoryDoc = await Category.findOne({ name: category });
+        if (!categoryDoc) {
+            return res.status(404).json({ success: false, message: 'Category not found' });
         }
 
        
         const updatedProduct = await Product.findByIdAndUpdate(
             id,
-            {
-                productName: data.name,
-                description: data.description,
-                brand: data.brand,
-                category: categoryId._id,
-                regularPrice: data.price,
-                salePrice: data.saleprice,
-                quantity: data.quantity,
-                size: data.size,
-                color: data.color,
-                images: imageUrls, 
-                status: data.status || 'Available'
-            },
+            { productName:name,
+                description:description,
+                regularPrice: price,
+                // salePrice: saleprice,
+                salePrice: price,
+                color:color,
+                category:categoryDoc._id,
+                sizes:sizes,
+                 productImage: images },
             { new: true }
         );
 
-        if (!updatedProduct) {
-            return res.status(400).json({ success: false, message: 'Failed to update product' });
-        }
-
-        res.status(200).json({ success: true, message: 'product updated successfully!' })
+        res.status(200).json({ success: true, message: 'Successfully updated!', product: updatedProduct });
 
     } catch (error) {
         console.error("Error updating product:", error);
@@ -301,8 +408,117 @@ const addProduct = async (req, res) => {
 
 
 
-  
 
+
+// const addProductOffer = async(req,res)=>{
+//     try {
+
+//         const {percentage,productId}  = req.body
+//         const findProduct = await Product.findOne({_id:productId})
+//         const findCategory = await Category.findOne({_id:findProduct.category})
+//         if(findCategory.categoryOffer>percentage){
+//             return res.json({status:false,message:"This products category already has a category offer"})
+//         }
+
+//         findProduct.salePrice =findProduct.salePrice-Math.floor(findProduct.regularPrice*(percentage/100))
+//         findProduct.productOffer = parseInt(percentage)
+//         await findProduct.save()
+//         findCategory.categoryOffer = 0
+//         await findCategory.save()
+//         res.json({status:true})
+
+        
+//     } catch (error) {
+//         res.redirect('/pageError')
+//         res.status(500).json({status:false,message:"Internal Server Error"})
+//     }
+// }
+
+
+const addProductOffer = async (req, res) => {
+    try {
+        const { percentage, productId } = req.body;
+
+        const parsedPercentage = parseInt(percentage);
+        if (isNaN(parsedPercentage) || parsedPercentage < 1 || parsedPercentage > 99) {
+            return res.status(400).json({ 
+                status: false, 
+                message: "Offer must be between 1% and 99%" 
+            });
+        }
+
+        const findProduct = await Product.findOne({ _id: productId });
+        if (!findProduct) {
+            return res.status(404).json({ 
+                status: false, 
+                message: "Product not found" 
+            });
+        }
+
+        const findCategory = await Category.findOne({ _id: findProduct.category });
+        if (!findCategory) {
+            return res.status(404).json({ 
+                status: false, 
+                message: "Category not found" 
+            });
+        }
+
+        const higherOffer = Math.max(findCategory.categoryOffer || 0, parsedPercentage);
+        
+        findProduct.salePrice = findProduct.regularPrice - Math.floor(findProduct.regularPrice * (higherOffer / 100));
+        findProduct.productOffer = parsedPercentage;
+        await findProduct.save();
+        
+        return res.status(200).json({ 
+            status: true, 
+            message: "Offer added successfully" 
+        });
+
+    } catch (error) {
+        console.error("Error in addProductOffer:", error);
+        return res.status(500).json({ 
+            status: false, 
+            message: "Internal Server Error" 
+        });
+    }
+};
+
+
+
+// const removeProductOffer = async(req,res)=>{
+//     try {
+//         const {productId} = req.body
+//         const findProduct = await Product.findOne({_id:productId})
+//         const percentage = findProduct.productOffer
+//         findProduct.salePrice = findProduct.salePrice+Math.floor(findProduct.regularPrice*(percentage/100))
+//         findProduct.productOffer = 0
+//         await findProduct.save()
+//         res.json({status:true})
+        
+//     } catch (error) {
+//         res.redirect('/pageError')
+        
+//     }
+
+// }
+
+
+
+const removeProductOffer=async(req,res)=>{
+    try {
+        const {productId} = req.body
+        const findProduct = await Product.findOne({_id:productId});
+        const findCategory = await Category.findOne({_id:findProduct.category}) 
+        const categoryOffer = findCategory.categoryOffer || 0
+        findProduct.salePrice = findProduct.regularPrice - Math.floor(findProduct.regularPrice*(categoryOffer/100))
+        findProduct.productOffer = 0
+        await findProduct.save();
+        res.json({status:true});
+
+    } catch (error) {
+        res.redirect('/pageerror')
+    }
+}
 
   
 module.exports = {
@@ -313,5 +529,7 @@ module.exports = {
     unblockedProduct,
     getEditProduct,
     editProduct,
+    addProductOffer,
+    removeProductOffer
 
 }

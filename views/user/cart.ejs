@@ -181,7 +181,39 @@
         background: #FF3F6c;
     }
 
-    /* Responsive Design */
+    .pagination-container {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    display: flex;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+}
+
+.pagination-link {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.pagination-link:hover {
+    background-color: #f5f5f5;
+}
+
+.pagination-link.active {
+    background-color: #FF3F6C;
+    color: white;
+    border-color: #FF3F6C;
+}
+
+   
     @media (max-width: 768px) {
         .cart-header {
             flex-direction: column;
@@ -226,7 +258,7 @@
             </thead>
             <tbody>
                 <% for (let i = 0; i < data.length; i++) { %>
-                <tr data-id="<%= data[i].productDetails[0]._id %>">
+                    <tr data-id="<%= data[i].productDetails[0]._id %>" data-size="<%= data[i].size %>">
                     <td data-label="Product">
                         <div class="product-column">
                             <img src="/uploads/product-images/<%= data[i].productDetails[0].productImage[0] %>" alt="<%= data[i].productDetails[0].productName %>">
@@ -235,14 +267,19 @@
                     </td>
                     <td data-label="Price">₹<%= data[i].productDetails[0].salePrice %></td>
                     <td data-label="size"><%= data[i].size %></td>
+                   
                     <td data-label="Quantity">
-                        <div class="quantity-control">
-                            <button onclick="changeQuantity('<%= data[i].productDetails[0]._id %>', 0, -1, '<%= data[i].size %>')">-</button>
-                            <input type="number" value="<%= data[i].quantity %>" min="1" readonly>
-                            <button onclick="changeQuantity('<%= data[i].productDetails[0]._id %>', 0, 1, '<%= data[i].size %>')">+</button>
-                            
-                        </div>
+                        <% if (data[i].productDetails[0].isBlocked) { %>
+                            <div class="product-unavailable">Product is no longer available</div>
+                        <% } else { %>
+                            <div class="quantity-control">
+                                <button onclick="changeQuantity('<%= data[i].productDetails[0]._id %>', 0, -1, '<%= data[i].size %>')">-</button>
+                                <input type="number" value="<%= data[i].quantity %>" min="1" readonly>
+                                <button onclick="changeQuantity('<%= data[i].productDetails[0]._id %>', 0, 1, '<%= data[i].size %>')">+</button>
+                            </div>
+                        <% } %>
                     </td>
+                    
                                        
                     <td data-label="Total">₹<%= data[i].productDetails[0].salePrice * data[i].quantity %></td>
                     <td>
@@ -276,6 +313,31 @@
         </div>
         <% } %>
     </div>
+
+    
+
+
+    <!-- Pagination -->
+    <% if (totalPages > 1) { %>
+        <div class="pagination-container">
+            <div class="pagination">
+                <% if (currentPage > 1) { %>
+                    <a href="/cart?page=<%= currentPage - 1 %>" class="pagination-link">&laquo; Previous</a>
+                <% } %>
+        
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <a href="/cart?page=<%= i %>" 
+                       class="pagination-link <%= currentPage === i ? 'active' : '' %>">
+                        <%= i %>
+                    </a>
+                <% } %>
+        
+                <% if (currentPage < totalPages) { %>
+                    <a href="/cart?page=<%= currentPage + 1 %>" class="pagination-link">Next &raquo;</a>
+                <% } %>
+            </div>
+        </div>
+        <% } %>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -351,93 +413,49 @@ async function removeCartItem(itemId) {
         });
     }
 }
-
-
 async function changeQuantity(productId, cartQuantity, count, size) {
-    const row = document.querySelector(`tr[data-id='${productId}']`);
-    const input = row.querySelector("input");
-    let currentQuantity = parseInt(input.value);
-    
-    let newQuantity = currentQuantity + count;
+    const row = document.querySelector(`tr[data-id="${productId}"][data-size="${size}"]`);
+  if (!row) {
+    console.error("Row not found for product ID:", productId, "and size:", size);
+    return;
+  }
 
-   
-    if (newQuantity < 1) {
-        Swal.fire({
-            icon: "warning",
-            title: "Invalid Quantity",
-            text: "Quantity cannot be less than 1!",
-            position: "top-end",
-            toast: true,
-            timer: 3000,
-            showConfirmButton: false
-        });
-        return;
+  const input = row.querySelector("input");
+  let currentQuantity = parseInt(input.value);
+  let newQuantity = currentQuantity + count;
+
+  if (newQuantity < 1) {
+    Swal.fire({ icon: "warning", title: "Invalid Quantity", text: "Quantity cannot be less than 1!", position: "top-end", toast: true, timer: 3000, showConfirmButton: false });
+    return;
+  }
+  if (newQuantity > 10) {
+    Swal.fire({ icon: "warning", title: "Quantity Limit", text: "You cannot add more than 10 items of this product.", position: "top-end", toast: true, timer: 3000, showConfirmButton: false });
+    return;
+  }
+
+  try {
+    const response = await fetch("/changeQuantity", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productId, count, size }),
+    });
+    const data = await response.json();
+
+    if (data.status) {
+        const updatedRow = document.querySelector(`tr[data-id="${productId}"][data-size="${size}"]`);
+      if (updatedRow) {
+        updatedRow.querySelector("input").value = data.quantityInput;
+        updatedRow.querySelector("[data-label='Total']").innerText = `₹${data.totalAmount}`;
+        document.querySelector(".cart-total").innerText = `₹${data.grandTotal}`;
+      }
+    } else {
+      Swal.fire({ icon: "error", title: "Update Failed", text: data.error || "Could not update the cart.", position: "top-end", toast: true, timer: 3000, showConfirmButton: false });
     }
-
-    // Quantity exceeds 10 check
-    if (newQuantity > 10) {
-        Swal.fire({
-            icon: "warning",
-            title: "Quantity Limit",
-            text: "You cannot add more than 10 items of this product.",
-            position: "top-end",
-            toast: true,
-            timer: 3000,
-            showConfirmButton: false
-        });
-        return;
-    }
-
-    try {
-        const response = await fetch("/changeQuantity", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                productId: productId,
-                count: count,
-                size: size
-            })
-        });
-
-        const data = await response.json();
-
-        if (data.status) {
-            const row = document.querySelector(`tr[data-id='${productId}']`);
-            if (row) {
-                row.querySelector("input").value = data.quantityInput;
-                row.querySelector("[data-label='Total']").innerText = `₹${data.totalAmount}`;
-                document.querySelector(".cart-total").innerText = `₹${data.grandTotal}`;
-            }
-        } else {
-            Swal.fire({
-                icon: "error",
-                title: "Stock Limit Reached",
-                text: data.error || "Cannot update quantity beyond available stock.",
-                position: "top-end",
-                toast: true,
-                timer: 3000,
-                showConfirmButton: false
-            });
-        }
-    } catch (error) {
-        console.error("Error updating cart:", error);
-        Swal.fire({
-            icon: "error",
-            title: "Update Failed",
-            text: "Could not update the cart. Please try again.",
-            position: "top-end",
-            toast: true,
-            timer: 2000,
-            showConfirmButton: false
-        });
-    }
+  } catch (error) {
+    console.error("Fetch error:", error.message);
+    Swal.fire({ icon: "error", title: "Update Failed", text: "Could not update the cart. Please try again.", position: "top-end", toast: true, timer: 2000, showConfirmButton: false });
+  }
 }
-
-
-
-
     async function confirmRemove(productId) {
         const confirmation = await Swal.fire({
             title: "Are you sure?",

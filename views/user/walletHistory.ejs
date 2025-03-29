@@ -1,0 +1,127 @@
+<%- include("../../views/partials/user/header") %>
+
+<style>
+    .pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.pagination-list {
+  list-style: none;
+  padding: 0;
+  display: inline-flex;
+}
+
+.pagination-list li {
+  margin: 0 5px;
+}
+
+.pagination-list li a {
+  text-decoration: none;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  color: #333;
+  background-color: #fff;
+}
+
+.pagination-list li.active a {
+  background-color: #4361ee;
+  color: white;
+  border-color: #4361ee;
+}
+
+.pagination-list li a:hover {
+  background-color: #f4f4f4;
+}
+
+</style>
+
+<main class="main">
+  <div class="breadcrumb-wrap">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/" rel="nofollow">Home</a>
+        <span></span> Profile <span></span> Wallet History
+      </div>
+    </div>
+  </div>
+
+  <section class="py-4">
+    <div class="dashboard-container">
+      <!-- Sidebar Menu from Partial -->
+      <%- include("../../views/partials/user/profile-sidebar") %>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Wallet History Section -->
+        <div id="wallet-history">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Wallet History</h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Transaction</th>
+                      <th>Description</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody id="walletTableBody">
+                    <% if (walletTransactions.length > 0) { %>
+                      <% walletTransactions.forEach(transaction => { %>
+                        <tr class="wallet-item">
+                          <td><%= new Date(transaction.date).toLocaleDateString() %></td>
+                          <td><%= transaction.type === 'credit' ? 'Credited' : 'Debited' %></td>
+                          <td><%= transaction.description || 'N/A' %></td>
+                          <td>₹<%= transaction.amount.toFixed(2) %></td>
+                        </tr>
+                      <% }) %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="4" class="text-center">No Transactions Found</td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="pagination">
+                <% if (totalPages > 1) { %>
+                  <ul class="pagination-list">
+                    <% if (currentPage > 1) { %>
+                      <li><a href="?page=<%= currentPage - 1 %>">Previous</a></li>
+                    <% } %>
+                    
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                      <li class="<%= currentPage === i ? 'active' : '' %>">
+                        <a href="?page=<%= i %>"><%= i %></a>
+                      </li>
+                    <% } %>
+              
+                    <% if (currentPage < totalPages) { %>
+                      <li><a href="?page=<%= currentPage + 1 %>">Next</a></li>
+                    <% } %>
+                  </ul>
+                <% } %>
+              </div>
+              
+
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include("../../views/partials/user/footer") %>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+

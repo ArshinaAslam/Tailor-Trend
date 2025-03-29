@@ -1,0 +1,95 @@
+<%- include("../../views/partials/admin/header") %>
+
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-800">Transaction Details</h2>
+        </div>
+
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- User Details Section -->
+                <div class="bg-gray-100 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold mb-4 text-gray-700">User Information</h3>
+                    <table class="w-full">
+                        <tr class="border-b">
+                            <td class="py-2 font-medium text-gray-600">Name:</td>
+                            <td class="py-2"><%= user.name %></td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-2 font-medium text-gray-600">Email:</td>
+                            <td class="py-2"><%= user.email %></td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 font-medium text-gray-600">User ID:</td>
+                            <td class="py-2"><%= user._id %></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Transaction Details Section -->
+                <div class="bg-gray-100 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold mb-4 text-gray-700">Transaction Information</h3>
+                    <table class="w-full">
+                        <tr class="border-b">
+                            <td class="py-2 font-medium text-gray-600">Transaction ID:</td>
+                            <td class="py-2"><%= transaction.transactionId %></td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-2 font-medium text-gray-600">Date:</td>
+                            <td class="py-2"><%= transaction.date.toLocaleString() %></td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-2 font-medium text-gray-600">Type:</td>
+                            <td class="py-2">
+                                <span class="<%= transaction.type === 'credit' ? 'text-green-600' : 'text-red-600' %>">
+                                    <%= transaction.type.toUpperCase() %>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-2 font-medium text-gray-600">Amount:</td>
+                            <td class="py-2 font-semibold">
+                                <%= transaction.type === 'credit' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2) %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 font-medium text-gray-600">Description:</td>
+                            <td class="py-2"><%= transaction.description %></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Related Order Section for Returns and Cancellations -->
+            <% if (transaction.description.toLowerCase().includes('returned') || 
+                   transaction.description.toLowerCase().includes('cancelled')) { %>
+            <div class="mt-6 bg-gray-100 rounded-lg p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-700">Related Order</h3>
+                    <!-- <a href="/admin/orders/<%= transaction.orderId %>" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300">
+                        View Order Details
+                    </a> -->
+                    <a href="/admin/orders/<%= relatedOrder._id %>" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300">
+                        View Order Details
+                    </a>
+                </div>
+                <% if (relatedOrder) { %>
+                <table class="w-full">
+                    <tr class="border-b">
+                        <td class="py-2 font-medium text-gray-600">Order ID:</td>
+                        <td class="py-2"><%= relatedOrder.orderid %></td>
+                    </tr>
+                    <tr class="border-b">
+                        <td class="py-2 font-medium text-gray-600">Order Status:</td>
+                        <td class="py-2"><%= relatedOrder.status %></td>
+                    </tr>
+                </table>
+                <% } %>
+            </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include("../../views/partials/admin/footer") %>

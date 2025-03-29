@@ -1,6 +1,5 @@
 <%- include("../../views/partials/admin/header") %>
 
-
 <style>
     :root {
         --bg-dark: white;
@@ -11,6 +10,11 @@
         --accent-blue: #0ea5e9;
         --status-processing: #06b6d4;
         --status-cancelled: #64748b;
+        --status-returned: #ef4444;
+        --status-shipped: #3b82f6;
+        --status-delivered: #10b981;
+        --status-pending: #f59e0b;
+        --status-return-requested: #8b5cf6;
     }
 
     body {
@@ -101,7 +105,15 @@
         color: var(--text-secondary);
         font-size: 0.875rem;
     }
+    
+    .product-name {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
+    /* Add distinct colors for each status */
     .status-badge {
         padding: 0.5rem 1rem;
         border-radius: 9999px;
@@ -118,6 +130,31 @@
     .status-cancelled {
         background-color: rgba(100, 116, 139, 0.1);
         color: var(--status-cancelled);
+    }
+    
+    .status-returned {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--status-returned);
+    }
+    
+    .status-shipped {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: var(--status-shipped);
+    }
+    
+    .status-delivered {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: var(--status-delivered);
+    }
+    
+    .status-pending {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: var(--status-pending);
+    }
+    
+    .status-return-requested {
+        background-color: rgba(139, 92, 246, 0.1);
+        color: var(--status-return-requested);
     }
 
     .action-button {
@@ -142,32 +179,49 @@
     }
 
     .pagination {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 2rem;
-}
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+    }
 
-.page-link {
-    padding: 0.5rem 1rem;
-    background-color: #f1f1f1;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    color: #333;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
+    .page-link {
+        padding: 0.5rem 1rem;
+        background-color: #f1f1f1;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        color: #333;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
 
-.page-link:hover {
-    background-color: #0ea5e9;
-    color: white;
-}
+    .page-link:hover {
+        background-color: #0ea5e9;
+        color: white;
+    }
 
-.page-link.active {
-    background-color: #0ea5e9;
-    color: white;
-    border-color: #0ea5e9;
-}
+    .page-link.active {
+        background-color: #0ea5e9;
+        color: white;
+        border-color: #0ea5e9;
+    }
+    
+    /* Style for order rows with same ID */
+    .same-order {
+        border-left: 3px solid var(--accent-blue);
+    }
+    
+    /* Add product info */
+    .product-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .product-details {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+    }
 </style>
 
 
@@ -188,24 +242,43 @@
                 <thead>
                     <tr>
                         <th>Order ID</th>
-                        <th>USER NAME</th>
+                        <th>User Name</th>
+                        <th>Product</th>
                         <th>Date</th>
-                        <th>Total Amount</th>
+                        <th>Price</th>
                         <th>Status</th>
                         <th>Payment Method</th>
-                        <th>ACTION</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% orders.forEach(function(order) { %>
-                        <tr>
+                    <% 
+                    let prevOrderId = null;
+                    orders.forEach(function(order, index) { 
+                        const sameAsPrevious = order.orderid === prevOrderId;
+                        prevOrderId = order.orderid;
+                    %>
+                        <tr class="<%= sameAsPrevious ? 'same-order' : '' %>">
                             <td class="order-id"><%= order.orderid %></td>
                             <td><%= order.userId.name %></td>
-                            <td><%= new Date(order.createdOn).toLocaleDateString('en-IN') %></td>
-                            <td class="rupee-symbol"><%= order.totalPrice.toFixed(2) %></td>
                             <td>
-                                <span class="status-badge status-<%= order.status.toLowerCase() %>">
-                                    <%= order.status %>
+                                <div class="product-info">
+                                    <div class="product-name"><%= order.productName %></div>
+                                    <div class="product-details">
+                                        <%= order.quantity %> x 
+                                        <span class="rupee-symbol"><%= order.price.toFixed(2) %></span>
+                                        <% if(order.size) { %> 
+                                            | Size: <%= order.size %> 
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><%= new Date(order.createdOn).toLocaleDateString('en-IN') %></td>
+                            <td class="rupee-symbol"><%= (order.price * order.quantity).toFixed(2) %></td>
+                            <td>
+                                <% const statusClass = order.itemStatus ? order.itemStatus.toLowerCase().replace(' ', '-') : 'pending'; %>
+                                <span class="status-badge status-<%= statusClass %>">
+                                    <%= order.itemStatus %>
                                 </span>
                             </td>
                             <td><%= order.paymentMethod %></td>
@@ -241,7 +314,6 @@
         <% } %>
 
     <script>
-        
         document.querySelector('.search-input').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
             const rows = document.querySelectorAll('tbody tr');

@@ -251,6 +251,46 @@ body {
 }
 
 
+
+.wishlist-container {
+    margin-bottom: 20px;
+}
+
+.button-add-to-wishlist {
+    background: #fff;
+    color: #ff3f6c;
+    padding: 12px 20px;
+    border: 2px solid #ff3f6c;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s;
+    width: 100%;
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.button-add-to-wishlist:hover {
+    background: #ff3f6c;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 63, 108, 0.3);
+}
+
+.button-add-to-wishlist.active {
+    background: #ff3f6c;
+    color: #fff;
+}
+
+.button-add-to-wishlist i {
+    font-size: 18px;
+}
+
+
 @media (max-width: 768px) {
     .product-image-container {
         height: 350px;
@@ -266,9 +306,9 @@ body {
     <div class="container">
         <div class="breadcrumb-wrap">
             <div class="breadcrumb">
-                <a href="#" rel="nofollow">Home</a>
+                <a href="/" rel="nofollow">Home</a>
                 <span>&gt;</span>
-                <a href="#">Fashion</a>
+                <a href="/shop">Shop</a>
                 <span>&gt;</span>
                 Product Detail Page
             </div>
@@ -299,17 +339,28 @@ body {
                         <!-- Price section with discount -->
                         <div class="price-container">
                             <div class="product-price">
+                                <%if(product.regularPrice === product.salePrice){%>
+                                    ₹<%= product.salePrice %>
+
+                                <%}else{%>
                                 <strike>₹<%= product.regularPrice %></strike>
                                 ₹<%= product.salePrice %>
+                                <%}%>
                             </div>
-                            <!-- <% const discount = Math.round((product.regularPrice - product.salePrice) / product.regularPrice * 100); %>
-                            <div class="discount-badge"><%= discount %>% OFF</div> -->
+                           
+                                
+                                  <% if (Math.max(product.category.categoryOffer, product.productOffer) > 0) { %>
+                                    <div class="discount-badge">
+                                      <%= Math.max(product.category.categoryOffer, product.productOffer) %>% OFF
+                                    </div>
+                                  <% } %>
+                              
                         </div>
                         
-                        <!-- Category info -->
+                    
                         <p>Category: <%= product.category.name %></p>
                         
-                        <!-- Size selector -->
+                       
                       
 <div class="size-selector" id="product-size">
     <p>Select Size:</p>
@@ -326,8 +377,12 @@ body {
     </div>
   </div>
                         
-                        
-                        <!-- Add to cart button with icon -->
+  <div class="wishlist-container">
+    <button class="button-add-to-wishlist" onclick="addToWishlist('<%= product._id %>')">
+        <i class="far fa-heart"></i> Add to Wishlist
+    </button>
+</div>
+                        <!-- Add to cart  -->
                         <button class="button-add-to-cart" onclick="addToCart('<%= product._id %>', document.querySelector('.size-button.selected')?.getAttribute('data-size'))">
                             <i class="fas fa-shopping-cart"></i> Add to Cart
                         </button>
@@ -361,63 +416,233 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     
-    window.addToCart = async function (productId, size) {
-        if (!size) {
+//     window.addToCart = async function (productId, size) {
+//         if (!size) {
+//             Swal.fire({
+//                 icon: 'warning',
+//                 title: 'Oops...',
+//                 text: 'Please select a size before adding to cart!',
+//                 confirmButtonColor: '#ff3f6c'
+//             });
+//             return;
+//         }
+
+//         console.log("Adding to cart:", productId, "Size:", size);
+
+//         try {
+//             const response = await fetch('/add-to-cart', {
+//                 method: 'POST',
+//                 headers: { 'Content-Type': 'application/json' },
+//                 body: JSON.stringify({ productId, size: size })
+//             });
+
+//             const result = await response.json();
+
+//             if (response.ok) {
+
+//  const sizeButton = document.querySelector(`.size-button[data-size="${size}"]`);
+//   if (sizeButton) {
+//     const quantitySpan = sizeButton.querySelector('.size-quantity');
+//     let currentQuantity = parseInt(quantitySpan.textContent);
+    
+    
+    
+//     quantitySpan.textContent = currentQuantity;
+
+    
+//     if (currentQuantity <= 0) {
+//       sizeButton.disabled = true;
+//       sizeButton.classList.remove('selected', 'active');
+//     }
+//   }
+
+  
+//                 Swal.fire({
+//                     icon: 'success',
+//                     title: 'Success!',
+//                     text: result.message || 'Product added to the cart successfully!',
+//                     confirmButtonColor: '#ff3f6c'
+//                 });
+//             } else {
+//                 Swal.fire({
+//                     icon: 'error',
+//                     title: 'Error!',
+//                     text: result.message || 'Error while adding the product to the cart!',
+//                     confirmButtonColor: '#ff3f6c'
+//                 });
+//             }
+//         } catch (error) {
+//             console.error("Error adding to cart:", error);
+//             Swal.fire({
+//                 icon: 'error',
+//                 title: 'Error!',
+//                 text: 'Something went wrong. Please try again.',
+//                 confirmButtonColor: '#ff3f6c'
+//             });
+//         }
+//     };
+
+    
+
+window.addToCart = async function (productId, size) {
+    if (!size) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Oops...',
+            text: 'Please select a size before adding to cart!',
+            confirmButtonColor: '#ff3f6c'
+        });
+        return;
+    }
+
+    console.log("Adding to cart:", productId, "Size:", size);
+
+    try {
+        const response = await fetch('/add-to-cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId, size: size })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            const sizeButton = document.querySelector(`.size-button[data-size="${size}"]`);
+            if (sizeButton) {
+                const quantitySpan = sizeButton.querySelector('.size-quantity');
+                let currentQuantity = parseInt(quantitySpan.textContent);
+                quantitySpan.textContent = currentQuantity;
+
+                if (currentQuantity <= 0) {
+                    sizeButton.disabled = true;
+                    sizeButton.classList.remove('selected', 'active');
+                }
+            }
+
             Swal.fire({
-                icon: 'warning',
-                title: 'Oops...',
-                text: 'Please select a size before adding to cart!',
+                icon: 'success',
+                title: 'Success!',
+                text: result.message || 'Product added to the cart successfully!',
                 confirmButtonColor: '#ff3f6c'
             });
-            return;
+        } else {
+           
+            Swal.fire({
+                icon: 'warning',
+                title: 'Cannot Add to Cart',
+                text: result.message || 'Error while adding the product to the cart!',
+                confirmButtonColor: '#ff3f6c'
+            });
         }
+    } catch (error) {
+        console.error("Error adding to cart:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'Something went wrong. Please try again.',
+            confirmButtonColor: '#ff3f6c'
+        });
+    }
+};
+    const productImage = document.getElementById("main-product-image");
+    const magnifier = document.getElementById("magnifier");
+    const productImageContainer = document.getElementById("product-image-container");
 
-        console.log("Adding to cart:", productId, "Size:", size);
+    
+    function updateMagnifierBackground(src) {
+        const img = new Image();
+        img.src = src;
+        img.onload = function() {
+            const naturalWidth = this.naturalWidth;
+            const naturalHeight = this.naturalHeight;
+            const bgSize = `${naturalWidth * 2}px ${naturalHeight * 2}px`;
+            magnifier.style.backgroundImage = `url('${src}')`; // Fixed syntax
+            magnifier.style.backgroundSize = bgSize;
+        };
+    }
 
+   
+    updateMagnifierBackground(productImage.src);
+
+    productImageContainer.addEventListener("mousemove", function(e) {
+        const rect = productImageContainer.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        
+        magnifier.style.display = "block";
+
+       
+        const magnifierSize = 150; 
+        let posX = mouseX - magnifierSize / 2;
+        let posY = mouseY - magnifierSize / 2;
+
+       
+        posX = Math.max(0, Math.min(posX, rect.width - magnifierSize));
+        posY = Math.max(0, Math.min(posY, rect.height - magnifierSize));
+
+        magnifier.style.left = `${posX}px`;
+        magnifier.style.top = `${posY}px`;
+
+        
+        const xPercentage = (mouseX / rect.width) * 100;
+        const yPercentage = (mouseY / rect.height) * 100;
+        magnifier.style.backgroundPosition = `${xPercentage}% ${yPercentage}%`;
+    });
+
+    productImageContainer.addEventListener("mouseleave", function() {
+        magnifier.style.display = "none";
+    });
+
+   
+    document.querySelectorAll(".thumbnail").forEach(thumbnail => {
+        thumbnail.addEventListener("click", function() {
+            document.querySelectorAll(".thumbnail").forEach(thumb => {
+                thumb.classList.remove("active");
+            });
+            this.classList.add("active");
+            const newImageSrc = this.getAttribute("data-src");
+            productImage.src = newImageSrc;
+            updateMagnifierBackground(newImageSrc);
+        });
+    });
+});
+
+
+
+window.addToWishlist = async function(productId) {
         try {
-            const response = await fetch('/add-to-cart', {
+            const response = await fetch('AddToWishlist', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ productId, size: size })
+                body: JSON.stringify({ productId })
             });
 
             const result = await response.json();
-
+            const wishlistButton = document.querySelector('.button-add-to-wishlist');
+            
             if (response.ok) {
-
-                const sizeButton = document.querySelector(`.size-button[data-size="${size}"]`);
-  if (sizeButton) {
-    const quantitySpan = sizeButton.querySelector('.size-quantity');
-    let currentQuantity = parseInt(quantitySpan.textContent);
-    
-    
-    currentQuantity -= 1;
-    quantitySpan.textContent = currentQuantity;
-
-    
-    if (currentQuantity <= 0) {
-      sizeButton.disabled = true;
-      sizeButton.classList.remove('selected', 'active');
-    }
-  }
-
-  
+                wishlistButton.classList.toggle('active');
+                const icon = wishlistButton.querySelector('i');
+                icon.classList.toggle('far'); 
+                icon.classList.toggle('fas'); 
+                
                 Swal.fire({
                     icon: 'success',
                     title: 'Success!',
-                    text: result.message || 'Product added to the cart successfully!',
+                    text: result.message || 'Product added to wishlist!',
                     confirmButtonColor: '#ff3f6c'
                 });
             } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error!',
-                    text: result.message || 'Error while adding the product to the cart!',
+                    text: result.message || 'Failed to add to wishlist',
                     confirmButtonColor: '#ff3f6c'
                 });
             }
         } catch (error) {
-            console.error("Error adding to cart:", error);
+            console.error("Error adding to wishlist:", error);
             Swal.fire({
                 icon: 'error',
                 title: 'Error!',
@@ -427,76 +652,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
-    
-    const productImage = document.getElementById("main-product-image");
-    const magnifier = document.getElementById("magnifier");
-    const productImageContainer = document.getElementById("product-image-container");
-
-    
-    function updateMagnifierBackground(src) {
-       
-        const img = new Image();
-        img.src = src;
-        img.onload = function() {
-            const naturalWidth = this.naturalWidth;
-            const naturalHeight = this.naturalHeight;
-            
-            
-            const bgSize = `${naturalWidth * 2}px ${naturalHeight * 2}px`
-            magnifier.style.backgroundImage = url('${src}');
-            magnifier.style.backgroundSize = bgSize;
-        };
-    }
-
-    
-    updateMagnifierBackground(productImage.src);
-
-   
-    productImageContainer.addEventListener("mousemove", function(e) {
-        const rect = productImageContainer.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
-        
-       
-        magnifier.style.display = "block";
-        
-        
-        magnifier.style.left = `${mouseX - 75}px`;
-        magnifier.style.top = `${mouseY - 75}px`;
-        
-      
-        const xPercentage = (mouseX / rect.width) * 100;
-        const yPercentage = (mouseY / rect.height) * 100;
-        
-       
-        magnifier.style.backgroundPosition = `${xPercentage}% ${yPercentage}%`;
-    });
-
-   
-    productImageContainer.addEventListener("mouseleave", function() {
-        magnifier.style.display = "none";
-    });
-
-   
-    document.querySelectorAll(".thumbnail").forEach(thumbnail => {
-        thumbnail.addEventListener("click", function() {
-           
-            document.querySelectorAll(".thumbnail").forEach(thumb => {
-                thumb.classList.remove("active");
-            });
-            
-            
-            this.classList.add("active");
-            
-            
-            const newImageSrc = this.getAttribute("data-src");
-            productImage.src = newImageSrc;
-            
-            
-            updateMagnifierBackground(newImageSrc);
-        });
-    });
-});
 
 function decreaseQuantity() {
     const quantityInput = document.getElementById("quantity");

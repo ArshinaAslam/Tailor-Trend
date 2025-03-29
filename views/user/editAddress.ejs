@@ -7,139 +7,200 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-
-        .container {
+        .address-card {
             max-width: 800px;
+            margin: 2rem auto;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            overflow: hidden;
         }
 
         .form-container {
-            background: #fff;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            background: #ffffff;
         }
 
         h3 {
-            color: #046963;
-            text-align: center;
-            margin-bottom: 30px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+
+        .form-section {
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .form-section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #4a5568;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
         }
 
         .form-control {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
             border-radius: 8px;
-            border: 2px solid #ced4da;
             transition: all 0.3s ease;
         }
 
         .form-control:focus {
-            border-color: #046963;
-            box-shadow: 0px 0px 6px rgba(4, 105, 99, 0.4);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        .btn-primary {
-            background: #046963;
-            border: none;
+        #submitButton {
             width: 100%;
-            padding: 12px;
-            font-size: 18px;
+            padding: 0.875rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
             border-radius: 8px;
-            transition: all 0.3s ease;
+            transition: transform 0.2s ease;
         }
 
-        .btn-primary:hover {
-            background: #034f4a;
+        #submitButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .text-danger {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            padding-left: 0.25rem;
         }
     </style>
 </head>
+
 <body>
-    <div class="container mt-5">
-        <div class="form-container">
-            <h3>Edit User Address</h3>
-            <form id="addressForm" method="POST" action="/editAddress?id=<%=address._id%>">
-                <div class="row mb-3">
-                    <div class="form-group col-md-6">
-                        <label for="addressType">Address Type</label>
-                        <input type="text" class="form-control" id="addressType" name="addressType" value="<%= address.addressType %>">
+    <%- include("../../views/partials/user/header") %>
+    <div class="container">
+        <div class="address-card">
+            <div class="form-container">
+                <h3>Edit Your Address</h3>
+                <form id="addressForm" method="POST" action="/editAddress?id=<%=address._id%>">
+                    <div class="form-section">
+                        <div class="form-section-title">Contact Information</div>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="name">Full Name</label>
+                                    <input type="text" class="form-control" id="name" name="name" 
+                                           value="<%= address.name %>" placeholder="Enter a name">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="addressType">Address Type</label>
+                                    <input type="text" class="form-control" id="addressType" name="addressType" 
+                                           value="<%= address.addressType %>" placeholder="Home, Work, etc.">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="number" class="form-control" id="phone" name="phone" 
+                                           value="<%= address.phone %>" placeholder="Phone">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="altPhone">Alternate Phone</label>
+                                    <input type="number" class="form-control" id="altPhone" name="altPhone" 
+                                           value="<%= address.altPhone %>" placeholder="Alternate number">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group col-md-6">
-                        <label for="name">Name</label>
-                        <input type="text" class="form-control" id="name" name="name" value="<%= address.name %>" >
+
+                    <div class="form-section">
+                        <div class="form-section-title">Address Details</div>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="city">City</label>
+                                    <input type="text" class="form-control" id="city" name="city" 
+                                           value="<%= address.city %>" placeholder="City">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="state">State</label>
+                                    <input type="text" class="form-control" id="state" name="state" 
+                                           value="<%= address.state %>" placeholder="State">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="landMark">Landmark</label>
+                                    <input type="text" class="form-control" id="landMark" name="landMark" 
+                                           value="<%= address.landMark%>" placeholder="Landmark">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="pincode">Pincode</label>
+                                    <input type="number" class="form-control" id="pincode" name="pincode" 
+                                           value="<%= address.pincode %>" placeholder="Pincode">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="form-group col-md-6">
-                        <label for="city">City</label>
-                        <input type="text" class="form-control" id="city" name="city" value="<%= address.city %>">
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="landMark">Landmark</label>
-                        <input type="text" class="form-control" id="landMark" name="landMark" value="<%= address.landMark%>">
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="form-group col-md-6">
-                        <label for="state">State</label>
-                        <input type="text" class="form-control" id="state" name="state" value="<%= address.state %>" >
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="pincode">Pincode</label>
-                        <input type="number" class="form-control" id="pincode" name="pincode" value="<%= address.pincode %>" >
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="form-group col-md-6">
-                        <label for="phone">Phone</label>
-                        <input type="number" class="form-control" id="phone" name="phone" value="<%= address.phone %>">
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label for="altPhone">Alternate Phone</label>
-                        <input type="number" class="form-control" id="altPhone" name="altPhone" value="<%= address.altPhone %>">
-                    </div>
-                </div>
-                <button type="submit" id="submitButton" class="btn btn-primary">Submit</button>
-            </form>
+                    
+                    <button type="submit" id="submitButton" class="btn btn-primary mt-4">Update Address</button>
+                </form>
+            </div>
         </div>
     </div>
 
-
+    <%- include("../../views/partials/user/footer") %>
 <script>
 document.getElementById('addressForm').addEventListener('submit', function (event) {
-    event.preventDefault(); // Prevent the default form submission
+    event.preventDefault(); 
 
     if (validateForm()) {
-        // Convert form data to JSON
         const formData = new FormData(this);
         const data = {};
         formData.forEach((value, key) => {
             data[key] = value;
         });
-
-        // Submit the form via fetch
+       
         fetch(this.action, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json', // Send as JSON
+                'Content-Type': 'application/json', 
             },
-            body: JSON.stringify(data), // Convert data to JSON
+            body: JSON.stringify(data), 
         })
             .then(response => {
                 if (response.ok) {
-                    // Show success message
                     Swal.fire({
                         title: 'Success',
                         text: 'Address updated successfully',
                         icon: 'success',
-                        timer: 2000, // Show for 2 seconds
+                        timer: 2000, 
                         showConfirmButton: false,
                     }).then(() => {
-                        // Redirect after the Swal message is closed
-                        window.location.href = '/userProfile';
+                        window.location.href = '/address';
                     });
                 } else {
-                    // Handle errors
                     Swal.fire({
                         title: 'Error',
                         text: 'Failed to update address',
@@ -162,7 +223,7 @@ function validateForm() {
     let isValid = true;
     const requiredFields = ["addressType", "name", "city", "landMark", "state", "pincode", "phone", "altPhone"];
 
-    // Clear all existing error messages
+    
     requiredFields.forEach(function (field) {
         const errorElement = document.getElementById(field + '-error');
         if (errorElement) {
@@ -170,7 +231,7 @@ function validateForm() {
         }
     });
 
-    // Validate required fields
+   
     requiredFields.forEach(function (field) {
         const input = document.getElementById(field);
         const inputValue = input.value.trim();
@@ -190,7 +251,7 @@ function validateForm() {
         return isValid;
     }
 
-    // Validate name, city, landmark, and state (alphabets only)
+
     const namePattern = /^[A-Za-z\s]+$/;
     const name = document.getElementById('name').value.trim();
     const city = document.getElementById('city').value.trim();
@@ -202,34 +263,34 @@ function validateForm() {
         (landMark && !namePattern.test(landMark)) ||
         (state && !namePattern.test(state))) {
         Swal.fire({
-            title: 'Error',
+            title: 'Input Error',
             text: 'Only alphabets are allowed in Name, City, Landmark, and State fields.',
             icon: 'error'
         });
         isValid = false;
     }
 
-    // Validate pincode (6 digits)
+    
     const pincodePattern = /^\d{6}$/;
     const pincode = document.getElementById('pincode').value.trim();
 
     if (pincode && !pincodePattern.test(pincode)) {
         Swal.fire({
-            title: 'Error',
+            title: 'Input Error',
             text: 'Pincode should be a 6-digit number.',
             icon: 'error'
         });
         isValid = false;
     }
 
-    // Validate phone and alternate phone (10 digits)
+    
     const phonePattern = /^\d{10}$/;
     const phone = document.getElementById('phone').value.trim();
     const altPhone = document.getElementById('altPhone').value.trim();
 
     if (phone && !phonePattern.test(phone)) {
         Swal.fire({
-            title: 'Error',
+            title: 'Input Error',
             text: 'Phone number should be a 10-digit number.',
             icon: 'error'
         });
@@ -238,7 +299,7 @@ function validateForm() {
 
     if (altPhone && !phonePattern.test(altPhone)) {
         Swal.fire({
-            title: 'Error',
+            title: 'Input Error',
             text: 'Alternate phone number should be a 10-digit number.',
             icon: 'error'
         });
@@ -247,7 +308,7 @@ function validateForm() {
 
     if (phone && altPhone && phone === altPhone) {
         Swal.fire({
-            title: 'Error',
+            title: 'Input Error',
             text: 'Phone number and alternate phone number should be different.',
             icon: 'error'
         });
@@ -256,8 +317,11 @@ function validateForm() {
 
     return isValid;
 }
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('submitButton').classList.add('btn-primary');
+});
 </script>
-
- 
-
-
+</body>
+</html>

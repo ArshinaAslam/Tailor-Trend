@@ -199,7 +199,7 @@
         font-weight: bold;
     }
 
-    /* Responsive Design */
+   
     @media (max-width: 768px) {
         .confirmation-container {
             margin: 40px 20px;
@@ -229,57 +229,19 @@
     <div class="shopping-bag"></div>
     <h3 class="heading">Order Confirmed!</h3>
     <p>Thank you for shopping with us! Your order has been successfully placed.</p>
+
     
     <div class="order-details">
-        <div class="order-id">Order ID: <span>#<%= locals.orderId || Math.floor(Math.random() * 900000) + 100000 %></span></div>
+        <div class="order-id">Order ID: <span>#<%= dOrderId %></span></div>
         
-        <div class="shipping-details">
-            <h4>Estimated Delivery</h4>
-            <div class="shipping-address">
-                <p style="margin: 0; font-size: 1rem;">
-                    Your order will be delivered within 3-5 business days.
-                </p>
-            </div>
-        </div>
-    </div>
-    
     <div class="buttons">
-        <h4 id="pdf" class="btn download-btn">Download Order PDF</h4>
+        <a href="/download-invoice/<%= orderId %>" class="btn download-btn">Download Order PDF</a>
         <a href="/shop" class="btn shop-btn">Continue Shopping</a>
     </div>
 </div>
 
 <script>
-   document.getElementById('pdf').addEventListener('click', function() {
-    const orderId = '<%= locals.orderId %>'; 
-    
-    
-    fetch(`/api/orders/${orderId}/invoice`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to generate invoice');
-            }
-            return response.blob();
-        })
-        .then(blob => {
-            
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = `invoice-${orderId}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            
-           
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-        })
-        .catch(error => {
-            console.error('Error downloading invoice:', error);
-            alert('There was an error generating your invoice. Please try again later.');
-        });
-});
+  
 </script>
 
 <%- include("../../views/partials/user/footer") %>

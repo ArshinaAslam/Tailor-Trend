@@ -1,3 +1,6 @@
+<%- include("../../views/partials/user/header") %>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -316,6 +319,7 @@
         height: 60px;
       }
     }
+    
   </style>
 </head>
 
@@ -326,7 +330,7 @@
         <h2 class="content-title">Order Details</h2>
         <p class="order-id">Order ID: <%= orders.orderid %>
         </p>
-        <!-- Add status display here -->
+        
         <div class="order-status mt-2" id="orderStatus">
           <span class="label">Current Status:</span>
           <span class="value">
@@ -336,38 +340,54 @@
       </div>
 
       <div class="card-body">
-        <!-- Order Status -->
         <div class="order-status-bar" style="
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              margin-bottom: 2rem;
-            ">
-          <div class="status-badge">
-            <% let statusClass='' ; %>
-              <% if (orders.status==='Confirmed' ) { statusClass='badge-info' ; } %>
-                <% if (orders.status==='Shipped' ) { statusClass='badge-warning' ; } %>
-                  <% if (orders.status==='Delivered' ) { statusClass='badge-success' ; } %>
-                    <% if (orders.status==='Cancelled' ) { statusClass='badge-danger' ; } %>
-                      <span class="badge <%= statusClass %>">
-                        <% if (orders.status==='Confirmed' ) { %><i class="fas fa-check-circle"></i>
-                          <% } %>
-                            <% if (orders.status==='Shipped' ) { %><i class="fas fa-truck"></i>
-                              <% } %>
-                                <% if (orders.status==='Delivered' ) { %><i class="fas fa-box-open"></i>
-                                  <% } %>
-                                    <% if (orders.status==='Cancelled' ) { %><i class="fas fa-times-circle"></i>
-                                      <% } %>
-                                        <%= orders.status %>
-                      </span>
-          </div>
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    ">
+  <div class="status-badge">
+    <% let statusClass='' ; %>
+      <% if (orders.status==='Confirmed' ) { statusClass='badge-info' ; } %>
+        <% if (orders.status==='Shipped' ) { statusClass='badge-warning' ; } %>
+          <% if (orders.status==='Delivered' ) { statusClass='badge-success' ; } %>
+            <% if (orders.status==='Cancelled' ) { statusClass='badge-danger' ; } %>
+              <% if (orders.status==='Pending Payment' ) { statusClass='badge-warning' ; } %>
+                <span class="badge <%= statusClass %>">
+                  <% if (orders.status==='Confirmed' ) { %><i class="fas fa-check-circle"></i>
+                    <% } %>
+                      <% if (orders.status==='Shipped' ) { %><i class="fas fa-truck"></i>
+                        <% } %>
+                          <% if (orders.status==='Delivered' ) { %><i class="fas fa-box-open"></i>
+                            <% } %>
+                              <% if (orders.status==='Cancelled' ) { %><i class="fas fa-times-circle"></i>
+                                <% } %>
+                                  <% if (orders.status==='Pending Payment' ) { %><i class="fas fa-clock"></i>
+                                    <% } %>
+                                      <%= orders.status %>
+                </span>
+  </div>
 
-          <% if(orders.status==='Delivered' ) { %>
-            <a href="/downloadInvoice/<%= orders._id %>" class="btn btn-primary">
-              <i class="fas fa-download"></i> Download Invoice
-            </a>
-            <% } %>
-        </div>
+  <% if(orders.status==='Delivered' ) { %>
+    <a href="/download-invoice/<%= orders.orderid %>" class="btn btn-primary">
+      <i class="fas fa-download"></i> Download Invoice
+    </a>
+  <% } %>
+  
+  <!-- Add this section for Retry Payment -->
+ <!-- Add this section for Retry Payment -->
+<!-- <% if(orders.status === 'Pending Payment' && !orders.paymentId) { %>
+  <button class="btn btn-primary" onclick="retryPayment('<%= orders._id %>', '<%= orders.finalAmount %>')">
+    <i class="fas fa-sync"></i> Retry Payment
+  </button>
+<% } %> -->
+
+<% if(orders.status === 'Pending Payment' && !orders.paymentId) { %>
+  <button class="btn btn-primary" style="width: auto; min-width: 120px;" onclick="retryPayment('<%= orders._id %>', '<%= orders.finalAmount %>')">
+    <i class="fas fa-sync"></i> Pay Now
+  </button>
+<% } %>
+</div>
 
        
         <div class="info-grid">
@@ -408,7 +428,7 @@
               </div>
               <div class="summary-item summary-total">
                 <span>Final Amount:</span>
-                <span class="price">₹<%= orders.finalAmount.toLocaleString() %></span>
+                <span id="finalAmount" class="price">₹<%= orders.finalAmount.toLocaleString() %></span>
               </div>
             </div>
           </div>
@@ -445,8 +465,10 @@
           <table>
             <thead>
               <tr>
-                <th width="15%">Product</th>
+                <th width="15%">ProductId</th>
+                <th>Image</th>
                 <th width="30%">Name</th>
+                <th>size</th>
                 <th width="15%">Unit Price</th>
                 <th width="10%">Quantity</th>
                 <th width="15%">Total</th>
@@ -458,13 +480,26 @@
                 <% for (let i=0; i < orders.orderitems.length; i++) { %>
                   <tr>
                     <td>
-                      <img src="/uploads/product-images/<%= orders.orderitems[i].productId.productImage[0] %>"
-                        class="product-img" alt="Product Image" />
+                      <%= orders.orderitems[i].productId._id %>
                     </td>
                     <td>
-                      <div style="font-weight: 500; color: var(--dark)">
-                        <%= orders.orderitems[i].productId.productName %>
-                      </div>
+                     
+
+                        <img src="/uploads/product-images/<%= orders.orderitems[i].productId.productImage[0] %>"
+                                style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;" />
+                      
+                    </td>
+                    <td>
+                      
+                        <strong><%= orders.orderitems[i].productId.productName %></strong>
+                        
+                    
+                    
+
+                    </td>
+                    <td>
+                       <%= orders.orderitems[i].size %>
+
                     </td>
                     <td class="price">
                       ₹<%= orders.orderitems[i].price.toLocaleString() %>
@@ -477,22 +512,24 @@
                         parseInt(orders.orderitems[i].quantity)).toLocaleString() %>
                     </td>
                     <td>
-                      <% if (orders.status==="Cancelled" ) { %>
+                      <% if (orders.orderitems[i].status==="Cancelled" ) { %>
                         <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Cancelled</span>
-                        <% } else { %>
-                          <% if (orders.status==="Pending" ) { %>
-                            <select class="action-select" onchange="handleDropdownChange(this)">
+                        <% }else if (orders.orderitems[i].status==="Return requested" ) { %>
+                          <span class="badge badge-danger"><i class="fas fa-times-circle"></i> Return requested</span>
+                          <% }else { %>
+                          <% if (orders.orderitems[i].status==="Pending" ) { %>
+                            <select class="action-select" onchange="handleDropdownChange(this,'<%= orders.orderitems[i]._id %>','<%= orders.orderitems[i].size %>')">
                               <option value="" disabled selected>Actions</option>
                               <option value="cancel">Cancel Order</option>
                             </select>
-                            <% } else if ( orders.status==="Shipped" || orders.status==="Delivered" ) { %>
-                              <select class="action-select" onchange="handleDropdownChange(this)">
+                            <% } else if ( orders.orderitems[i].status==="Shipped" || orders.orderitems[i].status==="Delivered" ) { %>
+                              <select class="action-select" onchange="handleDropdownChange(this, '<%= orders.orderitems[i]._id %>', '<%= orders.orderitems[i].size %>')">
                                 <option value="" disabled selected>Actions</option>
                                 <option value="returnrequest">Return Order</option>
                               </select>
-                              <%} else if(orders.status =="Returned"){%>  
+                              <%} else if(orders.orderitems[i].status =="Returned"){%>  
                                 <span class="badge badge-info"><i class="fas fa-clock"></i> Returned</span>
-                              <% } else if(orders.status =="Return requested"){%>  
+                              <% } else if(orders.orderitems[i].status =="Return requested"){%>  
                                 <span class="badge badge-info"><i class="fas fa-clock"></i> Return Requested</span>
                               <% }else { %>
                                 <span class="badge badge-info"><i class="fas fa-clock"></i> Pending</span>
@@ -530,57 +567,160 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <script>
-    console.log("on script..");
 
-    function refreshStatus() {
-      const orderId = '<%= orders._id %>'; 
-      fetch(`/orders/status/${orderId}`)
-        .then(response => response.json())
-        .then(data => {
-          const statusElement = document.getElementById('orderStatus');
-          if (data.status && data.status !== statusElement.textContent) {
-           
-            statusElement.querySelector('.value').textContent = data.status;
-
-            
-            Swal.fire({
-              icon: 'info',
-              title: 'Status Updated',
-              text: `Order status changed to: ${data.status}`,
-              timer: 3000,
-              showConfirmButton: false
-            });
-
-            
-            if (['Delivered', 'Cancelled'].includes(data.status)) {
-              setTimeout(() => window.location.reload(), 3000);
-            }
-          }
+async function retryPayment(orderId, amount) {
+    try {
+      Swal.fire({
+        title: 'Processing',
+        text: 'Preparing payment gateway...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+      });
+      
+      const response = await fetch('/create-razorpay-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          amount: amount * 100, 
+          currency: 'INR',
+          orderId: orderId 
         })
-        .catch(error => console.error('Error fetching status:', error));
+      });
+      
+      const orderData = await response.json();
+      Swal.close();
+      
+      if (!orderData.success) {
+        throw new Error(orderData.message || 'Failed to create payment order');
+      }
+      
+      const options = {
+        key: orderData.key_id,
+        amount: orderData.amount,
+        currency: 'INR',
+        name: 'TAILOR TREND',
+        description: 'Order Payment Retry',
+        order_id: orderData.order_id,
+        handler: async function(response) {
+          Swal.fire({ 
+            title: 'Verifying Payment', 
+            text: 'Please wait...', 
+            allowOutsideClick: false, 
+            didOpen: () => { Swal.showLoading(); } 
+          });
+          
+          const verificationResponse = await fetch('/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              payment_id: response.razorpay_payment_id,
+              order_id: response.razorpay_order_id,
+              signature: response.razorpay_signature,
+              mongoOrderId: orderId
+            })
+          });
+          
+          const verificationResult = await verificationResponse.json();
+          
+          if (verificationResult.success) {
+            Swal.fire({ 
+              title: 'Payment Successful!', 
+              text: 'Your order is confirmed.', 
+              icon: 'success', 
+              confirmButtonColor: '#4361ee' 
+            })
+            .then(() => window.location.href = '/orderConfirm');
+
+            const retryButton = document.querySelector('[onclick^="retryPayment"]');
+  if (retryButton) {
+    retryButton.style.display = 'none';
+  }
+          } else {
+            Swal.fire({ 
+              title: 'Payment Failed', 
+              text: verificationResult.message, 
+              icon: 'error', 
+              confirmButtonColor: '#4361ee' 
+            });
+          }
+        },
+        prefill: {
+          name: '<%= user.name %>',
+          email: '<%= user.email %>',
+          contact: '<%= user.phone %>'
+        },
+        theme: { color: '#4361ee' }
+      };
+      
+      const rzp = new Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      Swal.fire({ 
+        title: 'Error', 
+        text: error.message || 'An error occurred while retrying payment.', 
+        icon: 'error', 
+        confirmButtonColor: '#4361ee' 
+      });
     }
+  }
+ 
+
+    // function refreshStatus() {
+    //   const orderId = '<%= orders._id %>'; 
+    //   fetch(`/orders/status/${orderId}`)
+    //     .then(response => response.json())
+    //     .then(data => {
+    //       const statusElement = document.getElementById('orderStatus');
+    //       if (data.status && data.status !== statusElement.textContent) {
+           
+    //         statusElement.querySelector('.value').textContent = data.status;
+
+            
+    //         Swal.fire({
+    //           icon: 'info',
+    //           title: 'Status Updated',
+    //           text: `Order status changed to: ${data.status}`,
+    //           timer: 3000,
+    //           showConfirmButton: false
+    //         });
+
+            
+    //         if (['Delivered', 'Cancelled'].includes(data.status)) {
+    //           setTimeout(() => window.location.reload(), 3000);
+    //         }
+    //       }
+    //     })
+    //     .catch(error => console.error('Error fetching status:', error));
+    // }
 
     
-    document.addEventListener('DOMContentLoaded', () => {
-      setInterval(refreshStatus, 30000); 
-    });
+    // document.addEventListener('DOMContentLoaded', () => {
+    //   setInterval(refreshStatus, 30000); 
+    // });
 
-    function handleDropdownChange(selectElement) {
+    function handleDropdownChange(selectElement,productId,size) {
       var selectedValue = selectElement.value;
       var orderId = document.getElementById("orderId").value;
-      console.log(selectedValue, orderId, "on handle drpo");
+      const finalAmountText = document.getElementById("finalAmount").textContent;
+      const finalAmount = parseFloat(finalAmountText.replace(/[^0-9.]/g, ''));
 
+     
+     
 
       if (selectedValue === "cancel") {
-        confirmCancelOrder(orderId);
+
+       
+        
+        confirmCancelOrder(orderId, productId, size,finalAmount);
       } else if (selectedValue == "returnrequest") {
-        returnRequestOrder(orderId);
+        returnRequestOrder(orderId,productId,size);
       }
     }
 
-    function confirmCancelOrder(orderId) {
+    function confirmCancelOrder(orderId, productId, size,finalAmount) {
       Swal.fire({
         title: 'Cancel Your Order?',
         text: 'Are you sure you want to cancel this order?',
@@ -591,96 +731,122 @@
         confirmButtonText: 'Yes, cancel it!',
         cancelButtonText: 'No, keep it',
         reverseButtons: true,
-        borderRadius: '10px'
+       
       }).then((result) => {
         if (result.isConfirmed) {
-          cancelOrder(orderId);
-        }
-      });
-    }
-
-    function cancelOrder(orderId) {
-      $.ajax({
-        url: '/cancelOrder',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ orderId: orderId }),
-        success: (response) => {
-          if (response.result.modifiedCount === 1) {
-            Swal.fire({
-              title: 'Cancelled!',
-              text: 'Your order has been cancelled successfully.',
-              icon: 'success',
-              confirmButtonColor: '#4361ee'
-            }).then(() => {
-              window.location.reload();
-            });
-          }
-        },
-        error: (error) => {
-          Swal.fire({
-            title: 'Error!',
-            text: 'Something went wrong while cancelling your order.',
-            icon: 'error',
-            confirmButtonColor: '#4361ee'
-          });
+          cancelOrder(orderId, productId, size,finalAmount);
         }
       });
     }
 
 
+    function cancelOrder(orderId, productId, size, finalAmount) {
+  $.ajax({
+    url: '/cancelOrder',
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({ orderId, productId, size, finalAmount }),
+    success: (response) => {
+      if (response.success) {
+        let message = '';
+        
+        
+        if (response.paymentMethod === "COD") {
+          message = "Your order has been cancelled successfully.";
+        } else {
+          message = `Your order has been cancelled successfully. Refunded: ₹${response.refundAmount.toFixed(2)}`;
+        }
+        
+        Swal.fire({
+          title: 'Cancelled!',
+          text: message,
+          icon: 'success',
+          confirmButtonColor: '#4361ee'
+        }).then(() => {
+          window.location.reload();
+        });
+      }
+    },
+    error: (error) => {
+      Swal.fire({
+        title: 'Error!',
+        text: 'Something went wrong while cancelling your order.',
+        icon: 'error',
+        confirmButtonColor: '#4361ee'
+      });
+    }
+  });
+}
     let selectedOrderId = '';
+    let selectedProductId = ''; 
+    let selectedSize = '';     
 
-    function returnRequestOrder(orderId) {
+    function returnRequestOrder(orderId,productId,size) {
       selectedOrderId = orderId;
+      selectedProductId=productId
+      selectedSize=size
       document.getElementById('returnModal').style.display = 'flex';
     }
 
     function closeModal() {
       document.getElementById('returnModal').style.display = 'none';
     }
+
+
+
+
     function submitReturnRequest() {
-      const returnReason = document.getElementById('returnReason').value;
-      if (!returnReason) {
-        Swal.fire({
-          title: 'Error!',
-          text: 'Please select a return reason.',
-          icon: 'warning',
-          confirmButtonColor: '#f59e0b'
-        });
-        return;
-      }
+  const returnReason = document.getElementById('returnReason').value;
+  if (!returnReason) {
+    Swal.fire({
+      title: 'Error!',
+      text: 'Please select a return reason.',
+      icon: 'warning',
+      confirmButtonColor: '#f59e0b'
+    });
+    return;
+  }
 
-      $.ajax({
-        url: '/returnOrder', 
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify({ orderId: selectedOrderId, returnReason: returnReason }),
-        success: (response) => {
-          Swal.fire({
-            title: 'Return Requested!',
-            text: 'Your return request has been submitted successfully.',
-            icon: 'success',
-            confirmButtonColor: '#4361ee'
-          }).then(() => {
-            window.location.reload();
-          });
-        },
-        error: (error) => {
-          Swal.fire({
-            title: 'Error!',
-            text: 'Something went wrong while requesting your return.',
-            icon: 'error',
-            confirmButtonColor: '#4361ee'
-          });
-        }
+  console.log('Submitting return request:', { orderId: selectedOrderId, returnReason,  productId:selectedProductId ,size:selectedSize});
+
+  $.ajax({
+    url: '/returnOrder',
+    method: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify({ orderId: selectedOrderId, returnReason: returnReason,productId:selectedProductId,size:selectedSize }),
+    success: (response) => {
+      console.log('Return request success:', response);
+      Swal.fire({
+        title: 'Return Requested!',
+        text: 'Your return request has been submitted successfully.',
+        icon: 'success',
+        confirmButtonColor: '#4361ee'
+      }).then(() => {
+        window.location.reload();
       });
-
-      closeModal();
+    },
+    error: (xhr, status, error) => {
+      console.error('Return request failed:', {
+        status: status,
+        statusCode: xhr.status,
+        responseText: xhr.responseText,
+        error: error
+      });
+      Swal.fire({
+        title: 'Error!',
+        text: xhr.responseJSON?.message || 'Something went wrong while requesting your return.',
+        icon: 'error',
+        confirmButtonColor: '#4361ee'
+      });
     }
+  });
 
-   
+  closeModal();
+}
   </script>
 </body>
 
 </html>
+
+
+<%- include("../../views/partials/user/footer") %>

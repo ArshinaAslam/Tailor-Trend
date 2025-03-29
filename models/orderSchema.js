@@ -19,6 +19,10 @@ const orderSchema = new Schema ({
             ref : "Product",
             required : true
         },
+        size: {  
+            type: String,
+            required: false
+        },
         quantity : {
             type : Number ,
             required : true
@@ -27,7 +31,22 @@ const orderSchema = new Schema ({
             type : Number ,
             default : 0
 
-        }
+        },
+        status: {
+            type: String,
+            required: false,
+            enum:['Pending', 'Cancelled', 'Placed','Shipped', 'Delivered','Return requested','Returned'],
+        },
+        returnRequest: {  
+            reason: { type: String },
+            requestedAt:{ type: Date, default: Date.now },
+            status: {
+              type: String,
+              enum: ["pending", "approved", "rejected"],
+              default: "pending"
+            }
+          }
+       
     }],
     totalPrice : {
         type : Number ,
@@ -49,15 +68,11 @@ const orderSchema = new Schema ({
     invoiceDate : {
         type : Date 
     },
-    // status : {
-    //     type : String ,
-    //     required : true ,
-    //     enum : ["Pending","Processing","Shipped","Delivered","Cancelled","Return request","Returned"]
-    // },
+    
     status: {
         type: String,
         required: true,
-        enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Return requested", "Returned"],
+        enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Return requested", "Returned","Payment Failed","Pending Payment"],
         default: "Pending"
       },
     createdOn : {
@@ -69,19 +84,27 @@ const orderSchema = new Schema ({
         type : Boolean ,
         default : false
     },
+    // coupon: { type: mongoose.Schema.Types.ObjectId, ref: 'Coupon' }, // Reference to Coupon
+    couponMinimumPrice: { 
+        type: Number, default: 0 
+    },
+    paymentId: {
+        type: String,
+        required: false
+      },
     paymentMethod: {
         type: String,
-        enum: ['COD', 'UPI', 'WALLET']
+        enum: ['COD', 'RAZORPAY', 'WALLET']
     },
-    returnRequest: {  
-        reason: String,
-        requestedAt: Date,
-        status: {
-          type: String,
-          enum: ["pending", "approved", "rejected"],
-          default: "pending"
-        }
-      }
+    // returnRequest: {  
+    //     reason: { type: String },
+    //     requestedAt:{ type: Date, default: Date.now },
+    //     status: {
+    //       type: String,
+    //       enum: ["pending", "approved", "rejected"],
+    //       default: "pending"
+    //     }
+    //   }
 })
 
 const Order = mongoose.model("Order",orderSchema)

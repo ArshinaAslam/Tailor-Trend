@@ -1,13 +1,13 @@
 <%- include("../../views/partials/admin/header") %>
 
 <head>
-    <!-- SweetAlert2 CDN -->
+    
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Global Styles */
+   
     body {
       font-family: 'Inter', sans-serif;
       background-color: #f8fafc;
@@ -24,7 +24,7 @@
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
     }
 
-    /* Header Styling */
+   
     .content-header h2 {
       font-size: 24px;
       font-weight: 600;
@@ -32,7 +32,7 @@
       margin-bottom: 20px;
     }
 
-    /* Card Styling */
+    
     .card {
       border: none;
       border-radius: 12px;
@@ -60,7 +60,7 @@
       padding: 20px;
     }
 
-    /* Form Controls */
+    
     .form-label {
       font-weight: 500;
       color: #475569;
@@ -92,7 +92,7 @@
       resize: vertical;
     }
 
-    /* Error Messages */
+    
     .error-message {
       color: #dc2626;
       font-size: 12px;
@@ -101,7 +101,7 @@
       display: block;
     }
 
-    /* Image Upload Section */
+   
     .thumbnails-container {
       display: flex;
       flex-wrap: wrap;
@@ -157,7 +157,7 @@
       transform: scale(1.1);
     }
 
-    /* Buttons */
+    
     .btn {
       background-color: #3b82f6;
       color: white;
@@ -190,7 +190,7 @@
       background-color: #059669;
     }
 
-    /* Cropper Container Styling */
+    
     .image-cropper {
       display: none;
       margin: 20px auto;
@@ -227,7 +227,7 @@
       background-color: #059669;
     }
 
-    /* Responsive Tweaks */
+  
     @media (max-width: 768px) {
       .content-main {
         padding: 20px;
@@ -289,14 +289,14 @@
       <div class="col-lg-6">
         <div class="card mb-4">
           <div class="card-body">
-            <form method="POST" action="/admin/editProduct/<%= product._id %>" enctype="multipart/form-data" onsubmit="return validateForm()" id="product-form">
+            <form method="POST" action="/admin/editProduct/<%= product._id %>" enctype="multipart/form-data" id="product-form">
               <!-- Product Information -->
               <div class="mb-4">
                 <label for="product_name" class="form-label">Product Name</label>
                 <input type="text" placeholder="Type here" name="productName" class="form-control" id="product_name" value="<%=product.productName%>">
                 <div id="productName-error" class="error-message"></div>
               </div>
-              <div class="col-lg-4 mb-4">
+              <!-- <div class="col-lg-4 mb-4">
                 <label class="form-label">Brand</label>
                 <select class="form-select" name="brand">
                   <% for(let i = 0 ; i < brand.length ; i++){ %>
@@ -304,7 +304,7 @@
                   <% } %>
                 </select>
                 <div id="brand-error" class="error-message"></div>
-              </div>
+              </div> -->
               <div class="mb-4">
                 <label class="form-label">Full description</label>
                 <textarea placeholder="Type here" id="descriptionid" name="description" class="form-control" rows="4"><%=product.description%></textarea>
@@ -354,15 +354,15 @@
                               <% product.sizes.forEach(sizeObj => { sizeQuantities[sizeObj.size] = sizeObj.quantity; }); %>
                           <% } %>
               
-                          <input type="number" placeholder="S" name="sizeQuantity[S]" class="form-control size-input" 
+                          S :<input type="number" placeholder="S" name="sizeQuantity[S]" class="form-control size-input" 
                               min="0" required value="<%= sizeQuantities['S'] || 0 %>">
-                          <input type="number" placeholder="M" name="sizeQuantity[M]" class="form-control size-input" 
+                          M :<input type="number" placeholder="M" name="sizeQuantity[M]" class="form-control size-input" 
                               min="0" required value="<%= sizeQuantities['M'] || 0 %>">
-                          <input type="number" placeholder="L" name="sizeQuantity[L]" class="form-control size-input" 
+                          L :<input type="number" placeholder="L" name="sizeQuantity[L]" class="form-control size-input" 
                               min="0" required value="<%= sizeQuantities['L'] || 0 %>">
-                          <input type="number" placeholder="XL" name="sizeQuantity[XL]" class="form-control size-input" 
+                          XL :<input type="number" placeholder="XL" name="sizeQuantity[XL]" class="form-control size-input" 
                               min="0" required value="<%= sizeQuantities['XL'] || 0 %>">
-                          <input type="number" placeholder="XXL" name="sizeQuantity[XXL]" class="form-control size-input" 
+                          XXL :<input type="number" placeholder="XXL" name="sizeQuantity[XXL]" class="form-control size-input" 
                               min="0" required value="<%= sizeQuantities['XXL'] || 0 %>">
                       </div>
                       <div id="size-error" class="error-message"></div>
@@ -398,7 +398,7 @@
                   <h4>Edit Images</h4>
                 </div>
                 <div class="card-body">
-                  <!-- Inside the thumbnails-container -->
+                 
                   <div class="thumbnails-container" id="addedImagesContainer">
                     <% productImages.forEach(function(image, index) { %>
                       <div class="thumbnail" id="thumbnail-<%= index %>">
@@ -422,7 +422,7 @@
               </div>
 
               <div>
-                <button class="btn" type="button" onclick="validateAndSubmit('<%=product._id%>')">Update</button>
+                <button class="btn" type="submit">Update</button>
               </div>
             </form>
           </div>
@@ -431,97 +431,143 @@
     </div>
   </section>
 
-  <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js" integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
   <script>
-    let cropper;
-
-   // Function to trigger form submission after validation
-   async function validateAndSubmit(productId) {
-    console.log('Starting form validation...');
+     
+function base64ToBlob(base64, mimeType) {
+  const byteCharacters = atob(base64);
+  const byteArrays = [];
+  
+  for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+    const slice = byteCharacters.slice(offset, offset + 512);
     
-    const name = document.getElementsByName('productName')[0]?.value || '';
-    const description = document.getElementById('descriptionid')?.value || '';
-    // const brand = document.getElementsByName('brand')[0]?.value || '';
-    const price = document.getElementsByName('regularPrice')[0]?.value || '';
-    const saleprice = document.getElementsByName('salePrice')[0]?.value || '';
-    const color = document.getElementsByName('color')[0]?.value || '';
-    const category = document.getElementsByName('category')[0]?.value || '';
-
-    console.log("Extracted values:", { name, description, price, saleprice, color, category });
-
-    // Fixing size & quantity handling
-    const sizeQuantities = {};
-    document.querySelectorAll('input[name^="sizeQuantity"]').forEach(input => {
-        const size = input.name.match(/\[([A-Za-z]+)\]/)[1];  // Extracts "S", "M", etc.
-        sizeQuantities[size] = input.value || "0";
-    });
-
-    console.log("Size Quantities:", sizeQuantities);
-
-    if (!name || !description || !price || !saleprice || !color || !category) {
-        Swal.fire({
-            title: "Error!",
-            text: 'All fields are required!',
-            icon: "error",
-            confirmButtonText: "Try Again"
-        });
-        return;
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
     }
-
-    const formData = {
-        name,
-        description,
-        price,
-        saleprice,
-        color,
-        category,
-        sizeQuantities
-    };
-
-    console.log('Submitting form data:', formData);
-
-    try {
-        const response = await fetch(`/admin/editProduct/${productId}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
-        });
-
-        console.log('Response received:', response);
-
-        const data = await response.json();
-        if (data.success) {
-            Swal.fire({
-                title: "Success!",
-                text: "Product updated successfully!",
-                icon: "success",
-                confirmButtonText: "OK"
-            }).then(() => {
-                window.location.href = '/admin/Products';
-            });
-        } else {
-            Swal.fire({
-                title: "Error!",
-                text: data.message || "An error occurred.",
-                icon: "error",
-                confirmButtonText: "Try Again"
-            });
-        }
-    } catch (error) {
-        console.error('Fetch error:', error);
-        Swal.fire({
-            title: "Error!",
-            text: "Failed to update the product.",
-            icon: "error",
-            confirmButtonText: "Try Again"
-        });
-    }
+    
+    const byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+  
+  return new Blob(byteArrays, { type: mimeType });
 }
 
+
+
+    let cropper;
+
+   
+   const form = document.querySelector('form')
+   
+  
+form.addEventListener('submit', async(e) => {
+  e.preventDefault();
+  const productId = '<%= product._id %>';
+  
+  
+  const productName = document.getElementsByName('productName')[0]?.value || '';
+  const description = document.getElementById('descriptionid')?.value || '';
+  const regularPrice = document.getElementsByName('regularPrice')[0]?.value || '';
+  const salePrice = document.getElementsByName('salePrice')[0]?.value || '';
+  const color = document.getElementsByName('color')[0]?.value || '';
+  const category = document.getElementsByName('category')[0]?.value || '';
+  
+  
+  if (!productName || !description || !regularPrice || !salePrice || !color || !category) {
+    Swal.fire({
+      title: "Error!",
+      text: 'All fields are required!',
+      icon: "error",
+      confirmButtonText: "Try Again"
+    });
+    return;
+  }
+  
+  
+  const formData = new FormData();
+  formData.append('productName', productName);
+  formData.append('description', description);
+  formData.append('regularPrice', regularPrice);
+  formData.append('salePrice', salePrice);
+  formData.append('color', color);
+  formData.append('category', category);
+  
+  
+  const sizeQuantities = [];
+  document.querySelectorAll('input[name^="sizeQuantity"]').forEach(input => {
+    const size = input.name.match(/\[([A-Za-z]+)\]/)[1]; 
+    sizeQuantities.push({
+      size: size,
+      quantity: parseInt(input.value) || 0
+    });
+  });
+  formData.append('sizeQuantities', JSON.stringify(sizeQuantities));
+  
+  
+  const newImageInputs = document.querySelectorAll('input[name="images"]');
+  newImageInputs.forEach((input) => {
+    if (input.value.startsWith('data:image')) {
+      formData.append('editedImages', input.value);
+    }
+  });
+  
+  
+  const editedImageInputs = document.querySelectorAll('input[name="editedImages"]');
+  editedImageInputs.forEach((input) => {
+    formData.append('editedImages', input.value);
+  });
+  
+ 
+  const removedImageInputs = document.querySelectorAll('input[name="removeImages"]');
+  removedImageInputs.forEach((input) => {
+    formData.append('removeImages', input.value);
+  });
+  
+  try {
     
-    // Handle image upload and initialize cropper
-    function handleImageUpload(event) {
+    const response = await fetch(`/admin/editProduct/${productId}`, {
+      method: 'POST',
+      body: formData  
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Server responded with status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    if (data.success) {
+      Swal.fire({
+        title: "Success!",
+        text: "Product updated successfully!",
+        icon: "success",
+        confirmButtonText: "OK"
+      }).then(() => {
+        window.location.href = '/admin/Products';
+      });
+    } else {
+      Swal.fire({
+        title: "Error!",
+        text: data.message || "An error occurred.",
+        icon: "error",
+        confirmButtonText: "Try Again"
+      });
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    Swal.fire({
+      title: "Error!",
+      text: `Failed to update the product: ${error.message}`,
+      icon: "error",
+      confirmButtonText: "Try Again"
+    });
+  }
+});
+
+
+   
+   function handleImageUpload(event) {
   const file = event.target.files[0];
   if (file) {
     const reader = new FileReader();
@@ -531,12 +577,12 @@
     reader.readAsDataURL(file);
   }
 }
-    // Function to edit existing images
+   
     function editImage(imageSrc) {
       showCropper(imageSrc);
     }
 
-    // Show cropper and initialize it
+    
     function showCropper(imageSrc, index) {
   const cropperContainer = document.getElementById('cropperContainer');
   const saveButton = document.getElementById('saveButton');
@@ -556,7 +602,7 @@
     zoomable: true,
   });
 
-  // Bind the save button
+  
   saveButton.addEventListener(
     'click',
     function () {
@@ -566,14 +612,15 @@
         (blob) => {
           const reader = new FileReader();
           reader.onloadend = function () {
-            // Add the new image to the form data
+           
+            const file = new File([blob], `image-${index || Date.now()}`.jpg, { type: 'image/jpeg' });
             const hiddenInput = document.createElement('input');
             hiddenInput.type = 'hidden';
             hiddenInput.name = 'images';
             hiddenInput.value = reader.result;
             document.forms[0].appendChild(hiddenInput);
 
-            // Create a thumbnail preview for the cropped image
+            
             const thumbnail = document.createElement('div');
             thumbnail.classList.add('thumbnail');
             const thumbImg = document.createElement('img');
@@ -584,8 +631,6 @@
             removeIcon.innerHTML = '&times';
             removeIcon.addEventListener('click', function () {
               thumbnail.remove();
-
-              // Also remove the corresponding hidden input
               const inputs = document.getElementsByName('images');
               for (let i = 0; i < inputs.length; i++) {
                 if (inputs[i].value === reader.result) {
@@ -598,7 +643,7 @@
             thumbnail.appendChild(removeIcon);
             document.getElementById('addedImagesContainer').appendChild(thumbnail);
 
-            // Hide cropper container and destroy cropper instance
+            
             cropper.destroy();
             cropperContainer.style.display = 'none';
             saveButton.style.display = 'none';
@@ -679,7 +724,7 @@ function showCropper(imageSrc, index) {
     zoomable: true,
   });
 
-  // Bind the save button
+  
   saveButton.addEventListener(
     'click',
     function () {
@@ -757,7 +802,7 @@ function showCropper(imageSrc, index) {
                 oldImageInput.remove();
               }
 
-              // Add the edited image data to the form
+             
               const editedImageInput = document.createElement('input');
               editedImageInput.type = 'hidden';
               editedImageInput.name = 'editedImages';
@@ -930,4 +975,4 @@ function showCropper(imageSrc, index) {
   //   }
 </script>
 
-<%- include("../../views/partials/admin/footer") %>
+<%- include("../../views/partials/admin/footer") %>

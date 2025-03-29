@@ -2,122 +2,248 @@ const User = require("../../models/userSchema");
 const Product = require("../../models/productSchema");
 const Address = require("../../models/addressSchema");
 const Order = require("../../models/orderSchema");
+const Wallet = require("../../models/walletSchema");
 const mongodb = require("mongodb");
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const env = require("dotenv").config();
 const crypto = require("crypto");
 
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 const { log } = require("console");
 
+// const getOrderListPageAdmin = async (req, res) => {
+//   try {
+//     const itemsPerPage = 7;
+//     const currentPage = parseInt(req.query.page) || 1;
 
+//     const totalOrders = await Order.countDocuments();
+//     const totalPages = Math.ceil(totalOrders / itemsPerPage);
 
+//     const orders = await Order.find(
+//       {},
+//       "orderid totalPrice finalAmount status createdOn userId paymentMethod"
+//     )
+//       .populate("userId", "name")
+//       .sort({ createdOn: -1 })
+//       .skip((currentPage - 1) * itemsPerPage)
+//       .limit(itemsPerPage);
+
+//     res.render("order-list", {
+//       orders,
+//       totalPages,
+//       currentPage,
+//       hasNextPage: currentPage < totalPages,
+//       hasPreviousPage: currentPage > 1,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.redirect("/pageError");
+//   }
+// };
 
 const getOrderListPageAdmin = async (req, res) => {
   try {
-      const itemsPerPage = 3;
-      const currentPage = parseInt(req.query.page) || 1;
-      
-      
-      const totalOrders = await Order.countDocuments();
-      const totalPages = Math.ceil(totalOrders / itemsPerPage);
+    const itemsPerPage = 7;
+    const currentPage = parseInt(req.query.page) || 1;
 
-      
-      const orders = await Order.find({}, "orderid totalPrice finalAmount status createdOn userId paymentMethod")
-          .populate("userId", "name")
-          .sort({ createdOn: -1 })
-          .skip((currentPage - 1) * itemsPerPage)
-          .limit(itemsPerPage);
+    
+    const totalOrders = await Order.countDocuments();
+    const totalPages = Math.ceil(totalOrders / itemsPerPage);
 
-      res.render("order-list", { 
-          orders, 
-          totalPages, 
-          currentPage,
-          hasNextPage: currentPage < totalPages,
-          hasPreviousPage: currentPage > 1
+    
+    const orders = await Order.find({})
+      .populate("userId", "name")
+      .populate("orderitems.productId", "name") 
+      .sort({ createdOn: -1 })
+      .skip((currentPage - 1) * itemsPerPage)
+      .limit(itemsPerPage);
+
+   
+    const flattenedOrders = [];
+    orders.forEach(order => {
+      
+      order.orderitems.forEach(item => {
+        flattenedOrders.push({
+          _id: order._id,
+          orderid: order.orderid,
+          userId: order.userId,
+          createdOn: order.createdOn,
+          finalAmount: order.finalAmount,
+          orderStatus: order.status,
+          paymentMethod: order.paymentMethod,
+         
+          productId: item.productId,
+          productName: item.productId.name,
+          quantity: item.quantity,
+          price: item.price,
+          size: item.size,
+          itemStatus: item.status || order.status 
+        });
       });
+    });
+
+    res.render("order-list", {
+      orders: flattenedOrders,
+      totalPages,
+      currentPage,
+      hasNextPage: currentPage < totalPages,
+      hasPreviousPage: currentPage > 1,
+    });
   } catch (error) {
-      console.error(error);
-      res.redirect("/pageError");
+    console.error(error);
+    res.redirect("/pageError");
   }
 };
-  
-  const getOrderDetailsPageAdmin = async (req, res) => {
-    try {
-
-        const orderId = req.params.orderId;
-        const findOrder = await Order.findOne({ _id: orderId })  
-            .populate('userId', 'name') 
-            .populate('orderitems.productId', 'name'); 
-
-        if (!findOrder) {
-            return res.status(404).send('Order not found');
-        }
-
-       
-        const AddressId = findOrder.address._id
-
-        
-
-        const userId = findOrder.userId
-
-        const findUser = await User.findOne({ _id: userId })
-
-        const findAddress = await Address.findOne({ userId: userId })
-
-        
-
-        const selectedAddress = findAddress.address.find((addr) => addr._id.toString() === AddressId.toString())
-
-      
 
 
-        res.render("order-details-admin", { order: findOrder, address: selectedAddress });
-        
-    } catch (error) {
-        console.error("Error fetching order details:", error);
-        res.redirect("/pageError");
+
+const getOrderDetailsPageAdmin = async (req, res) => {
+  try {
+    console.log("haiii")
+    const orderId = req.params.orderId;
+    console.log("order id?",orderId)
+    const findOrder = await Order.findOne({ _id: orderId })
+      .populate("userId", "name")
+      .populate({
+        path: "orderitems.productId",
+        select: "productName productImage",
+      });
+      console.log("findOrder",findOrder)
+    
+    if (!findOrder) {
+      return res.status(404).send("Order not found");
     }
+
+    const AddressId = findOrder.address._id;
+    console.log("AddressId",AddressId);
+    
+
+    const userId = findOrder.userId;
+    console.log("userId",userId)
+
+    const findUser = await User.findOne({ _id: userId });
+
+    const findAddress = await Address.findOne({ userId: userId });
+    console.log(" findAddress ", findAddress )
+
+    
+if (!findAddress || !findAddress.address) {
+  return res.status(404).send("Address not found");
+}
+
+    const selectedAddress = findAddress.address.find(
+      (addr) => addr._id.toString() === AddressId.toString()
+    );
+
+    res.render("order-details-admin", {
+      order: findOrder,
+      address: selectedAddress,
+    });
+  } catch (error) {
+    console.error("Error fetching order details:", error);
+    res.redirect("/pageError");
+  }
 };
 
+// const updateOrderStatus = async (req, res) => {
+//   try {
+//     const { status } = req.body;
 
+//     const orderId = req.params.orderId;
+
+//     console.log("recieved body in the updateOrderstatus: ", req.body, orderId);
+//     const order = await Order.findById(orderId);
+//     order.status = status;
+//     order.orderitems.forEach((item) => {
+//       item.status = status;
+//     });
+
+//     const updatedOrder = await Order.findByIdAndUpdate(orderId, order, {
+//       new: true,
+//     });
+
+//     if (!updatedOrder) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Order not found",
+//       });
+//     }
+
+//     res.json({
+//       success: true,
+//       message: "Status updated successfully",
+//       updatedOrder,
+//     });
+//   } catch (error) {
+//     console.error("Status update error:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: error.message || "Server error",
+//     });
+//   }
+// };
 
 
 const updateOrderStatus = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, productId, size } = req.body;
+    const orderId = req.params.orderId;
 
-    const orderId = req.params.orderId
-
-    console.log('recieved body in the updateOrderstatus: ', req.body, orderId);
-
-    const order = await Order.findByIdAndUpdate(
-      orderId,
-      { status: status },
-      { new: true}
-    );
-
+   
+    
+    const order = await Order.findById(orderId);
     if (!order) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Order not found' 
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
       });
     }
 
     
+    const itemIndex = order.orderitems.findIndex(
+      item => 
+        item.productId.toString() === productId && 
+        item.size === size
+    );
 
-    res.json({ 
-      success: true, 
-      message: 'Status updated successfully',
-      order 
+    if (itemIndex === -1) {
+      return res.status(404).json({
+        success: false,
+        message: "Item not found in order",
+      });
+    }
+
+    
+    order.orderitems[itemIndex].status = status;
+
+   
+    const allDelivered = order.orderitems.every(item => item.status === 'Delivered');
+    const allCancelled = order.orderitems.every(item => item.status === 'Cancelled');
+    const hasReturnRequested = order.orderitems.some(item => item.status === 'Return requested');
+
+    if (allDelivered) {
+      order.status = 'Delivered';
+    } else if (allCancelled) {
+      order.status = 'Cancelled';
+    } else if (hasReturnRequested) {
+      order.status = 'Return requested';
+    } else {
+      order.status = 'Pending'; // Or whatever default status you prefer
+    }
+
+    const updatedOrder = await order.save();
+
+    res.json({
+      success: true,
+      message: "Item status updated successfully",
+      updatedOrder,
     });
-
   } catch (error) {
-    console.error('Status update error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: error.message || 'Server error' 
+    console.error("Item status update error:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Server error",
     });
   }
 };
@@ -126,39 +252,168 @@ const updateOrderStatus = async (req, res) => {
 
 const handleReturn = async (req, res) => {
   try {
-    const { orderId, status, finalAmount } = req.body;
+    const { orderId, status, size, productId } = req.body;
+   
 
     const order = await Order.findById(orderId);
+
+   
+
     if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
     }
 
-    if (order.status !== "Return requested" || order.returnRequest.status !== "pending") {
-      return res.status(400).json({ success: false, message: "No pending return request" });
+    
+
+    order.orderitems.forEach((item) => {
+      if (item.productId == productId && item.size == size) {
+        if (status === "Approved") {
+          item.status = "Returned";
+          
+        } else if (status === "Rejected") {
+          item.status = "Delivered";
+          
+        }
+      }
+    });
+
+    const itemToReturn = order.orderitems.find(
+      (item) => item.productId.toString() === productId && item.size === size
+    );
+
+   
+
+    if (!itemToReturn) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Item not found in the order" });
     }
 
-    let updateData = {};
-    if (status === "Approved") {
-      updateData = {
-        status: "Returned",
-        "returnRequest.status": "approved",
-        "returnRequest.resolvedAt": new Date()
-      };
+    const itemOriginalCost = itemToReturn.price * itemToReturn.quantity;
+   
+    const totalItemsCost = order.totalPrice;
+  
+
+    let totalDiscount = order.discount || 0;
+   
+
+
+    const returnedItem = order.orderitems.find(
+      (item) => item.productId.toString() === productId && item.size === size
+    );
+    const remainingItemsCost = returnedItem
+      ? order.totalPrice - (returnedItem.price * returnedItem.quantity)
+      : order.totalPrice;
+
      
-    } else if (status === "Rejected") {
-      updateData = {
-        status: "Delivered", 
-        "returnRequest.status": "rejected",
-        "returnRequest.resolvedAt": new Date()
-      };
+
+    let refundAmount;
+    if (order.couponApplied && totalDiscount > 0) {
+      const couponMinimumThreshold = order.couponMinimumPrice; 
+
+      if (remainingItemsCost > couponMinimumThreshold) {
+        refundAmount = itemOriginalCost;
+       
+      } else {
+      
+        refundAmount = itemOriginalCost - totalDiscount;
+        totalDiscount = 0
+      }
+    } else {
+      refundAmount = itemOriginalCost;
+      
     }
 
-    const updatedOrder = await Order.findByIdAndUpdate(orderId, updateData, { new: true });
+    
+
+     order.totalPrice = remainingItemsCost;
+    
+     if(order.totalPrice==0  ){
+      totalDiscount = 0
+
+    
+     }
+     order.discount = totalDiscount 
+    
+    order.finalAmount = order.totalPrice - totalDiscount
+    
+    
+   
+    //restock
+    const product = await Product.findById(itemToReturn.productId);
+    if (product) {
+      const sizeObj = product.sizes.find((s) => s.size === size);
+      if (sizeObj) {
+        sizeObj.quantity += itemToReturn.quantity;
+        await product.save();
+        console.log("Product restocked:", {
+          productId: itemToReturn.productId,
+          size,
+          quantity: itemToReturn.quantity,
+        });
+      }
+    }
+
+   
+    const userId = req.session.user;
+  
+    const productName = product ? product.productName : "Unknown Product";
+
+    let wallet = await Wallet.findOne({ userId });
+    if (!wallet) {
+      wallet = new Wallet({ userId, balance: 0, transactions: [] });
+    }
+
+    wallet.balance += refundAmount;
+    wallet.transactions.push({
+      amount: refundAmount,
+      type: "credit",
+      description: `Refund for returned item: ${productName} (Size: ${size})`,
+      date: new Date(),
+      orderId: order._id
+
+    });
+    await wallet.save();
+    
+
+    const updatedOrder = await Order.findByIdAndUpdate(order._id, order, {
+      new: true,
+    });
+
+    const allReturned = updatedOrder.orderitems.every(
+      (item) => item.status === "Returned"
+    );
+    if (allReturned) {
+      await Order.updateOne({ _id: orderId }, { $set: { status: "Returned" } });
+    }
+    // Update order totals if not all items are returned
+    // if (!allReturned) {
+    //   const remainingDiscount =
+    //     order.couponApplied && remainingItemsCost >= order.couponMinimumPrice
+    //       ? totalDiscount
+    //       : 0;
+    //   await Order.updateOne(
+    //     { _id: orderId },
+    //     {
+    //       $set: {
+    //         totalPrice: remainingItemsCost,
+    //          discount: remainingDiscount,
+    //         finalAmount: order.totalPrice - remainingDiscount,
+    //       },
+    //     }
+    //   );
+    //   console.log("Order totals updated:", {
+    //     totalPrice: remainingItemsCost,
+    //     discount: remainingDiscount,
+    //   });
+    // }
 
     res.json({
       success: true,
       message: `Return request ${status.toLowerCase()} successfully`,
-      order: updatedOrder
+      order: updatedOrder,
     });
   } catch (error) {
     console.error("Error handling return:", error);
@@ -166,11 +421,9 @@ const handleReturn = async (req, res) => {
   }
 };
 
-
-  module.exports = {
-    getOrderListPageAdmin,
-    getOrderDetailsPageAdmin,
-    updateOrderStatus,
-    handleReturn
-  
-}
+module.exports = {
+  getOrderListPageAdmin,
+  getOrderDetailsPageAdmin,
+  updateOrderStatus,
+  handleReturn,
+};

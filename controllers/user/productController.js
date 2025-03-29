@@ -14,20 +14,26 @@ const productDetails = async (req, res) => {
             return res.redirect('/pageNotFound');
         }
 
-        
+        if (!product.category || !product.category.isListed) {
+            return res.render("page-404");
+        }
 
+        if(!product || product.isBlocked){
+            return res.render("page-404")
+        }
 
         
 
         const findCategory = product.category;
         const categoryOffer = findCategory?.categoryOffer || 0;
         const productOffer = product.productOffer || 0;
-        const totalOffer = categoryOffer + productOffer;
-
+        
+       
         res.render('productDetails', {
             user: userData,
             product: product,
-            totalOffer: totalOffer,
+            productOffer,
+            categoryOffer:categoryOffer,
             category: findCategory,
             sizes: product.sizes
         });

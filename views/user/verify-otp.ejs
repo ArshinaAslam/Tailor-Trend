@@ -1,3 +1,5 @@
+<%- include("../../views/partials/user/header") %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,15 +9,34 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
-        body {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
             font-family: Arial, sans-serif;
+        }
+        
+        
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: #f4f4f9;
+        }
+        
+       
+        .content-container {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: #f4f4f9;
+            padding: 2rem 0;
         }
+        
         form {
             background: white;
             padding: 2rem;
@@ -25,15 +46,18 @@
             width: 100%;
             text-align: center;
         }
+        
         form h3 {
             margin-bottom: 1rem;
             color: #333;
         }
+        
         label {
             display: block;
             margin-bottom: 0.5rem;
             color: #555;
         }
+        
         input {
             width: 100%;
             padding: 0.8rem;
@@ -42,10 +66,12 @@
             border-radius: 5px;
             font-size: 1rem;
         }
+        
         input:focus {
             border-color: #007bff;
             outline: none;
         }
+        
         button {
             width: 100%;
             padding: 0.8rem;
@@ -56,24 +82,26 @@
             transition: background 0.3s;
             margin-bottom: 0.5rem;
         }
+        
         button:hover {
             opacity: 0.9;
         }
 
-        /* Verify Email Button */
+        
         button[type="submit"] {
             background: #007bff;
             color: white;
         }
+        
         button[type="submit"]:hover {
             background: #0056b3;
         }
-
        
         #resendOtp {
             background: #b0b0b0;
             color: white;
         }
+        
         #resendOtp:hover {
             background: #8e8e8e;
         }
@@ -82,11 +110,13 @@
             font-size: 0.9rem;
             color: #555;
         }
+        
         .link a {
             color: #007bff;
             text-decoration: none;
             font-weight: bold;
         }
+        
         .link a:hover {
             text-decoration: underline;
         }
@@ -106,32 +136,34 @@
             border: 2px solid #ccc;
             transition: background 0.5s;
         }
-
     
         #otpTimer.expired {
             background: red;
             color: white;
             border-color: red;
         }
-
     </style>
-   
 </head>
 <body>
-    <form id="otpForm" method="post" action="#" onsubmit="return validateOTPForm(event)">
-        <h3>Verify Your Email</h3>
-        <label for="otp">Enter OTP :</label>
-        <input type="text" id="otp" name="otp" maxlength="6" pattern="[0-9]{6}" placeholder="Enter 6-digit OTP" required>
-        <button type="submit">Verify Email</button>
+    <div class="page-container">
+      
+        <div class="content-container">
+            <form id="otpForm" method="post" action="#" onsubmit="return validateOTPForm(event)">
+                <h3>Verify Your Email</h3>
+                <label for="otp">Enter OTP :</label>
+                <input type="text" id="otp" name="otp" maxlength="6" pattern="[0-9]{6}" placeholder="Enter 6-digit OTP" required>
+                <button type="submit">Verify Email</button>
 
-        <!--  Timer -->
-        <div id="otpTimer">
-            <span id="timerValue">60</span>
+                <!--  Timer -->
+                <div id="otpTimer">
+                    <span id="timerValue">60</span>
+                </div>
+
+                <button type="button" id="resendOtp" onclick="resendOTP()" disabled>Resend OTP</button>
+                <div class="link">Already verified? <a href="/login">Login now</a></div>
+            </form>
         </div>
-
-        <button type="button" id="resendOtp" onclick="resendOTP()" disabled>Resend OTP</button>
-        <div class="link">Already verified? <a href="/login">Login now</a></div>
-    </form>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -202,25 +234,19 @@
         async function resendOTP() {
             clearInterval(timerInterval);
             timer = 60;
-            document.getElementById('resendOtp').disabled = false;
+            document.getElementById('resendOtp').disabled = true;
             document.getElementById('otpTimer').classList.remove("expired");
             startTimer();
-
-
-           
-            
 
             const response = await fetch('/resendOtpp', {
                 method: 'POST',
                 headers: {
                     'Content-type': 'application/json'
                 }
-            })
+            });
 
-            const result = await response.json()
-
+            const result = await response.json();
             console.log('result of the request: ', result);
-            
 
             if (result.success) {
                 Swal.fire({
@@ -239,10 +265,9 @@
                 confirmButtonColor: '#d33'
             });
 
-
             return false;
         }
-    
     </script>
 </body>
 </html>
+<%- include("../../views/partials/user/footer") %>

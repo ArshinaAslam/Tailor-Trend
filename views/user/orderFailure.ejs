@@ -1,0 +1,199 @@
+<%- include("../../views/partials/user/header") %>
+
+
+<style>
+  .checkout-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f8f9fa;
+  }
+  .checkout-card.modern {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 450px;
+  }
+  .order-status-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .status-icon.warning {
+    stroke: #ff3f6c;
+  }
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+  }
+  .order-summary {
+    margin-bottom: 1.5rem;
+  }
+  .order-message {
+    margin-bottom: 1rem;
+  }
+  .order-id {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid #f0f0f0;
+  }
+  .id-value {
+    font-weight: 600;
+    color: #333;
+  }
+  .order-amount {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    padding: 0.5rem 0;
+    border-top: 1px solid #f0f0f0;
+  }
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .btn-modern {
+    display: inline-block;
+    padding: 12px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+  .btn-modern.primary {
+    background: #ff3f6c;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-modern.primary:hover {
+    background: #e63258;
+  }
+  .btn-modern.secondary {
+    background: #f0f0f0;
+    color: #333;
+  }
+  .btn-modern.secondary:hover {
+    background: #e0e0e0;
+  }
+</style>
+
+
+<div class="checkout-container">
+  <div class="checkout-card modern">
+    <div class="order-status-header">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon warning">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <h3 class="section-title">Payment Not Completed</h3>
+    </div>
+    
+    <div class="order-summary">
+      <p class="order-message">Your order was placed successfully, but the payment was not completed.</p>
+      <div class="order-id">
+        <span>Order ID:</span>
+        <span class="id-value"><%= order.orderid %></span>
+      </div>
+      <div class="order-amount">
+        <span>Total Amount:</span>
+        <span class="amount">₹<%= order.finalAmount %></span>
+      </div>
+    </div>
+    
+    <div class="action-buttons">
+      <button class="btn-modern primary" onclick="retryPayment('<%= order._id %>', '<%= order.finalAmount %>')">
+        Retry Payment
+      </button>
+      <a href="/orderDetails?id=<%= order._id %>" class="btn-modern secondary">View Order Details</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  async function retryPayment(orderId, amount) {
+    try {
+      Swal.fire({
+        title: 'Processing',
+        text: 'Preparing payment gateway...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+      });
+      
+      const response = await fetch('/create-razorpay-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: amount * 100, currency: 'INR' })
+      });
+      
+      const orderData = await response.json();
+      Swal.close();
+      
+      if (!orderData.success) {
+        throw new Error(orderData.message || 'Failed to create payment order');
+      }
+      
+      const options = {
+        key: orderData.key_id,
+        amount: orderData.amount,
+        currency: 'INR',
+        name: 'TAILOR TREND',
+        description: 'Order Payment Retry',
+        order_id: orderData.order_id,
+        handler: async function(response) {
+          Swal.fire({ title: 'Verifying Payment', text: 'Please wait...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+          
+          const verificationResponse = await fetch('/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              payment_id: response.razorpay_payment_id,
+              order_id: response.razorpay_order_id,
+              signature: response.razorpay_signature,
+              mongoOrderId: orderId
+            })
+          });
+          
+          const verificationResult = await verificationResponse.json();
+          
+          if (verificationResult.success) {
+            Swal.fire({ title: 'Payment Successful!', text: 'Your order is confirmed.', icon: 'success', confirmButtonColor: '#FF3F6C' })
+              .then(() => window.location.href = '/orderConfirm');
+          } else {
+            Swal.fire({ title: 'Payment Failed', text: verificationResult.message, icon: 'error', confirmButtonColor: '#FF3F6C' });
+          }
+        },
+        prefill: {
+          name: '<%= user.name %>',
+          email: '<%= user.email %>',
+          contact: '<%= user.phone %>'
+        },
+        theme: { color: '#FF3F6C' }
+      };
+      
+      const rzp = new Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      Swal.fire({ title: 'Error', text: error.message || 'An error occurred while retrying payment.', icon: 'error', confirmButtonColor: '#FF3F6C' });
+    }
+  }
+</script>
+
+<%- include("../../views/partials/user/footer") %>

@@ -1,0 +1,647 @@
+<%- include("../../views/partials/user/header") %>
+
+<style>
+   
+    .wishlist-header {
+        padding: 40px 0 30px;
+        background-color: #fafafa;
+    }
+    
+    .header-content {
+        position: relative;
+    }
+    
+    .wishlist-title {
+        font-size: 32px;
+        font-weight: 300;
+        letter-spacing: 1px;
+        margin-top: 15px;
+        margin-bottom: 0;
+        color: #222;
+        text-transform: uppercase;
+        text-align: center;
+    }
+    
+    .breadcrumb-minimal {
+        font-size: 14px;
+        color: #888;
+        text-align: left;
+    }
+    
+    .breadcrumb-minimal a {
+        color: #888;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    
+    .breadcrumb-minimal a:hover {
+        color: #000;
+    }
+    
+    .breadcrumb-minimal .separator {
+        margin: 0 8px;
+        color: #ccc;
+    }
+    
+    .breadcrumb-minimal .current {
+        color: #222;
+    }
+    
+    .wishlist-gallery {
+        padding: 60px 0 80px;
+        background-color: #fff;
+    }
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+    
+    .wishlist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+        margin: 0 auto;
+        justify-content: center;
+    }
+    
+    .wishlist-card {
+        position: relative;
+        background-color: #fff;
+        border-radius: 4px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+    
+    .wishlist-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    .card-actions {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 10;
+    }
+    
+    .action-button {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255,255,255,0.9);
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: all 0.2s;
+        padding: 0;
+    }
+    
+    .action-button:hover {
+        background-color: #fff;
+        transform: scale(1.1);
+    }
+    
+    .remove-button {
+        color: #e74c3c;
+    }
+    
+    .cross-icon {
+        font-size: 20px;
+        line-height: 1;
+        font-weight: 300;
+        color: #e74c3c;
+        display: block;
+        margin-top: -2px;
+    }
+    
+    .remove-button:hover {
+        background-color: #e74c3c;
+    }
+    
+    .remove-button:hover .cross-icon {
+        color: #fff;
+    }
+    
+    .product-image {
+        height: 300px;
+        overflow: hidden;
+    }
+    
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+    
+    .wishlist-card:hover .product-image img {
+        transform: scale(1.05);
+    }
+    
+    .product-info {
+        padding: 25px;
+    }
+    
+    .product-name {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 10px;
+        line-height: 1.4;
+        color: #222;
+    }
+    
+    .product-meta {
+        display: flex;
+        margin-bottom: 15px;
+        font-size: 13px;
+        color: #888;
+    }
+    
+    .product-category {
+        margin-right: 15px;
+        position: relative;
+    }
+    
+    .product-category:after {
+        content: '';
+        position: absolute;
+        right: -8px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        background-color: #ddd;
+    }
+    
+    .product-price {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #222;
+    }
+    
+    .add-cart-btn {
+        width: 100%;
+        padding: 12px 0;
+        background-color: #222;
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .add-cart-btn:hover {
+        background-color: #000;
+    }
+    
+    /* Empty state styling */
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+    }
+    
+    .empty-illustration {
+        margin-bottom: 25px;
+    }
+    
+    .empty-state h2 {
+        font-size: 28px;
+        font-weight: 300;
+        margin-bottom: 10px;
+        color: #222;
+    }
+    
+    .empty-state p {
+        font-size: 16px;
+        color: #888;
+        max-width: 400px;
+        margin: 0 auto 30px;
+    }
+    
+    .shop-now-btn {
+        display: inline-block;
+        padding: 14px 32px;
+        background-color: #222;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 3px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .shop-now-btn:hover {
+        background-color: #000;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.size-option {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.size-option.selected {
+    background-color: #222;
+    color: white;
+    border-color: #222;
+}
+
+#confirmSizeBtn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background-color: #222;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.pagination-container {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    display: flex;
+    gap: 8px;
+}
+
+.pagination-link {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.3s;
+}
+
+.pagination-link:hover {
+    background-color: #f5f5f5;
+}
+
+.pagination-link.active {
+    background-color: #222;
+    color: white;
+    border-color: #222;
+}
+    /* Sweet Alert custom styles */
+    .swal-title {
+        font-weight: 400 !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    .swal-text {
+        font-weight: 300 !important;
+    }
+    
+   
+    @media (max-width: 768px) {
+        .wishlist-title {
+            font-size: 28px;
+        }
+        
+        .wishlist-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .product-image {
+            height: 240px;
+        }
+    }
+
+
+</style>
+<main class="main">
+ 
+    <div class="wishlist-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="breadcrumb-minimal">
+                    <a href="/" rel="nofollow">Home</a>
+                    <span class="separator">/</span>
+                    <a href="/shop">Shop</a>
+                    <span class="separator">/</span>
+                    <span class="current">Wishlist</span>
+                </div>
+                <h1 class="wishlist-title">My Wishlist</h1>
+            </div>
+        </div>
+    </div>
+
+    <section class="wishlist-gallery">
+        <div class="container">
+            <%if(wishlist.length>0){%>
+                <div class="wishlist-grid">
+                    <%for(let i = 0; i < wishlist.length; i++){%>
+                        <div class="wishlist-card" data-product-id="<%= wishlist[i].productId._id %>">
+                            <div class="card-actions">
+                                <button class="action-button remove-button" onclick="removeFromWishlist('<%= wishlist[i].productId._id %>')">
+                                    <span class="cross-icon">×</span>
+                                </button>
+                            </div>
+                            
+                            <div class="product-image">
+                                <img src="/uploads/product-images/<%= wishlist[i].productId.productImage[0]%>" alt="<%= wishlist[i].productId.productName %>">
+                            </div>
+                            
+                            <div class="product-info">
+                                <h3 class="product-name"><%= wishlist[i].productId.productName %></h3>
+                                <div class="product-meta">
+                                    <span class="product-category"><%= wishlist[i].productId.category.name %></span>
+                                    <span class="product-brand"><%= wishlist[i].productId.brand %></span>
+                                </div>
+                                <div class="product-price">₹<%= wishlist[i].productId.salePrice %></div>
+                                <!-- <button class="add-cart-btn" onclick="addToCart('<%= wishlist[i].productId._id %>')">
+                                    Add to Cart
+                                </button> -->
+                                <button class="add-cart-btn" onclick="showSizeModal('<%= wishlist[i].productId._id %>', ['S', 'M', 'L', 'XL', 'XXL'])">
+                                    Add to Cart
+                                </button>
+                                
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            <%} else {%>
+                <div class="empty-state">
+                    <div class="empty-illustration">
+                        <svg width="120" height="120" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.28 2 8.5C2 5.42 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.42 22 8.5C22 12.28 18.6 15.36 13.45 20.04L12 21.35Z" fill="#ddd"/>
+                        </svg>
+                    </div>
+                    <h2>Your wishlist is empty</h2>
+                    <p>Save your favorite items to keep track of them</p>
+                    <a href="/shop" class="shop-now-btn">Discover Products</a>
+                </div>
+            <%}%>
+        </div>
+    </section>
+
+
+
+    <div id="sizeModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2>Select Size</h2>
+            <div id="sizeOptions"></div>
+            <button id="confirmSizeBtn">Add to Cart</button>
+        </div>
+    </div>
+
+
+
+        <!--  pagination -->
+        <% if(wishlist.length > 0) { %>
+            <div class="pagination-container">
+                <div class="pagination">
+                    <% if(currentPage > 1) { %>
+                        <a href="/wishlist?page=<%= currentPage - 1 %>" class="pagination-link">Previous</a>
+                    <% } %>
+                    <% for(let i = 1; i <= totalPages; i++) { %>
+                        <a href="/wishlist?page=<%= i %>" 
+                           class="pagination-link <%= currentPage === i ? 'active' : '' %>">
+                            <%= i %>
+                        </a>
+                    <% } %>
+                    <% if(currentPage < totalPages) { %>
+                        <a href="/wishlist?page=<%= currentPage + 1 %>" class="pagination-link">Next</a>
+                    <% } %>
+                </div>
+            </div>
+        <% } %>
+    
+</main>
+<%- include("../../views/partials/user/footer") %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  
+  let selectedSize = null;
+let currentProductId = null;
+
+function showSizeModal(productId, sizes) {
+    currentProductId = productId;
+    selectedSize = null;
+    const sizeOptionsContainer = document.getElementById('sizeOptions');
+    sizeOptionsContainer.innerHTML = '';
+
+    sizes.forEach(size => {
+        const sizeElement = document.createElement('div');
+        sizeElement.classList.add('size-option');
+        sizeElement.textContent = size;
+        sizeElement.onclick = () => {
+            document.querySelectorAll('.size-option').forEach(el => el.classList.remove('selected'));
+            sizeElement.classList.add('selected');
+            selectedSize = size;
+        };
+        sizeOptionsContainer.appendChild(sizeElement);
+    });
+
+    document.getElementById('sizeModal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('sizeModal').style.display = 'none';
+}
+
+// document.getElementById('confirmSizeBtn').addEventListener('click', function() {
+//     if (!selectedSize) {
+//         Swal.fire('Please select a size');
+//         return;
+//     }
+
+//     fetch('/add-to-cart', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ 
+//             productId: currentProductId, 
+//             size: selectedSize 
+//         })
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         if (data.success) {
+//             Swal.fire({
+//                 title: 'Added to Cart',
+//                 text: 'Item successfully added to your cart',
+//                 icon: 'success',
+//                 showConfirmButton: false,
+//                 timer: 1500
+//             });
+//             closeModal();
+//         }
+//     })
+//     .catch(error => {
+//         console.error('Error:', error);
+//         Swal.fire({
+//             title: 'Error',
+//             text: 'Failed to add item to cart',
+//             icon: 'error'
+//         });
+//     });
+// });
+
+document.getElementById('confirmSizeBtn').addEventListener('click', function() {
+    if (!selectedSize) {
+        Swal.fire('Please select a size');
+        return;
+    }
+
+
+fetch('/add-to-cart', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+        productId: currentProductId, 
+        size: selectedSize 
+    })
+})
+.then(response => response.json())
+.then(data => {
+    console.log('Server response:', data);
+
+    if (data.success) {
+       
+        return fetch(`/removeFromWishlist/${currentProductId}`, { method: 'POST' });
+    } else {
+      
+        Swal.fire({
+            title: 'Out of Stock',
+            text: data.message, 
+            icon: 'warning'
+        });
+        throw new Error(data.message); 
+    }
+})
+.then(response => {
+    if (response.ok) {
+        Swal.fire({
+            title: 'Added to Cart',
+            text: 'Item successfully added to your cart',
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 1500
+        });
+
+       
+        const card = document.querySelector(`[data-product-id="${currentProductId}"]`);
+        if (card) card.remove();
+        closeModal();
+
+        
+        if (document.querySelectorAll('.wishlist-card').length === 0) {
+            window.location.reload();
+        }
+        
+    }
+})
+.catch(error => {
+    console.error('Error:', error);
+});
+
+
+
+});
+
+
+
+ 
+function removeFromWishlist(productId) {
+    Swal.fire({
+        title: 'Remove item',
+        text: 'Are you sure you want to remove this item?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Remove',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/removeFromWishlist/${productId}`, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (response.ok) {
+                    const card = document.querySelector(`[data-product-id="${productId}"]`);
+                    if (card) card.remove();
+
+                    const remainingItems = document.querySelectorAll('.wishlist-card').length;
+                    const currentPage = parseInt(new URLSearchParams(window.location.search).get('page')) || 1;
+                    const limit = 3; 
+                    const totalPages = Math.ceil(remainingItems / limit);
+
+                    if (remainingItems === 0) {
+                        window.location.href = '/wishlist?page=1'; 
+                    } else if (currentPage > totalPages) {
+                       
+                        window.location.href = `/wishlist?page=${totalPages}`;
+                    }
+                   
+                }
+            })
+            .catch(error => {
+                console.error('Error removing from wishlist:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Failed to remove item from wishlist',
+                    icon: 'error'
+                });
+            });
+        }
+    });
+}
+
+
+</script>

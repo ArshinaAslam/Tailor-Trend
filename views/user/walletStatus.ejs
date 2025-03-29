@@ -1,0 +1,309 @@
+<%- include("../../views/partials/user/header") %>
+
+<style>
+ 
+  .main {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    min-height: 100vh;
+  }
+  
+  .modern-card {
+    border-radius: 20px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+  }
+  
+  .card-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 1.5rem;
+    border-bottom: none;
+  }
+  
+  .custom-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-radius: 12px;
+    background: #f8f9fa;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .custom-input-group:hover {
+    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.1);
+  }
+  
+  .input-group-text {
+    background: transparent;
+    border: none;
+    font-size: 1.25rem;
+    color: #4361ee;
+    padding: 0 1rem;
+  }
+  
+  .custom-amount-input {
+    background: transparent;
+    border: none;
+    padding: 1rem;
+    font-size: 1.1rem;
+    height: 56px;
+  }
+  
+  .custom-amount-input:focus {
+    box-shadow: none;
+    background: rgba(67, 97, 238, 0.03);
+  }
+  
+  .custom-select-wrapper {
+    position: relative;
+    border-radius: 12px;
+    background: #f8f9fa;
+  }
+  
+  .custom-payment-select {
+    width: 100%;
+    padding: 1rem;
+    height: 56px;
+    border: none;
+    background: transparent;
+    appearance: none;
+    font-size: 1rem;
+    border-radius: 12px;
+  }
+  
+  .select-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #4361ee;
+    pointer-events: none;
+  }
+  
+  .modern-btn {
+    background:  linear-gradient(135deg, var(--primary), var(--primary-dark));;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .modern-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+  }
+  
+  .modern-label {
+    color: #2b2d42;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+    padding: 1rem 2rem;
+    background: rgba(67, 97, 238, 0.1);
+    border-radius: 50px;
+    display: inline-block;
+  }
+  
+  /* Glow Animation */
+  @keyframes glow {
+    0% { box-shadow: 0 0 10px rgba(67, 97, 238, 0.2); }
+    50% { box-shadow: 0 0 20px rgba(67, 97, 238, 0.3); }
+    100% { box-shadow: 0 0 10px rgba(67, 97, 238, 0.2); }
+  }
+  
+  .modern-card {
+    animation: glow 3s infinite alternate;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .modern-label {
+      font-size: 1.25rem;
+      padding: 0.75rem 1.5rem;
+    }
+    
+    .custom-amount-input {
+      height: 48px;
+      font-size: 1rem;
+    }
+    
+    .modern-btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+    }
+  }
+  </style>
+
+
+<main class="main">
+  <div class="breadcrumb-wrap">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="/" rel="nofollow">Home</a>
+        <span></span> Profile <span></span> Wallet Status
+      </div>
+    </div>
+  </div>
+
+  <section class="py-5">
+    <div class="dashboard-container">
+      <%- include("../../views/partials/user/profile-sidebar") %>
+
+      <div class="content-area">
+        <div id="wallet-status">
+          <div class="card modern-card shadow-sm border-0">
+            <div class="card-header">
+              <h5 class="mb-0">Wallet</h5>
+            </div>
+            <div class="card-body py-4">
+              <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-8">
+                  <form id="addMoneyForm" class="p-3">
+                    <div class="text-center mb-4">
+                      <label for="walletAmount" class="h4 fw-semibold modern-label">Current Balance: ₹<%= wallet.balance.toFixed(2) %></label>
+                    </div>
+
+                    <!-- Enter Amount Field -->
+                    <div class="mb-4">
+                      <label for="amount" class="form-label fw-medium">Enter Amount</label>
+                      <div class="custom-input-group">
+                        <span class="input-group-text">₹</span>
+                        <input 
+                          type="number" 
+                          class="form-control custom-amount-input" 
+                          id="amount" 
+                          name="amount" 
+                          placeholder="Enter amount" 
+                          min="1" 
+                          required
+                        >
+                      </div>
+                    </div>
+
+                    <!-- Payment Method Selection -->
+                    <div class="mb-4">
+                      <label for="paymentMethod" class="form-label fw-medium">Payment Method</label>
+                      <div class="custom-select-wrapper">
+                        <select 
+                          class="custom-payment-select" 
+                          id="paymentMethod" 
+                          name="paymentMethod" 
+                          required
+                        >
+                          <option value="razorpay">Razorpay</option>
+                        </select>
+                        <span class="select-icon">▼</span>
+                      </div>
+                    </div>
+
+                    <div class="text-center">
+                      <button type="submit" class="btn btn-success modern-btn w-100">
+                        <i class="fi-rs-wallet me-2"></i> Add Money
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<%- include("../../views/partials/user/footer") %>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  
+document.getElementById('addMoneyForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const amount = document.getElementById('amount').value;
+  const paymentMethod = document.getElementById('paymentMethod').value;
+
+  if (!amount || amount < 100) {
+    Swal.fire('Error', 'Minimum amount is ₹100', 'error');
+    return;
+  }
+
+  try {
+    const response = await fetch('/create-razorpay-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: amount * 100, 
+        walletTopup: true,
+      }),
+      credentials: 'include',
+    });
+
+    const order = await response.json();
+
+    if (!order.key_id || !order.order_id) {
+      throw new Error('Invalid response from server');
+    }
+
+    const options = {
+      key: order.key_id, 
+      amount: order.amount,
+      currency: 'INR',
+      name: 'TAILOR TREND',
+      description: 'Wallet Top-up',
+      order_id: order.order_id,
+      handler: async function (response) {
+        try {
+          const verification = await fetch('/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              payment_id: response.razorpay_payment_id,
+              order_id: response.razorpay_order_id,
+              signature: response.razorpay_signature,
+              amount: amount,
+              walletTopup: true,
+            }),
+            credentials: 'include',
+          });
+
+          const result = await verification.json();
+
+          if (result.success) {
+            Swal.fire('Success', 'Wallet top-up successful!', 'success').then(() => {
+              window.location.reload();
+            });
+          } else {
+            Swal.fire('Error', result.message, 'error');
+          }
+        } catch (error) {
+          Swal.fire('Error', 'Payment verification failed', 'error');
+        }
+      },
+      prefill: {
+        name: '<%= user.name %>',
+        email: '<%= user.email %>',
+        contact: '<%= user.phone %>',
+      },
+      theme: { color: '#4361ee' },
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+  } catch (error) {
+    console.error('Payment Initialization Error:', error);
+    Swal.fire('Error', 'Payment failed to initialize: ' + error.message, 'error');
+  }
+});
+
+</script>

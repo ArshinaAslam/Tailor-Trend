@@ -1,0 +1,293 @@
+<%- include("../partials/admin/header") %>
+<title>Sales Report - Delivered Orders</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+  body {
+    background: linear-gradient(135deg, #f0f2f5 0%, #e9ecef 100%);
+    font-family: 'Poppins', sans-serif;
+    color: #2c3e50;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    padding: 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .report-title {
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #1a202c;
+    text-transform: uppercase;
+  }
+
+  .filter-container {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .filter-btn {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .filter-btn:hover {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  }
+
+  .custom-date-inputs {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .custom-date-inputs input, 
+  .custom-date-inputs select {
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+  }
+
+  .table-container {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.95rem;
+  }
+
+  .data-table th {
+    background: #f8fafc;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    padding: 1.25rem;
+    text-align: left;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  .data-table td {
+    padding: 1.25rem;
+    border-bottom: 1px solid #edf2f7;
+    color: #2d3748;
+  }
+
+  .data-table tbody tr:hover {
+    background: #f1f5f9;
+  }
+
+  .summary-card {
+    background: #f0f9ff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .summary-item {
+    text-align: center;
+  }
+
+  .summary-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e40af;
+  }
+
+  .summary-label {
+    font-size: 0.95rem;
+    color: #4a5568;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .pagination-btn {
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .pagination-btn:disabled {
+    background: #d1d5db;
+    cursor: not-allowed;
+  }
+
+  .pagination-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  }
+
+  .page-info {
+    font-size: 0.95rem;
+    color: #4a5568;
+  }
+
+  .back-btn {
+    padding: 0.75rem 1.5rem;
+    background:#1e40af;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .back-btn:hover {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  }
+  
+</style>
+
+<div class="container">
+  <h3 class="report-title">Sales Report</h3>
+
+  <!-- Filter Container -->
+  <div class="filter-container">
+    <div class="filter-row">
+      <form action="/admin/sales-report" method="get">
+        <div class="custom-date-inputs">
+          <select name="period" id="period-select">
+            <option value="all" <%= period === 'all' ? 'selected' : '' %>>All Time</option>
+            <option value="1day" <%= period === '1day' ? 'selected' : '' %>>Last 24 Hours</option>
+            <option value="1week" <%= period === '1week' ? 'selected' : '' %>>Last 7 Days</option>
+            <option value="1month" <%= period === '1month' ? 'selected' : '' %>>Last 30 Days</option>
+            <option value="custom" <%= period === 'custom' ? 'selected' : '' %>>Custom Range</option>
+          </select>
+          <div id="custom-date-fields" class="<%= period === 'custom' ? 'd-flex' : 'd-none' %>">
+            <input type="date" name="startDate" value="<%= startDate || '' %>" placeholder="Start Date">
+            <input type="date" name="endDate" value="<%= endDate || '' %>" placeholder="End Date">
+          </div>
+          
+
+          <button type="submit" class="filter-btn">
+            <i class="fas fa-filter"></i> Apply Filter
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sales Summary -->
+  <div class="summary-card">
+    <div class="summary-item">
+      <div class="summary-value">₹<%= totalSales.toLocaleString() %></div>
+      <div class="summary-label">Total Revenue</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-value"><%= totalOrderCount.toLocaleString() %></div>
+      <div class="summary-label">Total Orders</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-value"><%= totalDiscount.toLocaleString() %></div>
+      <div class="summary-label">Total Discount</div>
+    </div>
+  </div>
+
+  <!-- Sales Table -->
+  <div class="table-container">
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Order Id</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Items</th>
+            <th>Price</th>
+            <th>Discount</th>
+            <th>Amount</th>
+            <th>Status</th>
+          
+            <th>Payment Method</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% sales.forEach(sale => { %>
+            <tr>
+              <td><%= sale.orderid%></td>
+              <td><%= sale.userId ? sale.userId.name : 'Unknown' %></td>
+              <td><%= sale.createdOn ? new Date(sale.createdOn).toLocaleDateString() : 'N/A' %></td>
+              <td><%=sale.orderitems.length%></td>
+              <td>₹<%= sale.totalPrice ? sale.totalPrice.toLocaleString() : '0' %></td>
+              <td><%=sale.discount%></td>
+              <td>₹<%= sale.finalAmount ? sale.finalAmount.toLocaleString() : '0' %></td>
+              <td><%= sale.status || 'N/A' %></td>
+              
+              <td><%= sale.paymentMethod || 'N/A' %></td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <a href="/admin/sales-report?period=<%= period %>&startDate=<%= startDate %>&endDate=<%= endDate %>&page=<%= currentPage - 1 %>" 
+      class="pagination-btn <%= currentPage <= 1 ? 'disabled' : '' %>">
+      Previous
+    </a>
+   
+    <span class="page-info">Page <%= currentPage %> of <%= totalPages %> </span>
+   
+    <a href="/admin/sales-report?period=<%= period %>&startDate=<%= startDate %>&endDate=<%= endDate %>&page=<%= currentPage + 1 %>" 
+      class="pagination-btn <%= currentPage >= totalPages ? 'disabled' : '' %>">
+      Next
+    </a>
+  </div>
+
+  <button class="back-btn" onclick="window.location.href='/admin/dashboard'">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+  </button>
+</div>
+
+<script>
+  // Dynamic show/hide of custom date fields
+  document.getElementById('period-select').addEventListener('change', function() {
+    const customDateFields = document.getElementById('custom-date-fields');
+    customDateFields.style.display = this.value === 'custom' ? 'flex' : 'none';
+  });
+</script>
+
+<%- include("../partials/admin/footer") %>

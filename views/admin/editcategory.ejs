@@ -56,6 +56,7 @@
   <div class="container">
     <h2 class="text-center">Edit Category</h2>
     <form id="editCategoryForm" method="post" onsubmit="return editFormSubmit(event)">
+      
       <input type="hidden" name="id" value="<%= category._id %>" />
       
       <div class="mb-4">
@@ -80,7 +81,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-  <script>
+  <!-- <script>
     function editFormSubmit(event) {
       event.preventDefault();
       if (!validateForm()) {
@@ -154,7 +155,96 @@
           el.style.display = "none";
       });
     }
-  </script>
+  </script> -->
+
+<script>
+
+function editFormSubmit(event) {
+    event.preventDefault();
+    if (!validateForm()) {
+        return false;
+    }
+    
+    const id = document.querySelector('input[name="id"]').value;
+    const name = document.getElementById("product_name").value.trim();
+    const description = document.getElementById("descriptionId").value.trim();
+
+    fetch(`/admin/editCategory/${id}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, description })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: data.message
+            }).then(() => {
+                window.location.href = "/admin/category";
+            });
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: data.error || "Failed to edit category"
+            });
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: "error",
+            title: "Oops",
+            text: "An unexpected error occurred"
+        });
+    });
+    return false;
+}
+
+function validateForm() {
+    clearErrorMessages();
+    const name = document.getElementById("product_name").value.trim();
+    const description = document.getElementById("descriptionId").value.trim();
+    let isValid = true;
+
+    if (name === "") {
+        displayErrorMessage("name-error", "Please enter a category name");
+        isValid = false;
+    } else if (!/^[a-zA-Z\s]+$/.test(name)) {
+        displayErrorMessage("name-error", "Category name should contain only alphabets and spaces");
+        isValid = false;
+    } else if (name.length > 50) {
+        displayErrorMessage("name-error", "Category name must be less than 50 characters");
+        isValid = false;
+    }
+
+    if (description === "") {
+        displayErrorMessage("description-error", "Please enter a description");
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+
+
+function displayErrorMessage(elementId, message) {
+      const errorElement = document.getElementById(elementId);
+      errorElement.innerText = message;
+      errorElement.style.display = "block";
+    }
+    
+    function clearErrorMessages() {
+      document.querySelectorAll(".error-message").forEach(el => {
+          el.innerText = "";
+          el.style.display = "none";
+      });
+    }
+</script>
+
 </body>
 
 <%- include("../../views/partials/admin/footer") %>

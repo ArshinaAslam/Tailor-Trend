@@ -1,0 +1,162 @@
+<%- include("../../views/partials/admin/header") %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Transactions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-full">
+            <h1 class="text-3xl font-bold text-gray-800 mb-6">Wallet Transactions</h1>
+            
+            <!-- Enhanced Search Bar -->
+            <div class="mb-4">
+                <form action="/admin/wallet-transaction" method="GET" class="flex">
+                    <input 
+                        type="text" 
+                        name="query" 
+                        placeholder="Search by ID, Type or Date" 
+                        value="<%= searchQuery %>"
+                        class="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                    <button 
+                        type="submit" 
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-r-md hover:bg-indigo-700 transition duration-200"
+                    >
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <p class="text-xs text-gray-500 mt-1">
+                    Search tips: Use Transaction ID, Type (credit/debit) or Date 
+                </p>
+            </div>
+            
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+                <div class="p-6">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                                    <th class="py-3 px-4 text-left">Transaction ID</th>
+                                    <th class="py-3 px-4 text-left">Transaction Date</th>
+                                    <th class="py-3 px-4 text-left">User</th>
+                                    <th class="py-3 px-4 text-left">Transaction Type</th>
+                                    <th class="py-3 px-4 text-left">Amount</th>
+                                    <th class="py-3 px-4 text-left">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-600 text-sm font-light">
+                                <% if (transactions && transactions.length > 0) { %>
+                                    <% transactions.forEach(function(transaction) { %>
+                                        <tr class="border-b border-gray-200 hover:bg-gray-50 transition duration-200">
+                                            <td class="py-3 px-4">
+                                                <span class="font-medium"><%= transaction.transactionId %></span>
+
+                                            </td>
+                                            <td class="py-3 px-4">
+                                                <%= new Date(transaction.date).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'short',
+                                                    day: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                    second: '2-digit'
+                                                }) %>
+                                            </td>
+                                            <td class="py-3 px-4">
+                                                <span class="font-medium"><%= transaction.userId.name || 'N/A' %></span>
+                                            </td>
+                                            <td class="py-3 px-4">
+                                                <span class="<%= transaction.type === 'credit' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %> py-1 px-3 rounded-full text-xs">
+                                                    <%= transaction.type.toUpperCase() %>
+                                                </span>
+                                            </td>
+                                            <td class="py-3 px-4">
+                                                <strong class="<%= transaction.type === 'credit' ? 'text-green-600' : 'text-red-600' %>">
+                                                    <%= transaction.type === 'credit' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2) %>
+                                                </strong>
+                                            </td>
+                                            <td class="py-3 px-4">
+                                                <a href="/admin/wallet-transaction/<%= transaction._id %>" class="text-indigo-600 hover:text-indigo-900 transition duration-200 flex items-center">
+                                                    <i class="fas fa-eye mr-2"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="6" class="text-center py-4 text-gray-500">
+                                            No transactions found
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Enhanced Pagination -->
+                    <div class="flex flex-col sm:flex-row justify-between items-center mt-6 px-4 space-y-4 sm:space-y-0">
+                        <div class="text-sm text-gray-600">
+                            Showing 
+                            <span class="font-medium"><%= (currentPage - 1) * 10 + 1 %></span> 
+                            to 
+                            <span class="font-medium"><%= Math.min(currentPage * 10, totalTransactions) %></span> 
+                            of 
+                            <span class="font-medium"><%= totalTransactions %></span> 
+                            transactions
+                        </div>
+                        
+                        <nav aria-label="Pagination" class="flex items-center space-x-2">
+                            <% if (currentPage > 1) { %>
+                                <a href="?page=<%= currentPage - 1 %><%= searchQuery ? '&query=' + encodeURIComponent(searchQuery) : '' %>" class="px-3 py-2 bg-white text-gray-600 hover:bg-gray-50 rounded-md border border-gray-300 transition duration-200">
+                                    <i class="fas fa-chevron-left mr-2"></i>Previous
+                                </a>
+                            <% } %>
+
+                            <div class="flex space-x-2">
+                                <% 
+                                let startPage = Math.max(1, currentPage - 2);
+                                let endPage = Math.min(totalPages, currentPage + 2);
+                                
+                                if (startPage > 1) { %>
+                                    <a href="?page=1<%= searchQuery ? '&query=' + encodeURIComponent(searchQuery) : '' %>" class="px-3 py-2 bg-white text-gray-600 hover:bg-gray-50 rounded-md border border-gray-300 transition duration-200">1</a>
+                                    <% if (startPage > 2) { %>
+                                        <span class="px-3 py-2 text-gray-600">...</span>
+                                    <% }
+                                }
+
+                                for(let i = startPage; i <= endPage; i++) { %>
+                                    <a href="?page=<%= i %><%= searchQuery ? '&query=' + encodeURIComponent(searchQuery) : '' %>" class="px-3 py-2 <%= currentPage === i ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50' %> rounded-md border border-gray-300 transition duration-200">
+                                        <%= i %>
+                                    </a>
+                                <% } %>
+
+                                <% if (endPage < totalPages) { %>
+                                    <% if (endPage < totalPages - 1) { %>
+                                        <span class="px-3 py-2 text-gray-600">...</span>
+                                    <% } %>
+                                    <a href="?page=<%= totalPages %><%= searchQuery ? '&query=' + encodeURIComponent(searchQuery) : '' %>" class="px-3 py-2 bg-white text-gray-600 hover:bg-gray-50 rounded-md border border-gray-300 transition duration-200">
+                                        <%= totalPages %>
+                                    </a>
+                                <% } %>
+                            </div>
+
+                            <% if (currentPage < totalPages) { %>
+                                <a href="?page=<%= currentPage + 1 %><%= searchQuery ? '&query=' + encodeURIComponent(searchQuery) : '' %>" class="px-3 py-2 bg-white text-gray-600 hover:bg-gray-50 rounded-md border border-gray-300 transition duration-200">
+                                    Next<i class="fas fa-chevron-right ml-2"></i>
+                                </a>
+                            <% } %>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<%- include("../../views/partials/admin/footer") %>
