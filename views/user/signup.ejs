@@ -238,6 +238,8 @@
         function phoneValidateChecking() {
             const phoneVal = phone.value;
             const phonePattern = /^[0-9]{10}$/;
+            const allZerosPattern = /^0+$/;
+            const allSameDigitsPattern = /^(\d)\1+$/;
 
             if (phoneVal.trim() === "") {
                 error3.style.display = "block";
@@ -247,7 +249,15 @@
                 error3.style.display = "block";
                 error3.innerHTML = "Enter a valid 10-digit phone number";
                 return false;
-            } else {
+            }else if (allZerosPattern.test(phoneVal)) {
+        error3.style.display = "block";
+        error3.innerHTML = "Phone number cannot be all zeros";
+        return false;
+    } else if (allSameDigitsPattern.test(phoneVal)) {
+        error3.style.display = "block";
+        error3.innerHTML = "Phone number cannot contain all the same digits";
+        return false;
+    }  else {
                 error3.style.display = "none";
                 error3.innerHTML = "";
                 return true;

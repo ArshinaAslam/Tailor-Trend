@@ -194,97 +194,6 @@ const verifyPayment = async (req, res) => {
 };
 
 
-// const verifyPayment = async (req, res) => {
-//   try {
-//     const { payment_id, order_id, signature, mongoOrderId, amount, walletTopup } = req.body;
-//     const userId = req.session.user;
-
-//     const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
-//     hmac.update(order_id + '|' + payment_id);
-//     const generatedSignature = hmac.digest('hex');
-
-//     if (generatedSignature !== signature) {
-//       return res.status(400).json({ success: false, message: 'Invalid signature' });
-//     }
-
-//     if (walletTopup) {
-//         if (!userId) {
-//           return res.status(401).json({ success: false, message: 'User not authenticated' });
-//         }
-
-//         const wallet = await Wallet.findOneAndUpdate(
-//           { userId },
-//           {
-//             $inc: { balance: amount },
-//             $push: {
-//               transactions: {
-//                 type: "credit",
-//                 amount: amount,
-//                 date: new Date(),
-//                 description: "Wallet Top-up"
-//               }
-//             }
-//           },
-//           { new: true, upsert: true }
-//         );
-
-//         return res.json({ success: true, message: 'Wallet top-up successful' });
-//     }
-
-//     let order;
-//     if (mongoOrderId) {
-//         order = await Order.findByIdAndUpdate(
-//           mongoOrderId,
-//           {
-//             paymentId: payment_id,
-//             orderId: order_id,
-//             status: 'Pending',
-//             paymentMethod: 'RAZORPAY'
-//           },
-//           { new: true }
-//         );
-
-//         // Add wallet transaction for the order payment
-//         if (order) {
-//           await Wallet.findOneAndUpdate(
-//             { userId: userId },
-//             { 
-//               $push: {
-//                 transactions: {
-//                   type: 'debit',
-//                   amount: amount / 100, // Razorpay amount is in paise
-//                   description: `Payment for Order #${order._id}`,
-//                   orderId: order._id,
-//                   date: new Date()
-//                 }
-//               }
-//             },
-//             { new: true, upsert: true }
-//           );
-//         }
-//     } else {
-//         order = await Order.findOneAndUpdate(
-//           { orderid: order_id },
-//           {
-//             paymentId: payment_id,
-//             status: 'Pending',
-//             paymentMethod: 'RAZORPAY'
-//           },
-//           { new: true }
-//         );
-//     }
-
-//     if (!order) {
-//       return res.status(404).json({ success: false, message: 'Order not found' });
-//     }
-
-//     res.json({ success: true, message: 'Payment verified successfully' });
-//   } catch (error) {
-//     console.error('Verification Error:', error);
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// };
-
 
 const cleanupOrder = async (req, res) => {
   try {
@@ -308,7 +217,7 @@ const walletPayment = async (req, res) => {
     const userId = req.session.user;
     const { mongoOrderId, amount } = req.body;
 
-    // Check if user is authenticated
+   
     if (!userId) {
       return res.status(401).json({ 
         success: false, 
@@ -316,10 +225,10 @@ const walletPayment = async (req, res) => {
       });
     }
 
-    // Find the user's wallet
+   
     const wallet = await Wallet.findOne({ userId });
 
-    // Check if wallet exists and has sufficient balance
+   
     if (!wallet || wallet.balance < amount) {
       return res.status(400).json({ 
         success: false, 
@@ -327,7 +236,7 @@ const walletPayment = async (req, res) => {
       });
     }
 
-    // Find the order
+    
     const order = await Order.findById(mongoOrderId);
 
     if (!order) {
@@ -337,10 +246,10 @@ const walletPayment = async (req, res) => {
       });
     }
 
-    // Deduct amount from wallet
+    
     wallet.balance -= amount;
     
-    // Add transaction to wallet history
+    
     wallet.transactions.push({
       type: 'debit',
       amount: amount,
@@ -349,12 +258,12 @@ const walletPayment = async (req, res) => {
       orderId: order._id
     });
 
-    // Update order status
+   
     order.paymentMethod = 'WALLET';
     order.status = 'Pending';
     order.paymentId = `wallet_${Date.now()}`;
 
-    // Save wallet and order
+    
     await wallet.save();
     await order.save();
 

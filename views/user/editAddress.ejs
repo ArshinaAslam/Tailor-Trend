@@ -285,6 +285,7 @@ function validateForm() {
 
     
     const phonePattern = /^\d{10}$/;
+    const allSameDigitsPattern = /^(\d)\1+$/;
     const phone = document.getElementById('phone').value.trim();
     const altPhone = document.getElementById('altPhone').value.trim();
 
@@ -304,6 +305,27 @@ function validateForm() {
             icon: 'error'
         });
         isValid = false;
+    }
+
+
+
+    if (phone && allSameDigitsPattern.test(phone)) {
+        Swal.fire({
+            title: 'Error',
+            text: 'Phone number cannot contain all the same digits.',
+            icon: 'error'
+        });
+        return false;
+    }
+
+
+    if (altPhone && allSameDigitsPattern.test(altPhone)) {
+        Swal.fire({
+            title: 'Error',
+            text: 'Alternate phone number cannot contain all the same digits.',
+            icon: 'error'
+        });
+        return false;
     }
 
     if (phone && altPhone && phone === altPhone) {

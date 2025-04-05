@@ -100,6 +100,7 @@ router.delete('/removeCartItem', userAuth, cartController.removeCartItem)
 
 router.get('/checkout',userAuth,cartController.loadCheckout)
 router.post('/apply-coupon',userAuth,cartController.applyCoupon)
+router.post('/remove-coupon',userAuth,cartController.removeCoupon)
 
 
 router.get('/wallet-status',userAuth,walletController.walletStatus)

@@ -51,39 +51,6 @@ const loadCoupon = async (req, res) => {
   }
 };
 
-// const createCoupon = async(req,res)=>{
-//     try {
-//         const data = {
-//             couponName : req.body.couponName,
-//             startDate : new Date(req.body.startDate + "T00:00:00"),
-//             endDate : new Date(req.body.endDate + "T00:00:00"),
-//             offerPrice : parseInt(req.body.offerPrice),
-//             minimumPrice : parseInt(req.body.minimumPrice),
-
-//         }
-
-//         const newCoupon = new Coupon({
-//            name : data.couponName,
-//            createdOn : data.startDate,
-//            expireOn : data.endDate,
-//            offerPrice : data.offerPrice ,
-//            minimumPrice : data.minimumPrice
-
-//         })
-
-//         await newCoupon.save()
-
-//         return res.redirect('/admin/coupon')
-
-        
-//     } catch (error) {
-//         console.error("Error creating coupon:", error); // Log the actual error
-//         return res.status(500).send("Internal Server Error. Check the console for details.");
-        
-
-
-//     }
-// }
 const createCoupon = async (req, res) => {
   try {
       const data = {
@@ -183,42 +150,6 @@ const getEditCoupon = async(req,res)=>{
 }
 
 
-
-// const editCoupon = async (req, res) => {
-//     try {
-//         const couponId = req.body.couponId;
-//         const objId = new mongoose.Types.ObjectId(couponId);
-
-//         const selectedCoupon = await Coupon.findOne({ _id: objId });
-
-//         if (selectedCoupon) {
-//             const startDate = new Date(req.body.startDate);
-//             const endDate = new Date(req.body.endDate);
-
-//            const updatedCoupon = await Coupon.updateOne(
-//                 { _id: objId },  
-//                 {
-//                     $set: {
-//                         name: req.body.couponName,
-//                         createdOn: startDate,
-//                         expireOn: endDate,
-//                         offerPrice: parseInt(req.body.offerPrice),  
-//                         minimumPrice: parseInt(req.body.minimumPrice),
-//                     }
-//                 }
-//             );
-
-//            if(updatedCoupon !== null){
-//             res.send("Coupon updated successfully")
-//            }else{
-//             res.status(500).send("Coupon update failed")
-//            }
-//         } 
-//     } catch (error) {
-//         console.error("Error updating coupon:", error);
-//         return redirect('/pageError')
-//     }
-// };
 
 const editCoupon = async (req, res) => {
   try {

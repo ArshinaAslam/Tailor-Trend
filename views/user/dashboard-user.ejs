@@ -144,7 +144,8 @@
     }
 
     const nameRegex = /^[A-Za-z\s]+$/;
-    const phoneRegex = /^\d{10}$/;
+    const phoneRegex = /^\d{10}$/;   
+    const allSameDigitsPattern = /^(\d)\1+$/;
     
     if (!nameRegex.test(data.name)) {
       Swal.fire({
@@ -163,6 +164,18 @@
       });
       return;
     }
+
+    if (data.phone && allSameDigitsPattern.test(data.phone)) {
+        Swal.fire({
+            title: 'Error',
+            text: 'Phone number cannot contain all the same digits.',
+            icon: 'error'
+        });
+        return false;
+    }
+
+
+
 
     try {
       const response = await fetch('/updateUserDetails', {

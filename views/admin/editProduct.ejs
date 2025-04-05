@@ -433,9 +433,420 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js" integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+ 
+  <!-- <script>
+    function base64ToBlob(base64, mimeType) {
+      const byteCharacters = atob(base64);
+      const byteArrays = [];
+      
+      for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+        const slice = byteCharacters.slice(offset, offset + 512);
+        
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+        
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+      
+      return new Blob(byteArrays, { type: mimeType });
+    }
+    
+    let cropper;
+    
+    const form = document.querySelector('form');
+    
+    form.addEventListener('submit', async(e) => {
+      e.preventDefault();
+      
+      // Validate form before submitting
+      if (!validateForm()) {
+        return;
+      }
+      
+      const productId = '<%= product._id %>';
+      const formData = new FormData();
+      
+      // Collect form data
+      const productName = document.getElementsByName('productName')[0].value;
+      const description = document.getElementById('descriptionid').value;
+      const regularPrice = document.getElementsByName('regularPrice')[0].value;
+      const salePrice = document.getElementsByName('salePrice')[0].value;
+      const color = document.getElementsByName('color')[0].value;
+      const category = document.getElementsByName('category')[0].value;
+      
+      formData.append('productName', productName);
+      formData.append('description', description);
+      formData.append('regularPrice', regularPrice);
+      formData.append('salePrice', salePrice);
+      formData.append('color', color);
+      formData.append('category', category);
+      
+      // Handle sizes
+      const sizeQuantities = [];
+      document.querySelectorAll('input[name^="sizeQuantity"]').forEach(input => {
+        const size = input.name.match(/\[([A-Za-z]+)\]/)[1]; 
+        sizeQuantities.push({
+          size: size,
+          quantity: parseInt(input.value) || 0
+        });
+      });
+      formData.append('sizeQuantities', JSON.stringify(sizeQuantities));
+      
+      // Handle new images (if any)
+      const imageInputs = document.querySelectorAll('input[name="images"]');
+      imageInputs.forEach(input => {
+        formData.append('images', input.value);
+      });
+      
+      // Handle edited images
+      const editedImageInputs = document.querySelectorAll('input[name="editedImages"]');
+      editedImageInputs.forEach(input => {
+        formData.append('editedImages', input.value);
+      });
+      
+      // Handle edited image positions
+      const positionInputs = document.querySelectorAll('input[name="editedImagePositions"]');
+      positionInputs.forEach(input => {
+        formData.append('editedImagePositions', input.value);
+      });
+      
+      // Handle removed images
+      const removedImageInputs = document.querySelectorAll('input[name="removeImages"]');
+      removedImageInputs.forEach(input => {
+        formData.append('removeImages', input.value);
+      });
+      
+      try {
+        const response = await fetch(`/admin/editProduct/${productId}`, {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Server responded with status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        if (data.success) {
+          Swal.fire({
+            title: "Success!",
+            text: "Product updated successfully!",
+            icon: "success",
+            confirmButtonText: "OK"
+          }).then(() => {
+            window.location.href = '/admin/Products';
+          });
+        } else {
+          Swal.fire({
+            title: "Error!",
+            text: data.message || "An error occurred.",
+            icon: "error",
+            confirmButtonText: "Try Again"
+          });
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+        Swal.fire({
+          title: "Error!",
+          text: `Failed to update the product: ${error.message}`,
+          icon: "error",
+          confirmButtonText: "Try Again"
+        });
+      }
+    });
+    
+    function validateForm() {
+      clearErrorMessages();
+      
+      const name = document.getElementsByName('productName')[0].value.trim();
+      const description = document.getElementById('descriptionid').value.trim();
+      const regularPrice = document.getElementsByName('regularPrice')[0].value.trim();
+      const salePrice = document.getElementsByName('salePrice')[0].value.trim();
+      const color = document.getElementsByName('color')[0].value.trim();
+      const category = document.getElementsByName('category')[0].value;
+      const imageContainer = document.getElementById('addedImagesContainer');
+      const sizeInputs = document.querySelectorAll('input[name^="sizeQuantity"]');
+      
+      let sizeSelected = false;
+      let isValid = true;
+      
+      // Validate product name
+      if (name === "") {
+        showErrorMessage('productName-error', 'Product Name is required.');
+        isValid = false;
+      }
+      
+      // Validate description
+      if (description === "") {
+        showErrorMessage('description-error', 'Description cannot be empty.');
+        isValid = false;
+      }
+      
+      // Validate regular price
+      if (regularPrice === "") {
+        showErrorMessage('regularPrice-error', 'Regular price is required.');
+        isValid = false;
+      } else if (isNaN(regularPrice) || parseFloat(regularPrice) <= 0) {
+        showErrorMessage('regularPrice-error', 'Enter a valid price greater than zero.');
+        isValid = false;
+      }
+      
+      // Validate sale price
+      if (salePrice === "") {
+        showErrorMessage('salePrice-error', 'Sale price is required.');
+        isValid = false;
+      } else if (isNaN(salePrice) || parseFloat(salePrice) < 0) {
+        showErrorMessage('salePrice-error', 'Enter a valid sale price (can be zero).');
+        isValid = false;
+      } else if (parseFloat(salePrice) > parseFloat(regularPrice)) {
+        showErrorMessage('salePrice-error', 'Sale price cannot be greater than the regular price.');
+        isValid = false;
+      }
+      
+      // Validate color
+      if (color === "") {
+        showErrorMessage('color-error', 'Color is required.');
+        isValid = false;
+      }
+      
+      // Validate category
+      if (category === "") {
+        showErrorMessage('category-error', 'Please select a category.');
+        isValid = false;
+      }
+      
+      // Validate images - ensure at least three images are present
+      // Count visible thumbnails (not hidden by removeImage function)
+      const visibleThumbnails = Array.from(imageContainer.children).filter(
+        child => child.style.display !== 'none'
+      ).length;
+      
+      if (visibleThumbnails < 3) {
+        showErrorMessage('image-error', 'Please upload at least three images.');
+        isValid = false;
+      }
+      
+      // Validate sizes - ensure at least one size has quantity > 0
+      sizeInputs.forEach(input => {
+        if (input.value.trim() !== "" && parseInt(input.value) > 0) {
+          sizeSelected = true;
+        }
+      });
+      
+      if (!sizeSelected) {
+        showErrorMessage('size-error', 'Please enter quantity for at least one size.');
+        isValid = false;
+      }
+      
+      return isValid;
+    }
+    
+    function showErrorMessage(elementId, message) {
+      const errorElement = document.getElementById(elementId);
+      if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.display = 'block';
+      }
+    }
+    
+    function clearErrorMessages() {
+      const errorElements = document.getElementsByClassName('error-message');
+      Array.from(errorElements).forEach(element => {
+        element.textContent = '';
+        element.style.display = 'none';
+      });
+    }
+    
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          showCropper(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    function removeImage(index) {
+      const thumbnail = document.getElementById(`thumbnail-${index}`);
+      if (thumbnail) {
+        const imgSrc = thumbnail.querySelector('img').src;
+        const filename = imgSrc.split('/').pop(); 
+        
+        // Hide the thumbnail visually
+        thumbnail.style.display = 'none';
+        
+        // Remove any existing inputs for this image to avoid duplicates
+        document.querySelectorAll(`input[name="removeImages"][value="${filename}"]`).forEach(el => el.remove());
+        
+        // Store the original image filename to remove it on the server
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'removeImages';
+        hiddenInput.value = filename;
+        document.forms[0].appendChild(hiddenInput);
+        
+        // Also remove any existingImages input for this thumbnail
+        const existingImageInput = thumbnail.querySelector('input[name="existingImages"]');
+        if (existingImageInput) {
+          existingImageInput.remove();
+        }
+        
+        // Also clear any edited images for this index
+        document.querySelectorAll(`input[name="editedImages"][data-index="${index}"]`).forEach(el => el.remove());
+        document.querySelectorAll(`input[name="editedImagePositions"][value="${index}"]`).forEach(el => el.remove());
+      }
+    }
+    
+    function editImage(imageSrc, index) {
+      showCropper(imageSrc, index);
+    }
+    
+    function showCropper(imageSrc, index) {
+      const cropperContainer = document.getElementById('cropperContainer');
+      const saveButton = document.getElementById('saveButton');
+      cropperContainer.style.display = 'block';
+      saveButton.style.display = 'block';
+      document.getElementById('imageToCrop').src = imageSrc;
+      
+      if (cropper) {
+        cropper.destroy();
+      }
+      
+      cropper = new Cropper(document.getElementById('imageToCrop'), {
+        aspectRatio: 1,
+        viewMode: 1,
+        guides: true,
+        background: false,
+        autoCropArea: 1,
+        zoomable: true,
+      });
+      
+      // Clear any previously attached event listeners to avoid duplicates
+      saveButton.replaceWith(saveButton.cloneNode(true));
+      const newSaveButton = document.getElementById('saveButton');
+      
+      newSaveButton.addEventListener('click', function() {
+        const croppedCanvas = cropper.getCroppedCanvas();
+        const resizedCanvas = resizeImage(croppedCanvas, 500, 500);
+        
+        resizedCanvas.toBlob((blob) => {
+          const reader = new FileReader();
+          reader.onloadend = function() {
+            const dataUrl = reader.result;
+            
+            if (index !== undefined) {
+              // Editing existing image
+              const thumbnail = document.getElementById(`thumbnail-${index}`);
+              if (thumbnail) {
+                const img = thumbnail.querySelector('img');
+                const oldSrc = img.src;
+                const oldFilename = oldSrc.split('/').pop();
+                
+                // Update the displayed image
+                img.src = dataUrl;
+                
+                // Remove any existing inputs for this index to avoid duplicates
+                document.querySelectorAll(`input[name="removeImages"][value="${oldFilename}"]`).forEach(el => el.remove());
+                document.querySelectorAll(`input[name="editedImages"][data-index="${index}"]`).forEach(el => el.remove());
+                document.querySelectorAll(`input[name="editedImagePositions"][value="${index}"]`).forEach(el => el.remove());
+                
+                // Store the original image to be removed
+                const removeInput = document.createElement('input');
+                removeInput.type = 'hidden';
+                removeInput.name = 'removeImages';
+                removeInput.value = oldFilename;
+                document.forms[0].appendChild(removeInput);
+                
+                // Add the edited image data
+                const editedInput = document.createElement('input');
+                editedInput.type = 'hidden';
+                editedInput.name = 'editedImages';
+                editedInput.value = dataUrl;
+                editedInput.dataset.index = index; // Add this to track which input corresponds to which index
+                document.forms[0].appendChild(editedInput);
+                
+                // Store the position for server-side processing
+                const positionInput = document.createElement('input');
+                positionInput.type = 'hidden';
+                positionInput.name = 'editedImagePositions';
+                positionInput.value = index;
+                document.forms[0].appendChild(positionInput);
+              }
+            } else {
+              // Adding a new image
+              const hiddenInput = document.createElement('input');
+              hiddenInput.type = 'hidden';
+              hiddenInput.name = 'images';
+              hiddenInput.value = dataUrl;
+              document.forms[0].appendChild(hiddenInput);
+              
+              // Create and add a new thumbnail
+              const newIndex = Date.now();
+              const thumbnail = document.createElement('div');
+              thumbnail.id = `thumbnail-${newIndex}`;
+              thumbnail.classList.add('thumbnail');
+              
+              const thumbImg = document.createElement('img');
+              thumbImg.src = dataUrl;
+              thumbImg.alt = 'thumbnail';
+              
+              const removeIcon = document.createElement('span');
+              removeIcon.classList.add('remove-icon');
+              removeIcon.innerHTML = '&times;';
+              removeIcon.onclick = function() {
+                thumbnail.remove();
+                hiddenInput.remove();
+              };
+              
+              thumbnail.appendChild(thumbImg);
+              thumbnail.appendChild(removeIcon);
+              document.getElementById('addedImagesContainer').appendChild(thumbnail);
+            }
+            
+            // Clean up the cropper
+            cropper.destroy();
+            cropperContainer.style.display = 'none';
+            newSaveButton.style.display = 'none';
+          };
+          
+          reader.readAsDataURL(blob);
+        }, 'image/jpeg', 0.8);
+      });
+    }
+    
+    function resizeImage(canvas, maxWidth, maxHeight) {
+      let width = canvas.width;
+      let height = canvas.height;
+      
+      if (width > height) {
+        if (width > maxWidth) {
+          height *= maxWidth / width;
+          width = maxWidth;
+        }
+      } else {
+        if (height > maxHeight) {
+          width *= maxHeight / height;
+          height = maxHeight;
+        }
+      }
+      
+      const resizedCanvas = document.createElement('canvas');
+      resizedCanvas.width = width;
+      resizedCanvas.height = height;
+      const ctx = resizedCanvas.getContext('2d');
+      ctx.drawImage(canvas, 0, 0, width, height);
+      return resizedCanvas;
+    }
+  </script> -->
+
+
   <script>
-     
-function base64ToBlob(base64, mimeType) {
+    function base64ToBlob(base64, mimeType) {
   const byteCharacters = atob(base64);
   const byteArrays = [];
   
@@ -454,39 +865,29 @@ function base64ToBlob(base64, mimeType) {
   return new Blob(byteArrays, { type: mimeType });
 }
 
+let cropper;
 
+const form = document.querySelector('form');
 
-    let cropper;
-
-   
-   const form = document.querySelector('form')
-   
-  
 form.addEventListener('submit', async(e) => {
   e.preventDefault();
-  const productId = '<%= product._id %>';
   
-  
-  const productName = document.getElementsByName('productName')[0]?.value || '';
-  const description = document.getElementById('descriptionid')?.value || '';
-  const regularPrice = document.getElementsByName('regularPrice')[0]?.value || '';
-  const salePrice = document.getElementsByName('salePrice')[0]?.value || '';
-  const color = document.getElementsByName('color')[0]?.value || '';
-  const category = document.getElementsByName('category')[0]?.value || '';
-  
-  
-  if (!productName || !description || !regularPrice || !salePrice || !color || !category) {
-    Swal.fire({
-      title: "Error!",
-      text: 'All fields are required!',
-      icon: "error",
-      confirmButtonText: "Try Again"
-    });
+ 
+  if (!validateForm()) {
     return;
   }
   
-  
+  const productId = '<%= product._id %>';
   const formData = new FormData();
+  
+  
+  const productName = document.getElementsByName('productName')[0].value;
+  const description = document.getElementById('descriptionid').value;
+  const regularPrice = document.getElementsByName('regularPrice')[0].value;
+  const salePrice = document.getElementsByName('salePrice')[0].value;
+  const color = document.getElementsByName('color')[0].value;
+  const category = document.getElementsByName('category')[0].value;
+  
   formData.append('productName', productName);
   formData.append('description', description);
   formData.append('regularPrice', regularPrice);
@@ -494,7 +895,7 @@ form.addEventListener('submit', async(e) => {
   formData.append('color', color);
   formData.append('category', category);
   
-  
+
   const sizeQuantities = [];
   document.querySelectorAll('input[name^="sizeQuantity"]').forEach(input => {
     const size = input.name.match(/\[([A-Za-z]+)\]/)[1]; 
@@ -506,37 +907,55 @@ form.addEventListener('submit', async(e) => {
   formData.append('sizeQuantities', JSON.stringify(sizeQuantities));
   
   
-  const newImageInputs = document.querySelectorAll('input[name="images"]');
-  newImageInputs.forEach((input) => {
-    if (input.value.startsWith('data:image')) {
-      formData.append('editedImages', input.value);
-    }
+  const imageInputs = document.querySelectorAll('input[name="images"]');
+  imageInputs.forEach(input => {
+    formData.append('images', input.value);
   });
   
-  
+
   const editedImageInputs = document.querySelectorAll('input[name="editedImages"]');
-  editedImageInputs.forEach((input) => {
+  editedImageInputs.forEach(input => {
     formData.append('editedImages', input.value);
   });
   
  
+  const positionInputs = document.querySelectorAll('input[name="editedImagePositions"]');
+  positionInputs.forEach(input => {
+    formData.append('editedImagePositions', input.value);
+  });
+  
+
   const removedImageInputs = document.querySelectorAll('input[name="removeImages"]');
-  removedImageInputs.forEach((input) => {
+  removedImageInputs.forEach(input => {
     formData.append('removeImages', input.value);
   });
   
   try {
-    
     const response = await fetch(`/admin/editProduct/${productId}`, {
       method: 'POST',
-      body: formData  
+      body: formData
     });
     
+    const data = await response.json();
+    
     if (!response.ok) {
-      throw new Error(`Server responded with status: ${response.status}`);
+      if (data.isNameDuplicate) {
+   
+        Swal.fire({
+          title: "Product Name Already Exists",
+          text: "A product with this name already exists. Please use a different name.",
+          icon: "warning",
+          confirmButtonText: "OK"
+        });
+     
+        document.getElementsByName('productName')[0].focus();
+        showErrorMessage('productName-error', 'Product name already exists. Please use a different name.');
+        return;
+      }
+      
+      throw new Error(data.message || `Server responded with status: ${response.status}`);
     }
     
-    const data = await response.json();
     if (data.success) {
       Swal.fire({
         title: "Success!",
@@ -565,9 +984,107 @@ form.addEventListener('submit', async(e) => {
   }
 });
 
+function validateForm() {
+  clearErrorMessages();
+  
+  const name = document.getElementsByName('productName')[0].value.trim();
+  const description = document.getElementById('descriptionid').value.trim();
+  const regularPrice = document.getElementsByName('regularPrice')[0].value.trim();
+  const salePrice = document.getElementsByName('salePrice')[0].value.trim();
+  const color = document.getElementsByName('color')[0].value.trim();
+  const category = document.getElementsByName('category')[0].value;
+  const imageContainer = document.getElementById('addedImagesContainer');
+  const sizeInputs = document.querySelectorAll('input[name^="sizeQuantity"]');
+  
+  let sizeSelected = false;
+  let isValid = true;
 
-   
-   function handleImageUpload(event) {
+  if (name === "") {
+    showErrorMessage('productName-error', 'Product Name is required.');
+    isValid = false;
+  }
+  
+  
+  if (description === "") {
+    showErrorMessage('description-error', 'Description cannot be empty.');
+    isValid = false;
+  }
+  
+  
+  if (regularPrice === "") {
+    showErrorMessage('regularPrice-error', 'Regular price is required.');
+    isValid = false;
+  } else if (isNaN(regularPrice) || parseFloat(regularPrice) <= 0) {
+    showErrorMessage('regularPrice-error', 'Enter a valid price greater than zero.');
+    isValid = false;
+  }
+  
+ 
+  if (salePrice === "") {
+    showErrorMessage('salePrice-error', 'Sale price is required.');
+    isValid = false;
+  } else if (isNaN(salePrice) || parseFloat(salePrice) < 0) {
+    showErrorMessage('salePrice-error', 'Enter a valid sale price (can be zero).');
+    isValid = false;
+  } else if (parseFloat(salePrice) > parseFloat(regularPrice)) {
+    showErrorMessage('salePrice-error', 'Sale price cannot be greater than the regular price.');
+    isValid = false;
+  }
+  
+
+  if (color === "") {
+    showErrorMessage('color-error', 'Color is required.');
+    isValid = false;
+  }
+  
+
+  if (category === "") {
+    showErrorMessage('category-error', 'Please select a category.');
+    isValid = false;
+  }
+  
+ 
+  const visibleThumbnails = Array.from(imageContainer.children).filter(
+    child => child.style.display !== 'none'
+  ).length;
+  
+  if (visibleThumbnails < 3) {
+    showErrorMessage('image-error', 'Please upload at least three images.');
+    isValid = false;
+  }
+  
+  
+  sizeInputs.forEach(input => {
+    if (input.value.trim() !== "" && parseInt(input.value) > 0) {
+      sizeSelected = true;
+    }
+  });
+  
+  if (!sizeSelected) {
+    showErrorMessage('size-error', 'Please enter quantity for at least one size.');
+    isValid = false;
+  }
+  
+  return isValid;
+}
+
+function showErrorMessage(elementId, message) {
+  const errorElement = document.getElementById(elementId);
+  if (errorElement) {
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+  }
+}
+
+function clearErrorMessages() {
+  const errorElements = document.getElementsByClassName('error-message');
+  Array.from(errorElements).forEach(element => {
+    element.textContent = '';
+    element.style.display = 'none';
+  });
+}
+
+function handleImageUpload(event) {
   const file = event.target.files[0];
   if (file) {
     const reader = new FileReader();
@@ -577,127 +1094,35 @@ form.addEventListener('submit', async(e) => {
     reader.readAsDataURL(file);
   }
 }
-   
-    function editImage(imageSrc) {
-      showCropper(imageSrc);
-    }
 
-    
-    function showCropper(imageSrc, index) {
-  const cropperContainer = document.getElementById('cropperContainer');
-  const saveButton = document.getElementById('saveButton');
-  cropperContainer.style.display = 'block';
-  saveButton.style.display = 'block';
-  document.getElementById('imageToCrop').src = imageSrc;
-
-  if (cropper) {
-    cropper.destroy();
-  }
-  cropper = new Cropper(document.getElementById('imageToCrop'), {
-    aspectRatio: 1,
-    viewMode: 1,
-    guides: true,
-    background: false,
-    autoCropArea: 1,
-    zoomable: true,
-  });
-
-  
-  saveButton.addEventListener(
-    'click',
-    function () {
-      const croppedCanvas = cropper.getCroppedCanvas();
-      const resizedCanvas = resizeImage(croppedCanvas, 500, 500);
-      resizedCanvas.toBlob(
-        (blob) => {
-          const reader = new FileReader();
-          reader.onloadend = function () {
-           
-            const file = new File([blob], `image-${index || Date.now()}`.jpg, { type: 'image/jpeg' });
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'images';
-            hiddenInput.value = reader.result;
-            document.forms[0].appendChild(hiddenInput);
-
-            
-            const thumbnail = document.createElement('div');
-            thumbnail.classList.add('thumbnail');
-            const thumbImg = document.createElement('img');
-            thumbImg.src = reader.result;
-            thumbImg.alt = 'thumbnail';
-            const removeIcon = document.createElement('span');
-            removeIcon.classList.add('remove-icon');
-            removeIcon.innerHTML = '&times';
-            removeIcon.addEventListener('click', function () {
-              thumbnail.remove();
-              const inputs = document.getElementsByName('images');
-              for (let i = 0; i < inputs.length; i++) {
-                if (inputs[i].value === reader.result) {
-                  inputs[i].remove();
-                  break;
-                }
-              }
-            });
-            thumbnail.appendChild(thumbImg);
-            thumbnail.appendChild(removeIcon);
-            document.getElementById('addedImagesContainer').appendChild(thumbnail);
-
-            
-            cropper.destroy();
-            cropperContainer.style.display = 'none';
-            saveButton.style.display = 'none';
-          };
-          reader.readAsDataURL(blob);
-        },
-        'image/jpeg',
-        0.8
-      );
-    },
-    { once: true }
-  );
-}
-   
-    function resizeImage(canvas, maxWidth, maxHeight) {
-      let width = canvas.width;
-      let height = canvas.height;
-
-      if (width > height) {
-        if (width > maxWidth) {
-          height *= maxWidth / width;
-          width = maxWidth;
-        }
-      } else {
-        if (height > maxHeight) {
-          width *= maxHeight / height;
-          height = maxHeight;
-        }
-      }
-
-      const resizedCanvas = document.createElement('canvas');
-      resizedCanvas.width = width;
-      resizedCanvas.height = height;
-      const ctx = resizedCanvas.getContext('2d');
-      ctx.drawImage(canvas, 0, 0, width, height);
-      return resizedCanvas;
-    }
-
-
-    function removeImage(index) {
+function removeImage(index) {
   const thumbnail = document.getElementById(`thumbnail-${index}`);
   if (thumbnail) {
     const imgSrc = thumbnail.querySelector('img').src;
     const filename = imgSrc.split('/').pop(); 
-
+    
    
     thumbnail.style.display = 'none';
-
+    
+    
+    document.querySelectorAll(`input[name="removeImages"][value="${filename}"]`).forEach(el => el.remove());
+    
     
     const hiddenInput = document.createElement('input');
     hiddenInput.type = 'hidden';
     hiddenInput.name = 'removeImages';
     hiddenInput.value = filename;
     document.forms[0].appendChild(hiddenInput);
+    
+    
+    const existingImageInput = thumbnail.querySelector('input[name="existingImages"]');
+    if (existingImageInput) {
+      existingImageInput.remove();
+    }
+    
+   
+    document.querySelectorAll(`input[name="editedImages"][data-index="${index}"]`).forEach(el => el.remove());
+    document.querySelectorAll(`input[name="editedImagePositions"][value="${index}"]`).forEach(el => el.remove());
   }
 }
 
@@ -711,10 +1136,11 @@ function showCropper(imageSrc, index) {
   cropperContainer.style.display = 'block';
   saveButton.style.display = 'block';
   document.getElementById('imageToCrop').src = imageSrc;
-
+  
   if (cropper) {
     cropper.destroy();
   }
+  
   cropper = new Cropper(document.getElementById('imageToCrop'), {
     aspectRatio: 1,
     viewMode: 1,
@@ -723,157 +1149,128 @@ function showCropper(imageSrc, index) {
     autoCropArea: 1,
     zoomable: true,
   });
-
   
-  saveButton.addEventListener(
-    'click',
-    function () {
-      const croppedCanvas = cropper.getCroppedCanvas();
-      const resizedCanvas = resizeImage(croppedCanvas, 500, 500);
-      resizedCanvas.toBlob(
-        (blob) => {
-          const reader = new FileReader();
-          reader.onloadend = function () {
-            
-            const thumbnail = document.getElementById(`thumbnail-${index}`);
+ 
+  saveButton.replaceWith(saveButton.cloneNode(true));
+  const newSaveButton = document.getElementById('saveButton');
+  
+  newSaveButton.addEventListener('click', function() {
+    const croppedCanvas = cropper.getCroppedCanvas();
+    const resizedCanvas = resizeImage(croppedCanvas, 500, 500);
+    
+    resizedCanvas.toBlob((blob) => {
+      const reader = new FileReader();
+      reader.onloadend = function() {
+        const dataUrl = reader.result;
+        
+        if (index !== undefined) {
+         
+          const thumbnail = document.getElementById(`thumbnail-${index}`);
+          if (thumbnail) {
             const img = thumbnail.querySelector('img');
-            img.src = reader.result;
-
-           
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'editedImages';
-            hiddenInput.value = reader.result;
-            document.forms[0].appendChild(hiddenInput);
-
+            const oldSrc = img.src;
+            const oldFilename = oldSrc.split('/').pop();
             
-            cropper.destroy();
-            cropperContainer.style.display = 'none';
-            saveButton.style.display = 'none';
-          };
-          reader.readAsDataURL(blob);
-        },
-        'image/jpeg',
-        0.8
-      );
-    },
-    { once: true }
-  );
-}
-
-function showCropper(imageSrc, index) {
-  const cropperContainer = document.getElementById('cropperContainer');
-  const saveButton = document.getElementById('saveButton');
-  cropperContainer.style.display = 'block';
-  saveButton.style.display = 'block';
-  document.getElementById('imageToCrop').src = imageSrc;
-
-  if (cropper) {
-    cropper.destroy();
-  }
-  cropper = new Cropper(document.getElementById('imageToCrop'), {
-    aspectRatio: 1,
-    viewMode: 1,
-    guides: true,
-    background: false,
-    autoCropArea: 1,
-    zoomable: true,
-  });
-
-  
-  saveButton.addEventListener(
-    'click',
-    function () {
-      const croppedCanvas = cropper.getCroppedCanvas();
-      const resizedCanvas = resizeImage(croppedCanvas, 500, 500);
-      resizedCanvas.toBlob(
-        (blob) => {
-          const reader = new FileReader();
-          reader.onloadend = function () {
-            if (index !== undefined) {
-             
-              const thumbnail = document.getElementById(`thumbnail-${index}`);
-              const img = thumbnail.querySelector('img');
-              img.src = reader.result;
-
-             
-              const oldImageInput = thumbnail.querySelector('input[name="existingImages"]');
-              if (oldImageInput) {
-                oldImageInput.remove();
-              }
-
-             
-              const editedImageInput = document.createElement('input');
-              editedImageInput.type = 'hidden';
-              editedImageInput.name = 'editedImages';
-              editedImageInput.value = reader.result;
-              thumbnail.appendChild(editedImageInput);
-            } else {
-             
-              const hiddenInput = document.createElement('input');
-              hiddenInput.type = 'hidden';
-              hiddenInput.name = 'images';
-              hiddenInput.value = reader.result;
-              document.forms[0].appendChild(hiddenInput);
-
-             
-              const thumbnail = document.createElement('div');
-              thumbnail.classList.add('thumbnail');
-              const thumbImg = document.createElement('img');
-              thumbImg.src = reader.result;
-              thumbImg.alt = 'thumbnail';
-              const removeIcon = document.createElement('span');
-              removeIcon.classList.add('remove-icon');
-              removeIcon.innerHTML = '&times';
-              removeIcon.addEventListener('click', function () {
-                thumbnail.remove();
-
-                
-                const inputs = document.getElementsByName('images');
-                for (let i = 0; i < inputs.length; i++) {
-                  if (inputs[i].value === reader.result) {
-                    inputs[i].remove();
-                    break;
-                  }
-                }
-              });
-              thumbnail.appendChild(thumbImg);
-              thumbnail.appendChild(removeIcon);
-              document.getElementById('addedImagesContainer').appendChild(thumbnail);
-            }
-
+            
+            img.src = dataUrl;
+            
            
-            cropper.destroy();
-            cropperContainer.style.display = 'none';
-            saveButton.style.display = 'none';
+            document.querySelectorAll(`input[name="removeImages"][value="${oldFilename}"]`).forEach(el => el.remove());
+            document.querySelectorAll(`input[name="editedImages"][data-index="${index}"]`).forEach(el => el.remove());
+            document.querySelectorAll(`input[name="editedImagePositions"][value="${index}"]`).forEach(el => el.remove());
+            
+          
+            const removeInput = document.createElement('input');
+            removeInput.type = 'hidden';
+            removeInput.name = 'removeImages';
+            removeInput.value = oldFilename;
+            document.forms[0].appendChild(removeInput);
+            
+        
+            const editedInput = document.createElement('input');
+            editedInput.type = 'hidden';
+            editedInput.name = 'editedImages';
+            editedInput.value = dataUrl;
+            editedInput.dataset.index = index; 
+            document.forms[0].appendChild(editedInput);
+            
+
+            const positionInput = document.createElement('input');
+            positionInput.type = 'hidden';
+            positionInput.name = 'editedImagePositions';
+            positionInput.value = index;
+            document.forms[0].appendChild(positionInput);
+          }
+        } else {
+        
+          const hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = 'images';
+          hiddenInput.value = dataUrl;
+          document.forms[0].appendChild(hiddenInput);
+          
+         
+          const newIndex = Date.now();
+          const thumbnail = document.createElement('div');
+          thumbnail.id = `thumbnail-${newIndex}`;
+          thumbnail.classList.add('thumbnail');
+          
+          const thumbImg = document.createElement('img');
+          thumbImg.src = dataUrl;
+          thumbImg.alt = 'thumbnail';
+          
+          const removeIcon = document.createElement('span');
+          removeIcon.classList.add('remove-icon');
+          removeIcon.innerHTML = '&times;';
+          removeIcon.onclick = function() {
+            thumbnail.remove();
+            hiddenInput.remove();
           };
-          reader.readAsDataURL(blob);
-        },
-        'image/jpeg',
-        0.8
-      );
-    },
-    { once: true }
-  );
+          
+          thumbnail.appendChild(thumbImg);
+          thumbnail.appendChild(removeIcon);
+          document.getElementById('addedImagesContainer').appendChild(thumbnail);
+        }
+        
+     
+        cropper.destroy();
+        cropperContainer.style.display = 'none';
+        newSaveButton.style.display = 'none';
+      };
+      
+      reader.readAsDataURL(blob);
+    }, 'image/jpeg', 0.8);
+  });
 }
-   
-    function removeImage(index) {
-  const thumbnail = document.getElementById(`thumbnail-${index}`);
-  if (thumbnail) {
-    const imgSrc = thumbnail.querySelector('img').src;
-    const filename = imgSrc.split('/').pop(); 
 
-   
-    thumbnail.style.display = 'none';
-
-    
-    const hiddenInput = document.createElement('input');
-    hiddenInput.type = 'hidden';
-    hiddenInput.name = 'removeImages';
-    hiddenInput.value = filename;
-    document.forms[0].appendChild(hiddenInput);
+function resizeImage(canvas, maxWidth, maxHeight) {
+  let width = canvas.width;
+  let height = canvas.height;
+  
+  if (width > height) {
+    if (width > maxWidth) {
+      height *= maxWidth / width;
+      width = maxWidth;
+    }
+  } else {
+    if (height > maxHeight) {
+      width *= maxHeight / height;
+      height = maxHeight;
+    }
   }
+  
+  const resizedCanvas = document.createElement('canvas');
+  resizedCanvas.width = width;
+  resizedCanvas.height = height;
+  const ctx = resizedCanvas.getContext('2d');
+  ctx.drawImage(canvas, 0, 0, width, height);
+  return resizedCanvas;
 }
+  </script>
+
+
+
+  <%- include("../../views/partials/admin/footer") %>
 
 
 
@@ -881,98 +1278,3 @@ function showCropper(imageSrc, index) {
 
 
 
-   
-  //   function validateForm() {
-  //     clearErrorMessages();
-  //     const name = document.getElementsByName('productName')[0].value;
-  //     const description = document.getElementById('descriptionid').value;
-  //     // const brand = document.getElementsByName('brand')[0].value;
-  //     const price = document.getElementsByName('regularPrice')[0].value;
-  //     const saleprice = document.getElementsByName('salePrice')[0].value;
-  //     const color = document.getElementsByName('color')[0].value;
-  //     const category = document.getElementsByName('category')[0].value;
-      
-  //     const images = document.getElementsByName('images');
-  //     const existingImages = document.querySelectorAll('.thumbnails-container .thumbnail img')
-  //     const sizeInputs = document.querySelectorAll('input[name^="sizeQuantity"]');
-
-
-
-      
-      
-  //     let isValid = true;
-
-  //     if (name.trim() === "") {
-  //       displayErrorMessage('productName-error', 'Please enter a product name.');
-  //       isValid = false;
-  //     }
-
-  //     if (description.trim() === "") {
-  //       displayErrorMessage('description-error', 'Please enter a product description.');
-  //       isValid = false;
-  //     }
-    
-  //   // if (quantity.trim() === "") {
-  //   //     displayErrorMessage('quantity-error', 'Please enter a quantity.');
-  //   //     isValid = false;
-  //   // } 
-  //   else if (!/^\d+$/.test(quantity.trim()) || parseInt(quantity) < 0) {
-  //       displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
-  //       isValid = false;
-  //   }
-    
-  //   if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) < 0) {
-  //       displayErrorMessage('regularPrice-error', 'Please enter a valid non-negative price.');
-  //       isValid = false;
-  //   }
-    
-  //   if (!/^\d+(\.\d{1,2})?$/.test(saleprice) || parseFloat(saleprice) < 0) {
-  //       displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
-  //       isValid = false;
-  //   }
-    
-  //   if (parseFloat(price) <= parseFloat(saleprice)) {
-  //       displayErrorMessage('regularPrice-error', 'Regular price must be greater than sale price.');
-  //       isValid = false;
-  //   }
-    
-  //   if (color.trim() === "") {
-  //       displayErrorMessage('color-error', 'Please enter a color.');
-  //       isValid = false;
-  //   }
-
-  // sizeInputs.forEach(input => {
-  //       if (input.value.trim() !== "" && parseInt(input.value) > 0) {
-  //           sizeSelected = true;
-  //       }
-  //   });
-
-  //   if (!sizeSelected) {
-  //       showErrorMessage('size-error', 'Please enter quantity for at least one size.');
-  //       isValid = false;
-  //   }
-
-    
-  //   if (existingImages.length === 0 && images.length === 0) {
-  //   displayErrorMessage('image-error', 'Please select at least one image.');
-  //   isValid = false;
-  // }
-
-  //   return isValid;
-  //   }
-    
-  //   function displayErrorMessage(elementId, message) {
-  //   const errorElement = document.getElementById(elementId);
-  //   errorElement.innerText = message;
-  //   errorElement.style.display = 'block';
-  //   }
-    
-  //   function clearErrorMessages() {
-  //   const errorElements = document.getElementsByClassName('error-message');
-  //   Array.from(errorElements).forEach(element => {
-  //       element.innerText = '';
-  //   });
-  //   }
-</script>
-
-<%- include("../../views/partials/admin/footer") %>

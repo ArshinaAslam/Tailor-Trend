@@ -318,15 +318,16 @@ body {
                 <div class="col-md-6">
                     <div class="detail-gallery">
                         <div class="product-image-container" id="product-image-container">
-                            <img id="main-product-image" src="/uploads/product-images/<%= product.productImage[0] %>" alt="<%= product.productName %>">
+                            <img id="main-product-image" src="<%= product.productImage[0] %>" alt="<%= product.productName %>">
+
                             <div id="magnifier" class="magnifier"></div>
                         </div>
                         <div class="slider-nav-thumbnails">
                             <% for (let i = 0; i < product.productImage.length; i++) { %>
                                 <img class="thumbnail <%= i === 0 ? 'active' : '' %>" 
-                                     src="/uploads/product-images/<%= product.productImage[i] %>" 
+                                     src="<%= product.productImage[i] %>" 
                                      alt="thumbnail" 
-                                     data-src="/uploads/product-images/<%= product.productImage[i] %>">
+                                     data-src="<%= product.productImage[i] %>">
                             <% } %>
                         </div>
                     </div>

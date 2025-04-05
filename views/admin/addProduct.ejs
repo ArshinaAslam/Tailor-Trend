@@ -465,7 +465,7 @@
     </section>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js" integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script>
+    <!-- <script>
         let cropper;
   
 
@@ -718,7 +718,7 @@ function validateAndSubmit() {
         Swal.fire({
               icon: 'success',
               title: 'Success!',
-              text: 'Produc added successfully!',
+              text: 'Product added successfully!',
               showConfirmButton: false,
               timer: 2000
             })
@@ -782,5 +782,309 @@ document.getElementById("submitBtn").addEventListener("click", function () {
     }
 });
 
+</script> -->
+   
+<script>
+function validateAndSubmit() {
+    if (validateForm()) {
+        const form = document.forms[0];
+        const formData = new FormData(form);
+
+      
+        for (const pair of formData.entries()) {
+            if (pair[0] === 'sizeQuantity[]') {
+                formData.delete(pair[0]);
+            }
+        }
+
+       
+        const sizeInputs = document.querySelectorAll('input[name^="sizeQuantity"]');
+        sizeInputs.forEach(input => {
+            const size = input.placeholder; 
+            const quantity = input.value.trim();
+            if (quantity !== "" && parseInt(quantity) > 0) {
+                formData.append('sizeQuantity[]', JSON.stringify({ size, quantity: parseInt(quantity) }));
+            }
+        });
+
+       
+        fetch('/admin/AddProducts', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.message || 'Server error occurred');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: data.message,
+                    showConfirmButton: false,
+                    timer: 2000
+                }).then(() => {
+                    window.location.href = '/admin/products'; 
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: data.message || 'Something went wrong'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: error.message || 'Something went wrong. Please try again later.'
+            });
+        });
+    }
+}
+
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+           
+            const cropperContainer = document.getElementById('cropperContainer');
+            const saveButton = document.getElementById('saveButton');
+            cropperContainer.style.display = 'block';
+            saveButton.style.display = 'block';
+            document.getElementById('imageToCrop').src = e.target.result;
+
+           
+            if (cropper) {
+                cropper.destroy();
+            }
+            cropper = new Cropper(document.getElementById('imageToCrop'), {
+                aspectRatio: 1,
+                viewMode: 1,
+                guides: true,
+                background: false,
+                autoCropArea: 1,
+                zoomable: true,
+            });
+
+            
+            document.getElementById('saveButton').addEventListener(
+                'click',
+                function () {
+                    const croppedCanvas = cropper.getCroppedCanvas();
+
+                   
+                    const MAX_WIDTH = 500;
+                    const MAX_HEIGHT = 500;
+                    let width = croppedCanvas.width;
+                    let height = croppedCanvas.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                   
+                    const resizedCanvas = document.createElement('canvas');
+                    resizedCanvas.width = width;
+                    resizedCanvas.height = height;
+                    const ctx = resizedCanvas.getContext('2d');
+                    ctx.drawImage(croppedCanvas, 0, 0, width, height);
+
+                   
+                    resizedCanvas.toBlob(
+                        (blob) => {
+                            const reader2 = new FileReader();
+                            reader2.onloadend = function () {
+                               
+                                const hiddenInput = document.createElement('input');
+                                hiddenInput.type = 'hidden';
+                                hiddenInput.name = 'images';
+                                hiddenInput.value = reader2.result;
+                                document.forms[0].appendChild(hiddenInput);
+
+                              
+                                const thumbnail = document.createElement('div');
+                                thumbnail.classList.add('thumbnail');
+                                const thumbImg = document.createElement('img');
+                                thumbImg.src = reader2.result;
+                                thumbImg.alt = 'thumbnail';
+                                const removeIcon = document.createElement('span');
+                                removeIcon.classList.add('remove-icon');
+                                removeIcon.innerHTML = '&times';
+                                removeIcon.addEventListener('click', function () {
+                                    thumbnail.remove();
+
+                                    
+                                    const inputs = document.getElementsByName('images');
+                                    for (let i = 0; i < inputs.length; i++) {
+                                        if (inputs[i].value === reader2.result) {
+                                            inputs[i].remove();
+                                            break;
+                                        }
+                                    }
+                                });
+                                thumbnail.appendChild(thumbImg);
+                                thumbnail.appendChild(removeIcon);
+                                document.getElementById('addedImagesContainer').appendChild(thumbnail);
+
+                               
+                                cropper.destroy();
+                                cropperContainer.style.display = 'none';
+                                saveButton.style.display = 'none';
+                            };
+                            reader2.readAsDataURL(blob);
+                        },
+                        'image/jpeg',
+                        0.8 
+                    );
+                },
+                { once: true }
+            );
+        };
+        reader.readAsDataURL(file);
+    }
+}
+    
+function validateForm() {
+    clearErrorMessages();
+
+    const name = document.getElementsByName('productName')[0].value.trim();
+    const description = document.getElementById('descriptionid').value.trim();
+    const price = document.getElementsByName('regularPrice')[0].value.trim();
+    const salePrice = document.getElementsByName('salePrice')[0].value.trim();
+    const color = document.getElementsByName('color')[0].value.trim();
+    const category = document.getElementsByName('category')[0].value;
+    const imageContainer = document.getElementById('addedImagesContainer');
+
+    const sizeInputs = document.querySelectorAll('input[name^="sizeQuantity"]');
+
+    let sizeSelected = false;
+    let isValid = true;
+    
+    if (name === "") {
+        showErrorMessage('productName-error', 'Product Name is required.');
+        isValid = false;
+    }
+
+    if (description === "") {
+        showErrorMessage('description-error', 'Description cannot be empty.');
+        isValid = false;
+    }
+
+    if (price === "") {
+        showErrorMessage('regularPrice-error', 'Regular price is required.');
+        isValid = false;
+    } else if (isNaN(price) || price <= 0) {
+        showErrorMessage('regularPrice-error', 'Enter a valid price.');
+        isValid = false;
+    }
+
+    if (salePrice === "") {
+        showErrorMessage('salePrice-error', 'Sale price is required.');
+        isValid = false;
+    } else if (isNaN(salePrice) || salePrice < 0) {
+        showErrorMessage('salePrice-error', 'Enter a valid sale price.');
+        isValid = false;
+    } else if (parseFloat(salePrice) > parseFloat(price)) {
+        showErrorMessage('salePrice-error', 'Sale price cannot be greater than the regular price.');
+        isValid = false;
+    }
+
+    if (color === "") {
+        showErrorMessage('color-error', 'Color is required.');
+        isValid = false;
+    }
+
+    if (category === "") {
+        showErrorMessage('category-error', 'Please select a category.');
+        isValid = false;
+    }
+
+    if (imageContainer.children.length < 3) {
+        showErrorMessage('image-error', 'Please upload at least three image.');
+        isValid = false;
+    }
+
+   
+    sizeInputs.forEach(input => {
+        if (input.value.trim() !== "" && parseInt(input.value) > 0) {
+            sizeSelected = true;
+        }
+    });
+
+    if (!sizeSelected) {
+        showErrorMessage('size-error', 'Please enter quantity for at least one size.');
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function showErrorMessage(elementId, message) {
+    document.getElementById(elementId).textContent = message;
+}
+
+function clearErrorMessages() {
+    const errorMessages = document.querySelectorAll('.error-message');
+    errorMessages.forEach(error => (error.textContent = ''));
+}
+
+function setEmptySizeInputsToZero() {
+    const sizeInputs = document.querySelectorAll('input[name^="sizeQuantity"]');
+    sizeInputs.forEach(input => {
+        if (input.value.trim() === "") {
+            input.value = 0;
+        }
+    });
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById("submitBtn")) {
+        document.getElementById("submitBtn").addEventListener("click", function () {
+            let inputs = document.querySelectorAll(".form-control"); 
+            let errorDiv = document.getElementById("size-error");
+            let isValid = false;
+            let quantities = {};
+
+            inputs.forEach(input => {
+                let size = input.placeholder; 
+                let quantity = input.value.trim();
+                
+                if (quantity !== "" && parseInt(quantity) > 0) {
+                    isValid = true;
+                    quantities[size] = parseInt(quantity);
+                }
+            });
+
+            if (!isValid) {
+                errorDiv.innerText = "Please enter at least one size quantity.";
+            } else {
+                errorDiv.innerText = "";
+                console.log("Selected Sizes & Quantities:", quantities);
+            }
+        });
+    }
+});
+
+
+let cropper;
 </script>
-    <%- include("../../views/partials/admin/footer") %>
+
+<%- include("../../views/partials/admin/footer") %>

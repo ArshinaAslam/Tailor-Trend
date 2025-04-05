@@ -31,7 +31,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
     }
 
     .page-title {
@@ -222,6 +222,71 @@
         font-size: 0.75rem;
         color: var(--text-secondary);
     }
+
+    /* Filter controls */
+    .filters-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .filter-label {
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: black;
+    }
+
+    .status-filter {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        background-color: #f1f1f1;
+        color: #333;
+        font-size: 0.875rem;
+        min-width: 180px;
+    }
+
+    .status-filter:focus {
+        outline: none;
+        border-color: var(--accent-blue);
+    }
+
+    .filter-button {
+        padding: 0.5rem 1rem;
+        background-color: var(--accent-blue);
+        border: none;
+        border-radius: 0.5rem;
+        color: white;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .filter-button:hover {
+        background-color: #0284c7;
+    }
+
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 3rem 0;
+        color: var(--text-secondary);
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state-text {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state-subtext {
+        font-size: 0.875rem;
+    }
 </style>
 
 
@@ -235,6 +300,26 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </div>
+        </div>
+
+        <div class="filters-container">
+            <span class="filter-label">Filter by Status:</span>
+            <form action="/admin/orderList" method="GET" id="statusFilterForm" style="display: flex; gap: 0.5rem;">
+                <select name="status" class="status-filter">
+                    <option value="">All Orders</option>
+                    <option value="pending" <%= status === 'pending' ? 'selected' : '' %>>Pending</option>
+                    <option value="processing" <%= status === 'processing' ? 'selected' : '' %>>Processing</option>
+                    <option value="shipped" <%= status === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                    <option value="delivered" <%= status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                    <option value="cancelled" <%= status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                    <option value="returned" <%= status === 'returned' ? 'selected' : '' %>>Returned</option>
+                    <option value="return-requested" <%= status === 'Return requested' ? 'selected' : '' %>>Return Requested</option>
+                </select>
+                <button type="submit" class="filter-button">Apply Filter</button>
+            </form>
+            <% if (status) { %>
+                <a href="/admin/orderList" class="action-button" style="color: black;">Clear Filter</a>
+            <% } %>
         </div>
 
         <div class="orders-table">
@@ -252,43 +337,55 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% 
-                    let prevOrderId = null;
-                    orders.forEach(function(order, index) { 
-                        const sameAsPrevious = order.orderid === prevOrderId;
-                        prevOrderId = order.orderid;
-                    %>
-                        <tr class="<%= sameAsPrevious ? 'same-order' : '' %>">
-                            <td class="order-id"><%= order.orderid %></td>
-                            <td><%= order.userId.name %></td>
-                            <td>
-                                <div class="product-info">
-                                    <div class="product-name"><%= order.productName %></div>
-                                    <div class="product-details">
-                                        <%= order.quantity %> x 
-                                        <span class="rupee-symbol"><%= order.price.toFixed(2) %></span>
-                                        <% if(order.size) { %> 
-                                            | Size: <%= order.size %> 
-                                        <% } %>
-                                    </div>
+                    <% if (orders.length === 0) { %>
+                        <tr>
+                            <td colspan="8">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📦</div>
+                                    <div class="empty-state-text">No orders found</div>
+                                    <div class="empty-state-subtext">Try changing your filter or search criteria</div>
                                 </div>
                             </td>
-                            <td><%= new Date(order.createdOn).toLocaleDateString('en-IN') %></td>
-                            <td class="rupee-symbol"><%= (order.price * order.quantity).toFixed(2) %></td>
-                            <td>
-                                <% const statusClass = order.itemStatus ? order.itemStatus.toLowerCase().replace(' ', '-') : 'pending'; %>
-                                <span class="status-badge status-<%= statusClass %>">
-                                    <%= order.itemStatus %>
-                                </span>
-                            </td>
-                            <td><%= order.paymentMethod %></td>
-                            <td>
-                                <a href="/admin/orders/<%= order._id %>" class="action-button" style="color: black;">
-                                    View
-                                </a>
-                            </td>
                         </tr>
-                    <% }); %>
+                    <% } else { %>
+                        <% 
+                        let prevOrderId = null;
+                        orders.forEach(function(order, index) { 
+                            const sameAsPrevious = order.orderid === prevOrderId;
+                            prevOrderId = order.orderid;
+                        %>
+                            <tr class="<%= sameAsPrevious ? 'same-order' : '' %>">
+                                <td class="order-id"><%= order.orderid %></td>
+                                <td><%= order.userId.name %></td>
+                                <td>
+                                    <div class="product-info">
+                                        <div class="product-name"><%= order.productName %></div>
+                                        <div class="product-details">
+                                            <%= order.quantity %> x 
+                                            <span class="rupee-symbol"><%= order.price.toFixed(2) %></span>
+                                            <% if(order.size) { %> 
+                                                | Size: <%= order.size %> 
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><%= new Date(order.createdOn).toLocaleDateString('en-IN') %></td>
+                                <td class="rupee-symbol"><%= (order.price * order.quantity).toFixed(2) %></td>
+                                <td>
+                                    <% const statusClass = order.itemStatus ? order.itemStatus.toLowerCase().replace(' ', '-') : 'pending'; %>
+                                    <span class="status-badge status-<%= statusClass %>">
+                                        <%= order.itemStatus %>
+                                    </span>
+                                </td>
+                                <td><%= order.paymentMethod %></td>
+                                <td>
+                                    <a href="/admin/orders/<%= order._id %>" class="action-button" style="color: black;">
+                                        View
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    <% } %>
                 </tbody>
             </table>
         </div>
@@ -298,30 +395,38 @@
     <% if (totalPages > 1) { %>
         <div class="pagination">
             <% if (hasPreviousPage) { %>
-                <a href="/admin/orderList?page=<%= currentPage - 1 %>" class="page-link">Previous</a>
+                <a href="/admin/orderList?page=<%= currentPage - 1 %><%= status ? '&status=' + status : '' %>" class="page-link">Previous</a>
+            <% } else { %>
+                <span class="page-link" style="opacity: 0.5; cursor: not-allowed;">Previous</span>
             <% } %>
-        
-            <% for (let page = 1; page <= totalPages; page++) { %>
-                <a href="/admin/orderList?page=<%= page %>" class="page-link <%= currentPage === page ? 'active' : '' %>">
-                    <%= page %>
-                </a>
-            <% } %>
-        
+            
+            <a href="#" class="page-link active">
+                Page <%= currentPage %> of <%= totalPages %>
+            </a>
+            
             <% if (hasNextPage) { %>
-                <a href="/admin/orderList?page=<%= currentPage + 1 %>" class="page-link">Next</a>
+                <a href="/admin/orderList?page=<%= currentPage + 1 %><%= status ? '&status=' + status : '' %>" class="page-link">Next</a>
+            <% } else { %>
+                <span class="page-link" style="opacity: 0.5; cursor: not-allowed;">Next</span>
             <% } %>
         </div>
-        <% } %>
-
+    <% } %>
     <script>
-        document.querySelector('.search-input').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('tbody tr');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
+        document.addEventListener('DOMContentLoaded', function() {
+        
+            document.querySelector('.search-input').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll('tbody tr');
+                
+                rows.forEach(row => {
+                    if (row.querySelector('.empty-state')) return; // Skip empty state row
+                    
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
             });
+            
+          
         });
     </script>
 </body>

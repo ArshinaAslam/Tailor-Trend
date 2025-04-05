@@ -9,28 +9,167 @@ const mongoose = require("mongoose");
 const env = require("dotenv").config();
 const crypto = require("crypto");
 
-const { v4: uuidv4 } = require("uuid");
-const { log } = require("console");
+// const { v4: uuidv4 } = require("uuid");
+// const { log } = require("console");
+const getOrderListPageAdmin = async (req, res) => {
+  try {
+    const itemsPerPage = 7;
+    const currentPage = parseInt(req.query.page) || 1;
+    const status = req.query.status || null;
+    
+    
+    const aggregationPipeline = [];
+    
+
+    aggregationPipeline.push({ $unwind: "$orderitems" });
+    
+
+    if (status) {
+      let formattedStatus;
+      
+      if (status === 'return-requested') {
+        formattedStatus = 'Return requested';
+      } else {
+        formattedStatus = status.charAt(0).toUpperCase() + status.slice(1);
+      }
+      
+    
+      aggregationPipeline.push({
+        $match: {
+          $or: [
+            { 'orderitems.status': formattedStatus },
+            { 
+              'orderitems.status': { $exists: false }, 
+              'status': formattedStatus 
+            },
+            { 
+              'orderitems.status': null, 
+              'status': formattedStatus 
+            }
+          ]
+        }
+      });
+    }
+    
+   
+    const countPipeline = [...aggregationPipeline, { $count: "total" }];
+    const countResult = await Order.aggregate(countPipeline);
+    const totalOrders = countResult.length > 0 ? countResult[0].total : 0;
+    const totalPages = Math.ceil(totalOrders / itemsPerPage);
+    
+
+    aggregationPipeline.push(
+      { $sort: { createdOn: -1 } },
+      { $skip: (currentPage - 1) * itemsPerPage },
+      { $limit: itemsPerPage }
+    );
+    
+
+    aggregationPipeline.push(
+      { 
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userInfo"
+        }
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "orderitems.productId",
+          foreignField: "_id",
+          as: "productInfo"
+        }
+      },
+      {
+        $addFields: {
+          userInfo: { $arrayElemAt: ["$userInfo", 0] },
+          productInfo: { $arrayElemAt: ["$productInfo", 0] }
+        }
+      }
+    );
+
+  
+    const orders = await Order.aggregate(aggregationPipeline);
+    
+ 
+    const flattenedOrders = orders.map(order => ({
+      _id: order._id,
+      orderid: order.orderid,
+      userId: { 
+        _id: order.userId,
+        name: order.userInfo ? order.userInfo.name : 'Unknown'
+      },
+      createdOn: order.createdOn,
+      finalAmount: order.finalAmount,
+      orderStatus: order.status,
+      paymentMethod: order.paymentMethod,
+      productId: order.orderitems.productId,
+      productName: order.productInfo ? order.productInfo.name : 'Unknown Product',
+      quantity: order.orderitems.quantity,
+      price: order.orderitems.price,
+      size: order.orderitems.size,
+      itemStatus: order.orderitems.status || order.status
+    }));
+
+    res.render("order-list", {
+      orders: flattenedOrders,
+      totalPages,
+      currentPage,
+      hasNextPage: currentPage < totalPages,
+      hasPreviousPage: currentPage > 1,
+      status
+    });
+  } catch (error) {
+    console.error(error);
+    res.redirect("/pageError");
+  }
+};
 
 // const getOrderListPageAdmin = async (req, res) => {
 //   try {
 //     const itemsPerPage = 7;
 //     const currentPage = parseInt(req.query.page) || 1;
 
+    
 //     const totalOrders = await Order.countDocuments();
 //     const totalPages = Math.ceil(totalOrders / itemsPerPage);
 
-//     const orders = await Order.find(
-//       {},
-//       "orderid totalPrice finalAmount status createdOn userId paymentMethod"
-//     )
+    
+//     const orders = await Order.find({})
 //       .populate("userId", "name")
+//       .populate("orderitems.productId", "name") 
 //       .sort({ createdOn: -1 })
 //       .skip((currentPage - 1) * itemsPerPage)
 //       .limit(itemsPerPage);
 
+   
+//     const flattenedOrders = [];
+//     orders.forEach(order => {
+      
+//       order.orderitems.forEach(item => {
+//         flattenedOrders.push({
+//           _id: order._id,
+//           orderid: order.orderid,
+//           userId: order.userId,
+//           createdOn: order.createdOn,
+//           finalAmount: order.finalAmount,
+//           orderStatus: order.status,
+//           paymentMethod: order.paymentMethod,
+         
+//           productId: item.productId,
+//           productName: item.productId.name,
+//           quantity: item.quantity,
+//           price: item.price,
+//           size: item.size,
+//           itemStatus: item.status || order.status 
+//         });
+//       });
+//     });
+
 //     res.render("order-list", {
-//       orders,
+//       orders: flattenedOrders,
 //       totalPages,
 //       currentPage,
 //       hasNextPage: currentPage < totalPages,
@@ -41,60 +180,6 @@ const { log } = require("console");
 //     res.redirect("/pageError");
 //   }
 // };
-
-const getOrderListPageAdmin = async (req, res) => {
-  try {
-    const itemsPerPage = 7;
-    const currentPage = parseInt(req.query.page) || 1;
-
-    
-    const totalOrders = await Order.countDocuments();
-    const totalPages = Math.ceil(totalOrders / itemsPerPage);
-
-    
-    const orders = await Order.find({})
-      .populate("userId", "name")
-      .populate("orderitems.productId", "name") 
-      .sort({ createdOn: -1 })
-      .skip((currentPage - 1) * itemsPerPage)
-      .limit(itemsPerPage);
-
-   
-    const flattenedOrders = [];
-    orders.forEach(order => {
-      
-      order.orderitems.forEach(item => {
-        flattenedOrders.push({
-          _id: order._id,
-          orderid: order.orderid,
-          userId: order.userId,
-          createdOn: order.createdOn,
-          finalAmount: order.finalAmount,
-          orderStatus: order.status,
-          paymentMethod: order.paymentMethod,
-         
-          productId: item.productId,
-          productName: item.productId.name,
-          quantity: item.quantity,
-          price: item.price,
-          size: item.size,
-          itemStatus: item.status || order.status 
-        });
-      });
-    });
-
-    res.render("order-list", {
-      orders: flattenedOrders,
-      totalPages,
-      currentPage,
-      hasNextPage: currentPage < totalPages,
-      hasPreviousPage: currentPage > 1,
-    });
-  } catch (error) {
-    console.error(error);
-    res.redirect("/pageError");
-  }
-};
 
 
 
@@ -146,37 +231,63 @@ if (!findAddress || !findAddress.address) {
   }
 };
 
+
 // const updateOrderStatus = async (req, res) => {
 //   try {
-//     const { status } = req.body;
-
+//     const { status, productId, size } = req.body;
 //     const orderId = req.params.orderId;
 
-//     console.log("recieved body in the updateOrderstatus: ", req.body, orderId);
+   
+    
 //     const order = await Order.findById(orderId);
-//     order.status = status;
-//     order.orderitems.forEach((item) => {
-//       item.status = status;
-//     });
-
-//     const updatedOrder = await Order.findByIdAndUpdate(orderId, order, {
-//       new: true,
-//     });
-
-//     if (!updatedOrder) {
+//     if (!order) {
 //       return res.status(404).json({
 //         success: false,
 //         message: "Order not found",
 //       });
 //     }
 
+    
+//     const itemIndex = order.orderitems.findIndex(
+//       item => 
+//         item.productId.toString() === productId && 
+//         item.size === size
+//     );
+
+//     if (itemIndex === -1) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Item not found in order",
+//       });
+//     }
+
+    
+//     order.orderitems[itemIndex].status = status;
+
+   
+//     const allDelivered = order.orderitems.every(item => item.status === 'Delivered');
+//     const allCancelled = order.orderitems.every(item => item.status === 'Cancelled');
+//     const hasReturnRequested = order.orderitems.some(item => item.status === 'Return requested');
+
+//     if (allDelivered) {
+//       order.status = 'Delivered';
+//     } else if (allCancelled) {
+//       order.status = 'Cancelled';
+//     } else if (hasReturnRequested) {
+//       order.status = 'Return requested';
+//     } else {
+//       order.status = 'Pending'; 
+//     }
+
+//     const updatedOrder = await order.save();
+
 //     res.json({
 //       success: true,
-//       message: "Status updated successfully",
+//       message: "Item status updated successfully",
 //       updatedOrder,
 //     });
 //   } catch (error) {
-//     console.error("Status update error:", error);
+//     console.error("Item status update error:", error);
 //     res.status(500).json({
 //       success: false,
 //       message: error.message || "Server error",
@@ -189,8 +300,6 @@ const updateOrderStatus = async (req, res) => {
   try {
     const { status, productId, size } = req.body;
     const orderId = req.params.orderId;
-
-   
     
     const order = await Order.findById(orderId);
     if (!order) {
@@ -199,14 +308,13 @@ const updateOrderStatus = async (req, res) => {
         message: "Order not found",
       });
     }
-
     
     const itemIndex = order.orderitems.findIndex(
       item => 
-        item.productId.toString() === productId && 
+        item.productId.toString() === productId &&
         item.size === size
     );
-
+    
     if (itemIndex === -1) {
       return res.status(404).json({
         success: false,
@@ -214,14 +322,59 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
-    
+    const previousStatus = order.orderitems[itemIndex].status;
     order.orderitems[itemIndex].status = status;
-
-   
+    
+    if (status === 'Cancelled' && previousStatus !== 'Cancelled' && order.paymentMethod !== 'COD') {
+      const itemToCancel = order.orderitems[itemIndex];
+      const itemOriginalCost = itemToCancel.price * itemToCancel.quantity;
+      const totalItemsCost = order.totalPrice;
+      const remainingCost = totalItemsCost - itemOriginalCost;
+      let priceToRefund = itemOriginalCost;
+      
+      
+      if (order.couponApplied) {
+        if (remainingCost < order.couponMinimumPrice) {
+          priceToRefund = itemOriginalCost - order.discount;
+          order.couponApplied = false;
+        }
+      }
+      
+     
+      const product = await Product.findById(itemToCancel.productId);
+      if (product) {
+        const sizeObj = product.sizes.find(s => s.size === size);
+        if (sizeObj) {
+          sizeObj.quantity += itemToCancel.quantity;
+          await product.save();
+        }
+      }
+      
+      // Process wallet refund
+      const userId = order.userId;
+      const productName = product ? product.productName : "Unknown Product";
+      
+      let wallet = await Wallet.findOne({ userId });
+      if (!wallet) {
+        wallet = new Wallet({ userId, balance: 0, transactions: [] });
+      }
+      
+      wallet.balance += priceToRefund;
+      wallet.transactions.push({
+        amount: priceToRefund,
+        type: "credit",
+        description: `Refund for admin cancelled item: ${productName} (Size: ${size})`,
+        date: new Date(),
+        orderId: order._id
+      });
+      await wallet.save();
+    }
+    
+  
     const allDelivered = order.orderitems.every(item => item.status === 'Delivered');
     const allCancelled = order.orderitems.every(item => item.status === 'Cancelled');
     const hasReturnRequested = order.orderitems.some(item => item.status === 'Return requested');
-
+    
     if (allDelivered) {
       order.status = 'Delivered';
     } else if (allCancelled) {
@@ -229,11 +382,11 @@ const updateOrderStatus = async (req, res) => {
     } else if (hasReturnRequested) {
       order.status = 'Return requested';
     } else {
-      order.status = 'Pending'; // Or whatever default status you prefer
+      order.status = 'Pending';
     }
-
+    
     const updatedOrder = await order.save();
-
+    
     res.json({
       success: true,
       message: "Item status updated successfully",
@@ -247,8 +400,6 @@ const updateOrderStatus = async (req, res) => {
     });
   }
 };
-
-
 
 const handleReturn = async (req, res) => {
   try {
@@ -388,27 +539,7 @@ const handleReturn = async (req, res) => {
     if (allReturned) {
       await Order.updateOne({ _id: orderId }, { $set: { status: "Returned" } });
     }
-    // Update order totals if not all items are returned
-    // if (!allReturned) {
-    //   const remainingDiscount =
-    //     order.couponApplied && remainingItemsCost >= order.couponMinimumPrice
-    //       ? totalDiscount
-    //       : 0;
-    //   await Order.updateOne(
-    //     { _id: orderId },
-    //     {
-    //       $set: {
-    //         totalPrice: remainingItemsCost,
-    //          discount: remainingDiscount,
-    //         finalAmount: order.totalPrice - remainingDiscount,
-    //       },
-    //     }
-    //   );
-    //   console.log("Order totals updated:", {
-    //     totalPrice: remainingItemsCost,
-    //     discount: remainingDiscount,
-    //   });
-    // }
+   
 
     res.json({
       success: true,

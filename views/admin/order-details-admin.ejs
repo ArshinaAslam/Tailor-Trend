@@ -387,7 +387,7 @@ button:active {
                           <td>
                               <select id="status-<%= order._id %>-<%= item.productId._id %>" 
                                       onchange="updateItemStatus('<%= order._id %>', '<%= item.productId._id %>', '<%= item.size %>')" 
-                                      <%= item.status === 'Delivered' || item.status === 'Returned' ? 'disabled' : '' %>>
+                                      <%= item.status === 'Delivered' || item.status === 'Returned' ? 'disabled' : '' || item.status === 'Cancelled' ? 'disabled' : '' %>>
                                   <option value="Pending" <%= item.status === 'Pending' ? 'selected' : '' %>>Pending</option>
                                   <option value="Processing" <%= item.status === 'Processing' ? 'selected' : '' %>>Processing</option>
                                   <option value="Shipped" <%= item.status === 'Shipped' ? 'selected' : '' %>>Shipped</option>

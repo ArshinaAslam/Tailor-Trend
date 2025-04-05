@@ -1306,16 +1306,50 @@ function useCoupon(couponName) {
     cancelButton.style.display = 'block';
 }
 
+// async function cancelCoupon(couponName) {
+//     const couponInput = document.getElementById('inputCoupon');
+//     couponInput.value = "";
+
+//     const useButton = document.getElementById(`useButton_${couponName}`);
+//     const cancelButton = document.getElementById(`cancelButton_${couponName}`);
+
+//     useButton.style.display = 'block';
+//     cancelButton.style.display = 'none';
+//     window.location.reload();
+// }
+
 async function cancelCoupon(couponName) {
-    const couponInput = document.getElementById('inputCoupon');
-    couponInput.value = "";
+    try {
+        const response = await fetch('/remove-coupon', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
 
-    const useButton = document.getElementById(`useButton_${couponName}`);
-    const cancelButton = document.getElementById(`cancelButton_${couponName}`);
-
-    useButton.style.display = 'block';
-    cancelButton.style.display = 'none';
-    window.location.reload();
+        const result = await response.json();
+        
+        if (result.success) {
+            // Update UI without reload
+            document.getElementById('discount').textContent = '₹0';
+            document.getElementById('totalValue').textContent = `₹${result.grandTotal}`;
+            document.getElementById('inputCoupon').value = '';
+            
+            // Toggle buttons
+            const useButton = document.getElementById(`useButton_${couponName}`);
+            const cancelButton = document.getElementById(`cancelButton_${couponName}`);
+            useButton.style.display = 'block';
+            cancelButton.style.display = 'none';
+            
+            // Re-validate payment options
+            validatePaymentOptions();
+            
+            Swal.fire('Success', 'Coupon removed successfully!', 'success');
+        } else {
+            Swal.fire('Error', result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error removing coupon:', error);
+        Swal.fire('Error', 'Failed to remove coupon', 'error');
+    }
 }
 
 async function applyCoupon(grandTotal) {
@@ -1348,6 +1382,8 @@ async function applyCoupon(grandTotal) {
         if (result.success) {
             document.getElementById('discount').textContent = `₹${result.discountAmount}`;
             document.getElementById('totalValue').textContent = `₹${result.updatedTotal}`;
+          
+    validatePaymentOptions();
             
             Swal.fire({
                 title: 'Coupon Applied!',

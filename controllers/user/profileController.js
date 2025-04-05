@@ -210,70 +210,6 @@ const resendOtp = async (req, res) => {
 };
 
 
-// const userProfile = async (req, res) => {
-//     try {
-//       const userId = req.session.user;
-//         if (!userId) {
-//         return res.redirect("/login");
-//       }
-
-
-      
-
-  
-//       const userData = await User.findById(userId);
-
-//     //   const addressPage = parseInt(req.query.page) || 1; 
-//     //     const addressLimit = 2; 
-//     //     const addressSkip = (page - 1) * limit;
-
-//     // const orderPage = parseInt(req.query.orderPage) || 1;
-//     // const orderLimit = 2;
-//     // const orderSkip = (orderPage - 1) * orderLimit;
-
-
-//       const addressData = await Address.findOne({ userId: userId });
-//       const totalAddresses = addressData ? addressData.address.length : 0;
-//       const AddressTotalPages = Math.ceil(totalAddresses / limit);
-//       const paginatedAddresses = addressData ? addressData.address.slice(skip, skip + limit) : [];
-
-
-//       const totalOrders = await Order.countDocuments({ userId: userId });
-//       const orderTotalPages = Math.ceil(totalOrders / orderLimit);
-//       const orders = await Order.find({ userId: userId })
-//         .skip(orderSkip)
-//         .limit(orderLimit)
-//         .populate("address")
-//         .sort({ createdOn: -1 });
-  
-     
-  
-//     //   const orders = await Order.find({ userId: userId })
-//     //     .populate("address")
-//     //     .sort({ createdOn: -1 });
-
-      
-//       res.render("profile", {
-//         user: userData,
-//         //  userAddress: addressData,
-//           userAddress: { address: paginatedAddresses },
-//         orders: orders || [], 
-//         AddressCurrentPage: addressPage,
-//         AddressTotalPages: AddressTotalPages,
-//         orderCurrentPage: orderPage,
-//       orderTotalPages,
-//       currentTab: req.query.tab || 'dashboard'
-    
-//         // currentTab: req.query.tab || 'dashboard' // Add this line
-//       });
-
-      
-//     } catch (error) {
-//       console.error("Error in userProfile:", error);
-//       res.redirect("/pageNotFound");
-//     }
-//   };
-
 
 const userProfile = async (req, res) => {
     try {
@@ -575,18 +511,6 @@ const updatePassword = async(req,res)=>{
 
 
 
-// const getAddAddress = async (req,res)=>{
-//     try {
-//         const user = req.session.user
-//         console.log("userid is ",user)
-
-//         res.render('addAddress',{user:user })
-        
-//     } catch (error) {
-//         res.redirect('/pageNotFound')
-        
-//     }
-// }
 
 const getAddress = async (req, res) => {
     try {
@@ -689,37 +613,6 @@ const addAddress = async(req,res)=>{
 
 
 
-
-
-
-// const getEditAddress = async (req, res) => {
-//     try {
-//         const addressId = req.query.id;
-//         const userId = req.session.user;
-//         console.log('user id is',userId)
-
-       
-//         const userAddress = await Address.findOne({ userId: userId });
-       
-//         if (!userAddress) {
-//             return res.redirect("/pageNotFound");
-//         }
-
-       
-//         const addressData = userAddress.address.find(addr => addr._id.toString() === addressId);
-       
-
-//         if (!addressData) {
-//             return res.redirect("/pageNotFound");
-//         }
-
-       
-//         res.render("editAddress", { address:addressData ,user:userId});
-//     } catch (error) {
-//         console.error("Error in edit address",error);
-//         res.status(500).send("Server Error");
-//     }
-// };
 
 
 

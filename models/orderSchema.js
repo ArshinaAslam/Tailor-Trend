@@ -45,7 +45,11 @@ const orderSchema = new Schema ({
               enum: ["pending", "approved", "rejected"],
               default: "pending"
             }
-          }
+          },
+          cancelRequest: { 
+            reason: { type: String },
+            requestedAt:{ type: Date, default: Date.now }
+        }
        
     }],
     totalPrice : {

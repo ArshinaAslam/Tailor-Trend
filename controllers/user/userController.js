@@ -82,6 +82,7 @@ async function sendVerificationEmail(email,otp){
     }
 }
 
+
 const signup = async (req,res)=>{
    try {
     const {name,phone,email,password,cPassword} = req.body
@@ -275,88 +276,6 @@ const logout = async (req,res)=>{
 
 
 
-// const loadShopping = async (req, res) => {
-//     try {
-//         const user = req.session.user;
-//         const userData = await User.findOne({ _id: user });
-//         if (user && userData.isBlocked) {
-//             req.session.user = undefined;
-//             return res.redirect("/login");
-//         }
-
-//         const categories = await Category.find({ isListed: true });
-//         const brands = await Brand.find({ isBlocked: false });
-
-//         const { 
-//             category: selectedCategory, 
-//             price: selectedPrice, 
-//             sort: sortOrder,
-//             page = 1 
-//         } = req.query;
-    
-        
-      
-
-//         // Build filter query
-//         let query = { isBlocked: false };
-
-//         if (selectedCategory) {
-//             query.category = selectedCategory;
-//         }
-
-//         if (selectedPrice) {
-//             const [minPrice, maxPrice] = selectedPrice.split('-').map(Number);
-//             query.salePrice = { 
-//                 $gte: minPrice, 
-//                 $lte: maxPrice 
-//             };
-//         }
-
-//         let sort = {};
-//         if (sortOrder === 'price_asc') sort.salePrice = 1;
-//         else if (sortOrder === 'price_desc') sort.salePrice = -1;
-//         else sort.createdOn = -1;
-
-        
-//         // const [products, total] = await Promise.all([
-//         //     Product.find(query).sort(sort).skip(skip).limit(limit),
-//         //     Product.countDocuments(query)
-//         // ]);
-
-//         // const totalPages = Math.ceil(total / limit);
-
-//         const limit = 9;
-//         const skip = (page - 1) * limit;
-//         const total = await Product.countDocuments(query);
-//         const products = await Product.find(query)
-//             .sort(sort)
-//             .skip(skip)
-//             .limit(limit)
-//             .lean()
-//             .populate("category")
-
-//         console.log('productssss', products);
-        
-
-
-//         res.render('shopping', {
-//             user: userData,
-//             products,
-//             category: categories.map(category => ({ _id: category._id, name: category.name })),
-//             brand: brands,
-//             currentPage: Number(page),
-//             totalPages: Math.ceil(total / limit),
-//             sort: sortOrder,
-//             selectedCategory,
-//             selectedPrice
-//         });
-
-//     } catch (error) {
-//         console.log("Shopping page not loading", error);
-//         res.redirect('/pageNotFound');
-//     }
-// };
-
 
 const loadShopping = async (req, res) => {
     try {
@@ -412,13 +331,7 @@ const loadShopping = async (req, res) => {
         else if (sortOrder === 'price_desc') sort.salePrice = -1;
         else sort.createdOn = -1;
 
-        
-        // const [products, total] = await Promise.all([
-        //     Product.find(query).sort(sort).skip(skip).limit(limit),
-        //     Product.countDocuments(query)
-        // ]);
-
-        // const totalPages = Math.ceil(total / limit);
+       
 
         const limit = 9;
         const skip = (page - 1) * limit;

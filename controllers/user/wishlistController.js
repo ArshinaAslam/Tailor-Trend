@@ -5,72 +5,21 @@ const Wishlist = require('../../models/wishlistSchema');
 
 
 
-// const getWishlist=async(req,res)=>{
-//     try {
-//        const userId= req.session.user;
-//        const user=await User.findById(userId);
-//        const page = parseInt(req.query.page)||1
-//        const limit = 3
-   
 
-    
-//     let wishlistData = await Wishlist.findOne({ userId })
-//     .populate({
-//         path: 'products.productId',
-//         populate: {
-//             path: 'category'
-//         }
-//     })
-    
-//   console.log("wisjlistDAta is",wishlistData)
-
-//     if (!wishlistData) {
-//         return res.render("wishlist", {
-//             user,
-//             wishlist: [],
-//             totalPages: 0,
-//             currentPage: 1
-//         });
-//     }
-
-//     const totalProducts = wishlistData.products.length
-//     const totalPages = Math.ceil(totalProducts/limit)
-
-//     const startIndex = (page-1)*limit
-//     const endIndex = page*limit
-//     const paginatedProducts = wishlistData.products.slice(startIndex, endIndex);
-    
-    
-   
-
-//        res.render("wishlist",{
-//         user,
-//         //  wishlist:wishlistData.products,
-//         wishlist: paginatedProducts,
-//             totalPages,
-//             currentPage: page
-//        })
-        
-//     } catch (error) {
-//       console.error(error);
-//       res.redirect("/pageNotFound")
-//     }
-//  }
-    
 const getWishlist = async (req, res) => {
     try {
         const userId = req.session.user;
         const user = await User.findById(userId);
         let page = parseInt(req.query.page) || 1;
         const limit = 3;
-
+        
         let wishlistData = await Wishlist.findOne({ userId }).populate({
             path: 'products.productId',
             populate: {
                 path: 'category'
             }
         });
-
+        
         if (!wishlistData || !wishlistData.products.length) {
             return res.render("wishlist", {
                 user,
@@ -79,19 +28,24 @@ const getWishlist = async (req, res) => {
                 currentPage: 1
             });
         }
-
-        const totalProducts = wishlistData.products.length;
+        
+     
+        const availableProducts = wishlistData.products.filter(item => 
+            item.productId && item.productId.isBlocked !== true
+        );
+        
+        const totalProducts = availableProducts.length;
         const totalPages = Math.ceil(totalProducts / limit);
-
-        if (page > totalPages) {
+        
+        if (page > totalPages && totalPages > 0) {
             page = totalPages;
             return res.redirect(`/wishlist?page=${page}`);
         }
-
+        
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
-        const paginatedProducts = wishlistData.products.slice(startIndex, endIndex);
-
+        const paginatedProducts = availableProducts.slice(startIndex, endIndex);
+        
         res.render("wishlist", {
             user,
             wishlist: paginatedProducts,
@@ -103,6 +57,8 @@ const getWishlist = async (req, res) => {
         res.redirect("/pageNotFound");
     }
 };
+
+
 
 const addToWishlist = async (req, res) => {
     try {

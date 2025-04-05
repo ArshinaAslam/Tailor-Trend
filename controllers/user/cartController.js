@@ -85,84 +85,6 @@ const getCartPage = async (req, res) => {
 
 
 
-
-// const addToCart = async (req, res) => {
-//   try {
-//     const { productId, size } = req.body;
-//     const userId = req.session.user;
-
-//     if (!userId) {
-//       return res.status(400).json({ success: false, message: "Login before adding to the cart!" });
-//     }
-
-    
-//     if (!mongoose.Types.ObjectId.isValid(productId)) {
-//       return res.status(400).json({ success: false, message: "Invalid product ID" });
-//     }
-
-//     const product = await Product.findById(new mongoose.Types.ObjectId(productId));
-//     if (!product) {
-//       return res.status(404).json({ success: false, message: "Product not found!" });
-//     }
-
-
-   
-   
-//     const sizeObj = product.sizes.find(s => s.size === size);
-//     if (!sizeObj || sizeObj.quantity <= 0) {
-//       return res.status(400).json({ success: false, message: "Selected size is out of stock" });
-//     }
-
-//     let cart = await Cart.findOne({ userId });
-    
-
-//     if (!cart) {
-//       cart = new Cart({ userId, items: [] });
-//     }
-
-   
-//     const existingItem = cart.items.find(item => 
-//       item.productId.equals(product._id) && item.size === size
-//     );
-
-
-
-//     /
-
-
-//     if (existingItem) {
-      
-//       if (sizeObj.quantity < 1) {
-//         return res.status(400).json({ success: false, message: "Insufficient stock for selected size" });
-//       }
-//       existingItem.quantity += 1;
-//       existingItem.totalPrice = existingItem.quantity * product.salePrice;
-//     } else {
-     
-//       cart.items.push({
-//         productId: product._id,
-//         size: size,
-//         price: product.salePrice,
-//         quantity: 1,
-//         totalPrice: product.salePrice
-//       });
-//     }
-
-    
-//     // sizeObj.quantity -= 1;
-//     // await product.save();
-
-//     await cart.save();
-
-//     return res.status(200).json({ success: true, message: "Product added successfully to the cart!" });
-
-//   } catch (error) {
-//     console.log("Error while adding to cart:", error);
-//     res.status(500).json({ success: false, message: "Internal server error" });
-//   }
-// };
-
-
 const changeQuantity = async (req, res) => {
   try {
     const { productId, count, size } = req.body;
@@ -419,79 +341,6 @@ const loadCheckout = async (req, res) => {
   }
 };
 
-// const loadCheckout = async (req, res) => {
-//   try {
-//     const userId = req.session.user;
-    
-//     if (!userId) {
-//       return res.redirect("/login");
-//     }
-
-    
-//     const cart = await Cart.findOne({ userId }).populate("items.productId");
-    
-
-//     let grandTotal = 0
-
-//     for (var i = 0; i < cart.items.length; i++) {
-//       grandTotal += cart.items[i].totalPrice
-//     }
-
-    
-    
-//     // Get user address
-//     const userAddress = await Address.findOne({ userId });
-    
-//     // Get user details
-//     const user = await User.findById(userId);
-    
-//     // const coupons = await Coupon.find({
-//     //   $or: [
-//     //     { userId: userId },
-//     //     { userId: { $size: 0 } }
-//     //   ],
-//     //   isList: true,
-//     //   expireOn: { $gte: new Date() },
-//     //    minimumPrice: { $lte: cart?.total || 0 } 
-//     // });
-
-
-
-//  const coupons = await Coupon.find({})
-   
-
-//     let offerPrice = 0;
-    
-//     if (cart) {
-
-     
-//       offerPrice = cart.offerPrice || 0;
-      
-//       // Apply coupon discount if exists
-//       if (cart.coupon) {
-//         const appliedCoupon = await Coupon.findById(cart.coupon);
-//         if (appliedCoupon) {
-//           offerPrice = appliedCoupon.offerPrice;
-//         }
-//       }
-//     }
-    
-//     res.render("checkout", {
-//       product: cart?.items || [],
-//       userAddress,
-//       grandTotal,
-//       offerPrice,
-//       user,
-//       Coupon: coupons,
-//       isCart: !!cart
-//     });
-//   } catch (error) {
-//     console.error("Error loading checkout:", error);
-//     res.status(500).send("Internal Server Error");
-//   }
-// };
-
-
 const applyCoupon = async(req,res)=>{
   try {
     const { couponCode, grandTotal } = req.body;
@@ -563,6 +412,35 @@ res.json({
 }
 
 
+const removeCoupon = async(req,res)=>{
+  try {
+    const userId = req.session.user;
+    const cart = await Cart.findOne({ userId });
+
+    if (!cart) {
+        return res.status(400).json({ success: false, message: 'Cart not found' });
+    }
+
+    
+    const grandTotal = cart.items.reduce((acc, item) => acc + item.totalPrice, 0);
+    
+    
+    cart.coupon = undefined;
+    cart.offerPrice = 0;
+    cart.total = grandTotal;
+    await cart.save();
+
+    res.json({
+        success: true,
+        grandTotal,
+        message: 'Coupon removed successfully'
+    });
+} catch (error) {
+    console.error('Error removing coupon:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+}
+}
+
 
 const removeCartItem = async (req, res) => {
 
@@ -607,6 +485,7 @@ const removeCartItem = async (req, res) => {
     removeCartItem,
     loadCheckout,
     applyCoupon,
+    removeCoupon
    
 
   

@@ -285,10 +285,6 @@ switch (selectedPeriod) {
     ]);
 
    
-    // const orderStatusDistribution = stats.map(stat => ({
-    //   status: stat._id || "Unknown",
-    //   count: stat.count
-    // }));
 
 
     const orderStatusDistribution = stats.map(stat => ({
@@ -351,341 +347,6 @@ switch (selectedPeriod) {
 
 
 
-  
-  // const exportExcel = async (req, res) => {
-  //   if (!req.session.admin) {
-  //     return res.status(401).json({ error: 'Unauthorized' });
-  //   }
-  
-  //   try {
-     
-  //     const period = req.query.period || 'all';
-  //     const startDate = req.query.startDate;
-  //     const endDate = req.query.endDate;
-  
-      
-  //     let dateFilter = {};
-  //     if (period !== 'all') {
-  //       const today = new Date();
-  //       let fromDate = new Date();
-  
-  //       switch (period) {
-  //         case '1day':
-  //           fromDate.setDate(today.getDate() - 1);
-  //           break;
-  //         case '1week':
-  //           fromDate.setDate(today.getDate() - 7);
-  //           break;
-  //         case '1month':
-  //           fromDate.setMonth(today.getMonth() - 1);
-  //           break;
-  //       }
-  
-  //       dateFilter = { createdOn: { $gte: fromDate, $lte: today } };
-  //     } else if (startDate && endDate) {
-       
-  //       dateFilter = {
-  //         createdOn: {
-  //           $gte: new Date(startDate),
-  //           $lte: new Date(new Date(endDate).setHours(23, 59, 59))
-  //         }
-  //       };
-  //     }
-  
-     
-  //     dateFilter.status = "Delivered";
-  
-      
-  //     const orders = await Order.find(dateFilter)
-  //       .populate('userId', 'name email')
-  //       .populate('address')
-  //       .populate({
-  //         path: 'orderitems.productId',
-  //         select: 'name category price'
-  //       })
-  //       .sort({ createdOn: -1 });
-  
-      
-  //     const workbook = new ExcelJS.Workbook();
-      
-      
-  //     const summarySheet = workbook.addWorksheet('Orders Summary');
-  //     summarySheet.columns = [
-  //       { header: 'Order ID', key: 'orderId', width: 20 },
-  //       { header: 'Customer', key: 'customer', width: 20 },
-  //       { header: 'Date', key: 'date', width: 15 },
-  //       { header: 'Status', key: 'status', width: 15 },
-  //       { header: 'Total Items', key: 'items', width: 12 },
-  //       { header: 'Total Price', key: 'totalPrice', width: 15 },
-  //       { header: 'Discount', key: 'discount', width: 12 },
-  //       { header: 'Final Amount', key: 'finalAmount', width: 15 },
-  //       { header: 'Payment Method', key: 'paymentMethod', width: 15 }
-  //     ];
-  
-      
-  //     summarySheet.getRow(1).font = { bold: true };
-  //     summarySheet.getRow(1).fill = {
-  //       type: 'pattern',
-  //       pattern: 'solid',
-  //       fgColor: { argb: 'FFE0F0FF' }
-  //     };
-  
-      
-  //     orders.forEach(order => {
-  //       summarySheet.addRow({
-  //         orderId: order.orderid,
-  //         customer: order.userId ? `${order.userId.name} (${order.userId.email})` : 'N/A',
-  //         date: order.createdOn.toLocaleDateString(),
-  //         status: order.status,
-  //         items: order.orderitems.length,
-  //         totalPrice: `₹${order.totalPrice.toFixed(2)}`,
-  //         discount: `₹${order.discount.toFixed(2)}`,
-  //         finalAmount: `₹${order.finalAmount.toFixed(2)}`,
-  //         paymentMethod: order.paymentMethod
-  //       });
-  //     });
-  
-      
-  //     const totalItems = orders.reduce((total, order) => {
-  //       return total + order.orderitems.reduce((sum, item) => sum + (item.quantity || 1), 0);
-  //     }, 0);
-  
-      
-  //     const totalAmount = orders.reduce((sum, order) => sum + order.totalPrice, 0);
-  //     const totalDiscount = orders.reduce((sum, order) => sum + order.discount, 0);
-  //     const totalFinalAmount = orders.reduce((sum, order) => sum + order.finalAmount, 0);
-  
-     
-  //     summarySheet.addRow([]);
-  //     summarySheet.addRow([]);
-      
-      
-  //     const summaryHeadingRow = summarySheet.addRow(['Order Summary']);
-  //     summaryHeadingRow.font = { bold: true, size: 14 };
-  //     summarySheet.addRow([]);
-  
-      
-  //     const summaryHeaderRow = summarySheet.addRow(['Description', 'Value']);
-  //     summaryHeaderRow.font = { bold: true };
-  //     summaryHeaderRow.fill = {
-  //       type: 'pattern',
-  //       pattern: 'solid',
-  //       fgColor: { argb: 'FFE0F0FF' }
-  //     };
-      
-     
-  //     const addSummaryRow = (description, value, isAlternate = false) => {
-  //       const row = summarySheet.addRow([description, value]);
-  //       if (isAlternate) {
-  //         row.fill = {
-  //           type: 'pattern',
-  //           pattern: 'solid',
-  //           fgColor: { argb: 'FFF9F9F9' }
-  //         };
-  //       }
-  //       return row;
-  //     };
-  
-      
-  //     addSummaryRow('Total Delivered Orders', orders.length);
-  //     addSummaryRow('Total Items', totalItems, true);
-  //     addSummaryRow('Total Amount', `₹${totalAmount.toFixed(2)}`);
-  //     addSummaryRow('Total Discount', `₹${totalDiscount.toFixed(2)}`, true);
-  //     addSummaryRow('Total Final Amount', `₹${totalFinalAmount.toFixed(2)}`);
-  
-      
-  //     const summaryStartRow = summarySheet.rowCount - 4;
-  //     const summaryEndRow = summarySheet.rowCount;
-      
-  //     for (let i = summaryStartRow; i <= summaryEndRow; i++) {
-  //       const row = summarySheet.getRow(i);
-       
-  //       row.getCell(1).border = {
-  //         top: {style:'thin'},
-  //         left: {style:'thin'},
-  //         bottom: {style:'thin'},
-  //         right: {style:'thin'}
-  //       };
-  //       row.getCell(2).border = {
-  //         top: {style:'thin'},
-  //         left: {style:'thin'},
-  //         bottom: {style:'thin'},
-  //         right: {style:'thin'}
-  //       };
-  //     }
-  
-      
-  //     const detailsSheet = workbook.addWorksheet('Order Details');
-  //     detailsSheet.columns = [
-  //       { header: 'Order ID', key: 'orderId', width: 20 },
-  //       { header: 'Product', key: 'product', width: 30 },
-  //       { header: 'Size', key: 'size', width: 10 },
-  //       { header: 'Quantity', key: 'quantity', width: 10 },
-  //       { header: 'Price', key: 'price', width: 12 },
-  //       { header: 'Item Status', key: 'status', width: 15 },
-  //       { header: 'Return Status', key: 'returnStatus', width: 15 }
-  //     ];
-  
-      
-  //     detailsSheet.getRow(1).font = { bold: true };
-  //     detailsSheet.getRow(1).fill = {
-  //       type: 'pattern',
-  //       pattern: 'solid',
-  //       fgColor: { argb: 'FFE0F0FF' }
-  //     };
-  
-     
-  //     orders.forEach(order => {
-  //       order.orderitems.forEach(item => {
-  //         detailsSheet.addRow({
-  //           orderId: order.orderid,
-  //           product: item.productId ? item.productId.name : 'N/A',
-  //           size: item.size || 'N/A',
-  //           quantity: item.quantity,
-  //           price: `₹${item.price.toFixed(2)}`,
-  //           status: item.status || order.status,
-  //           returnStatus: item.returnRequest?.status || 'N/A'
-  //         });
-  //       });
-  //     });
-  
-     
-  //     const statsSheet = workbook.addWorksheet('Sales Statistics');
-  //     statsSheet.columns = [
-  //       { header: 'Metric', key: 'metric', width: 25 },
-  //       { header: 'Value', key: 'value', width: 20 }
-  //     ];
-  
-      
-  //     statsSheet.getRow(1).font = { bold: true };
-  //     statsSheet.getRow(1).fill = {
-  //       type: 'pattern',
-  //       pattern: 'solid',
-  //       fgColor: { argb: 'FFE0F0FF' }
-  //     };
-  
-      
-  //     const totalSales = orders.reduce((sum, order) => sum + order.finalAmount, 0);
-  //     const totalOrders = orders.length;
-      
-     
-  //     const totalDiscounts = orders.reduce((sum, order) => sum + order.discount, 0);
-      
-      
-  //     const paymentMethods = {
-  //       'COD': 0,
-  //       'RAZORPAY': 0,
-  //       'WALLET': 0
-  //     };
-      
-  //     orders.forEach(order => {
-  //       if (paymentMethods.hasOwnProperty(order.paymentMethod)) {
-  //         paymentMethods[order.paymentMethod]++;
-  //       }
-  //     });
-  
-     
-  //     statsSheet.addRow({ metric: 'Total Delivered Sales', value: `₹${totalSales.toFixed(2)}` });
-  //     statsSheet.addRow({ metric: 'Total Delivered Orders', value: totalOrders });
-  //     statsSheet.addRow({ metric: 'Total Discounts', value: `₹${totalDiscounts.toFixed(2)}` });
-      
-      
-  //     statsSheet.addRow({ metric: 'Payment Methods', value: '' });
-  //     Object.entries(paymentMethods).forEach(([method, count]) => {
-  //       statsSheet.addRow({ metric: `- ${method}`, value: count });
-  //     });
-  
-      
-  //     const orderSummarySheet = workbook.addWorksheet('Order Summary');
-  //     orderSummarySheet.columns = [
-  //       { header: 'Date', key: 'date', width: 12 },
-  //       { header: 'Total Orders', key: 'totalOrders', width: 12 },
-  //       { header: 'Total Sales', key: 'totalSales', width: 15 },
-  //       { header: 'Average Order Value', key: 'averageOrderValue', width: 15 },
-  //       { header: 'Delivered Orders', key: 'deliveredOrders', width: 15 },
-  //       { header: 'Delivered Amount', key: 'deliveredAmount', width: 15 }
-  //     ];
-  
-      
-  //     orderSummarySheet.getRow(1).font = { bold: true };
-  //     orderSummarySheet.getRow(1).fill = {
-  //       type: 'pattern',
-  //       pattern: 'solid',
-  //       fgColor: { argb: 'FFE0F0FF' }
-  //     };
-  
-     
-  //     const ordersByDate = {};
-  //     orders.forEach(order => {
-  //       const dateKey = order.createdOn.toISOString().split('T')[0];
-        
-  //       if (!ordersByDate[dateKey]) {
-  //         ordersByDate[dateKey] = {
-  //           date: new Date(dateKey).toLocaleDateString(),
-  //           totalOrders: 0,
-  //           totalSales: 0,
-  //           deliveredOrders: 0,
-  //           deliveredAmount: 0
-  //         };
-  //       }
-        
-       
-  //       ordersByDate[dateKey].totalOrders++;
-  //       ordersByDate[dateKey].totalSales += order.finalAmount;
-  //       ordersByDate[dateKey].deliveredOrders++;
-  //       ordersByDate[dateKey].deliveredAmount += order.finalAmount;
-  //     });
-  
-     
-  //     Object.values(ordersByDate).forEach(summary => {
-  //       orderSummarySheet.addRow({
-  //         date: summary.date,
-  //         totalOrders: summary.totalOrders,
-  //         totalSales: `₹${summary.totalSales.toFixed(2)}`,
-  //         averageOrderValue: `₹${(summary.totalSales / summary.totalOrders).toFixed(2)}`,
-  //         deliveredOrders: summary.deliveredOrders,
-  //         deliveredAmount: `₹${summary.deliveredAmount.toFixed(2)}`
-  //       });
-  //     });
-  
-     
-  //     const totalRow = {
-  //       date: 'TOTAL',
-  //       totalOrders: Object.values(ordersByDate).reduce((sum, day) => sum + day.totalOrders, 0),
-  //       totalSales: `₹${Object.values(ordersByDate).reduce((sum, day) => sum + day.totalSales, 0).toFixed(2)}`,
-  //       averageOrderValue: `₹${(Object.values(ordersByDate).reduce((sum, day) => sum + day.totalSales, 0) / 
-  //                         Object.values(ordersByDate).reduce((sum, day) => sum + day.totalOrders, 0)).toFixed(2)}`,
-  //       deliveredOrders: Object.values(ordersByDate).reduce((sum, day) => sum + day.deliveredOrders, 0),
-  //       deliveredAmount: `₹${Object.values(ordersByDate).reduce((sum, day) => sum + day.deliveredAmount, 0).toFixed(2)}`
-  //     };
-  
-     
-  //     const totalRowIndex = orderSummarySheet.rowCount + 1;
-  //     orderSummarySheet.addRow(totalRow);
-  //     orderSummarySheet.getRow(totalRowIndex).font = { bold: true };
-  //     orderSummarySheet.getRow(totalRowIndex).fill = {
-  //       type: 'pattern',
-  //       pattern: 'solid',
-  //       fgColor: { argb: 'FFEEEEEE' }
-  //     };
-  
-      
-  //     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  //     res.setHeader('Content-Disposition', `attachment; filename=Delivered_Orders_Report_${new Date().toISOString().split('T')[0]}.xlsx`);
-  
-    
-  //     await workbook.xlsx.write(res);
-  //     res.end();
-  //   } catch (error) {
-  //     console.error('Error generating Excel report:', error);
-  //     res.status(500).json({ 
-  //       success: false, 
-  //       message: 'Failed to generate Excel report', 
-  //       details: error.message 
-  //     });
-  //   }
-  // };
-
 
   const exportExcel = async (req, res) => {
     if (!req.session.admin) {
@@ -704,7 +365,7 @@ switch (selectedPeriod) {
   
         switch (period) {
           case '1day':
-            // Set to beginning of today instead of yesterday
+        
             fromDate = new Date(today);
             fromDate.setHours(0, 0, 0, 0);
             break;
@@ -1007,7 +668,7 @@ switch (selectedPeriod) {
   
         switch (period) {
           case '1day':
-            // Set to beginning of today instead of yesterday
+          
             fromDate = new Date(today);
             fromDate.setHours(0, 0, 0, 0);
             break;
@@ -1091,7 +752,7 @@ switch (selectedPeriod) {
         };
         doc.fontSize(9).text(`Sales Report Period: ${periodText[period] || period}`, { align: 'left' });
       } else if (startDate && endDate) {
-        doc.fontSize(9).text(`Date Range: ${new Date(startDate).toLocaleDateString()} to ${new Date(endDate).toLocaleDateString()}`, { align: 'left' });
+        // doc.fontSize(9).text(`Date Range: ${new Date(startDate).toLocaleDateString()} to ${new Date(endDate).toLocaleDateString()}`, { align: 'left' });
       } else {
         doc.fontSize(9).text('Sales Report Period: All Time', { align: 'left' });
       }
@@ -1307,10 +968,10 @@ switch (selectedPeriod) {
         page = 1
       } = req.query;
   
-      const limit = 5; // Number of orders per page
+      const limit = 5; 
       let query = { status: 'Delivered' };
   
-      // Date filtering logic
+    
       const now = new Date();
       switch (period) {
         case '1day':
@@ -1336,15 +997,15 @@ switch (selectedPeriod) {
             };
           }
           break;
-        // 'all' case does not modify the query, so all orders are fetched
+        
       }
   
-      // Get total number of delivered orders for pagination
+    
       const totalOrders = await Order.countDocuments(query);
       const totalPages = Math.ceil(totalOrders / limit);
       const currentPage = parseInt(page, 10) || 1;
   
-      // Fetch delivered orders with pagination
+      
       const salesData = await Order.find(query)
         .populate('userId', 'name')
         .populate('address')
@@ -1352,7 +1013,7 @@ switch (selectedPeriod) {
         .limit(limit)
         .sort({ createdOn: -1 });
   
-      // Calculate total sales for the filtered period
+      
       const totalSales = await Order.aggregate([
         { $match: query },
         { $group: { 
@@ -1364,7 +1025,7 @@ switch (selectedPeriod) {
         }
       ]);
   
-      // Render the view with additional data
+      
       res.render('salesReport', {
         sales: salesData,
         period: period || 'all',

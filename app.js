@@ -26,8 +26,8 @@ app.use(session({
 }))
 
 
-// morgan middleware
-// app.use(morgan())
+//morgan middleware
+//  app.use(morgan())
 
 
 app.use(passport.initialize())
@@ -43,7 +43,17 @@ app.use(express.static(path.join(__dirname,"public")))
 app.use('/',userRouter)
 app.use('/admin',adminRouter)
 
-
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    
+    res.status(err.status || 500).json({
+      message: err.message || "An internal server error occurred",
+      success: false,
+    });
+  });
+  
+  
+  
 
 
 app.listen(process.env.PORT,()=>{

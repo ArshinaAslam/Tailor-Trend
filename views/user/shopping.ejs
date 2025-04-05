@@ -512,19 +512,7 @@
           </div>
         </div>
 
-        <div class="filter-section">
-          <div class="filter-title">Brands</div>
-          <div class="category-brand-container">
-            <ul>
-              <%for(let i=0;i<brand.length;i++){%>
-                <li class="filter-item">
-                  <a href="/filter?brand=<%=brand[i]._id%>"><%=brand[i].brandName%></a>
-                </li>
-              <%}%>
-            </ul>
-          </div>
-        </div>
-
+       
         <div class="price-filter">
           <div class="filter-title">Sort by Price</div>
           <form id="price-filter-form">
@@ -570,7 +558,8 @@
             
             <a href="/productDetails?productId=<%=products[i]._id%>">
               <div class="product-image-container">
-                <img src="/uploads/product-images/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>" />
+                <img src="<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>" />
+
               </div>
               <h4><%=products[i].productName%></h4>
               
@@ -715,7 +704,7 @@
       }
     },
     error: function(xhr) {
-      // Handle error responses from the server
+    
       let errorMessage = "Something went wrong. Please try again.";
       if (xhr.responseJSON && xhr.responseJSON.message) {
         errorMessage = xhr.responseJSON.message;

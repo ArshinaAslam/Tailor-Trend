@@ -447,6 +447,9 @@ body {
     </div>
   </div>
 
+
+  
+
   <!-- Sales -->
   <div class="row mb-4" id="sales-orders-overview">
     <% const stats = [
@@ -607,6 +610,7 @@ body {
  
 let salesChartInstance = null;
 let orderStatusChartInstance = null;
+let salesTimeChartInstance = null;
 
 function updateDashboard(data) {
   
@@ -919,7 +923,7 @@ const initialData = {
 
 updateDashboard(initialData);
 updateCharts(initialData.monthlySales, initialData.orderStatusDistribution);
- </script>
+ </script> 
 
 
 
