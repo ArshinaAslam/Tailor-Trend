@@ -1,7 +1,9 @@
+require('dotenv').config();
+
 const express = require('express')
 const app = express()
 const path = require('path')
-const env = require("dotenv").config()
+
 const session = require('express-session')
 const db = require('./config/db')
 const userRouter = require('./routes/userRouter')
