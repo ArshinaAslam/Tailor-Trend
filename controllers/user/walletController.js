@@ -85,46 +85,6 @@ const walletHistory = async (req, res) => {
   }
 };
 
-// function generateReferralCode(userId) {
-//   // Simple implementation - you might want something more sophisticated
-//   return userId.toString().substring(0, 8);
-// }
-// const referralPage = async (req, res) => {
-//   try {
-//     const userId = req.session.user;
-//     if (!userId) {
-//       return res.redirect("/login");
-//     }
-
-//     const userData = await User.findById(userId);
-    
-//     // Get referral code - assuming it's stored in the user model
-//     // If not, you may need to adjust this logic
-//     const referralCode = userData.referralCode || generateReferralCode(userId);
-    
-//     // Calculate earned amount from referrals
-//     // This logic will depend on your specific implementation
-//     let earnedAmount = 0;
-    
-//     if (userData.referrals && userData.referrals.length > 0) {
-//       // Example calculation - adjust according to your business logic
-//       earnedAmount = userData.referrals.reduce((sum, referral) => {
-//         return sum + (referral.amount || 0);
-//       }, 0);
-//     }
-
-//     res.render("referral", {
-//       user: userData,
-//       page: "referrals",
-//       referralCode,
-//       earnedAmount
-//     });
-//   } catch (error) {
-//     console.error("Error in referral page:", error);
-//     res.redirect("/pageNotFound");
-//   }
-// };
-
 
 const razorpayOrder = async (req, res) => {
   try {
@@ -331,7 +291,5 @@ module.exports = {
   walletPayment,
 
 
-
-  referralPage
 
 };
