@@ -15,17 +15,30 @@ db()
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
-app.use(session({
-    secret : process.env.SESSION_SECRET ,
-    resave : false ,
-    saveUninitialized : true ,
-    cookie : {
-        secure : false ,
-        httpOnly :true,
-        maxAge : 72*60*60*1000
+// app.use(session({
+//     secret : process.env.SESSION_SECRET ,
+//     resave : false ,
+//     saveUninitialized : true ,
+//     cookie : {
+//         secure : false ,
+//         httpOnly :true,
+//         maxAge : 72*60*60*1000
 
-    }
-}))
+//     }
+// }))
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI,
+  }),
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', 
+    httpOnly: true,
+    maxAge: 72 * 60 * 60 * 1000
+  }
+}));
 
 
 //morgan middleware
