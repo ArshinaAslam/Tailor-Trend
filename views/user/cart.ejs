@@ -261,8 +261,9 @@
                     <tr data-id="<%= data[i].productDetails[0]._id %>" data-size="<%= data[i].size %>">
                     <td data-label="Product">
                         <div class="product-column">
-                            <img src="/uploads/product-images/<%= data[i].productDetails[0].productImage[0] %>" alt="<%= data[i].productDetails[0].productName %>">
+                            <img src="<%= data[i].productDetails[0].productImage[0] %>" alt="<%= data[i].productDetails[0].productName %>">
                             <span><%= data[i].productDetails[0].productName %></span>
+                            
                         </div>
                     </td>
                     <td data-label="Price">₹<%= data[i].productDetails[0].salePrice %></td>

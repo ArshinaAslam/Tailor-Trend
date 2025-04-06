@@ -385,22 +385,7 @@ body {
             </div>
           </div>
 
-          <!-- Date Range and Reports -->
-          <!-- <div class="col-md-8 text-end">
-            <div class="date-input-group">
-              <input type="date" class="form-control date-input" value="<%= data.startDate %>">
-              <span class="date-separator">to</span>
-              <input type="date" class="form-control date-input" value="<%= data.endDate %>">
-            </div>
-            <div class="report-buttons">
-              <button class="report-btn excel-btn">
-                <i class="fas fa-file-excel"></i> Excel Report
-              </button>
-              <button class="report-btn pdf-btn">
-                <i class="fas fa-file-pdf"></i> PDF Report
-              </button>
-            </div>
-          </div> -->
+         
 
           <!-- Date Range and Reports -->
 <div class="col-md-8 text-end">
@@ -644,14 +629,14 @@ function updateDashboard(data) {
 function updateCharts(monthlySales, orderStatusDistribution) {
   const orderStatuses = ['Pending', 'Processing', 'Delivered', 'Cancelled', 'Returned'];
   const salesColors = {
-    'Pending': 'rgba(245, 158, 11, 0.6)',    // Yellow
-    'Processing': 'rgba(59, 130, 246, 0.6)', // Blue
-    'Delivered': 'rgba(16, 185, 129, 0.6)',  // Green
-    'Cancelled': 'rgba(239, 68, 68, 0.6)',   // Red
-    'Returned': 'rgba(139, 92, 246, 0.6)'    // Purple
+    'Pending': 'rgba(245, 158, 11, 0.6)',    
+    'Processing': 'rgba(59, 130, 246, 0.6)', 
+    'Delivered': 'rgba(16, 185, 129, 0.6)',  
+    'Cancelled': 'rgba(239, 68, 68, 0.6)',   
+    'Returned': 'rgba(139, 92, 246, 0.6)'    
   };
 
-  // Aggregate sales by status, including Returned
+  
   const statusSalesData = orderStatuses.map(status => {
     const matchingStatus = orderStatusDistribution.find(item => 
       item.status.toLowerCase() === status.toLowerCase()
@@ -659,7 +644,7 @@ function updateCharts(monthlySales, orderStatusDistribution) {
     return matchingStatus ? matchingStatus.amount || 0 : 0;
   });
 
-  // Filter out statuses with zero sales and their corresponding data
+  
   const filteredStatuses = orderStatuses.filter((status, index) => statusSalesData[index] > 0);
   const filteredSalesData = statusSalesData.filter(amount => amount > 0);
   const filteredColors = filteredStatuses.map(status => salesColors[status]);
@@ -669,10 +654,10 @@ function updateCharts(monthlySales, orderStatusDistribution) {
   salesChartInstance = new Chart(document.getElementById('salesChart').getContext('2d'), {
     type: 'bar',
     data: {
-      labels: filteredStatuses, // Use filtered statuses
+      labels: filteredStatuses, 
       datasets: [{
         label: 'Sales Amount (₹)',
-        data: filteredSalesData, // Use filtered sales data
+        data: filteredSalesData, 
         backgroundColor: filteredColors,
         borderColor: filteredBorderColors,
         borderWidth: 1
@@ -714,7 +699,7 @@ function updateCharts(monthlySales, orderStatusDistribution) {
     }
   });
 
-  // Update Order Status Distribution pie chart to include Returned
+  
   const orderLabels = orderStatusDistribution.map(item => item.status || 'Unknown');
   const orderData = orderStatusDistribution.map(item => parseInt(item.count) || 0);
 
@@ -876,7 +861,7 @@ salesButton.addEventListener('click', async () => {
     const startDate = document.querySelector('.date-input:first-child').value;
     const endDate = document.querySelector('.date-input:last-child').value;
 
-    // Optional: Show a loading indicator before redirecting
+   
     Swal.fire({
       title: 'Loading...',
       text: 'Generating Sales Report',
@@ -886,7 +871,7 @@ salesButton.addEventListener('click', async () => {
       }
     });
 
-    // Redirect to the sales report page with query parameters
+    
     window.location.href = `/admin/sales-report?period=${period}&startDate=${startDate}&endDate=${endDate}`;
   } catch (error) {
     console.error('Error redirecting to sales report:', error);

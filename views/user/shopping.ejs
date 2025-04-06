@@ -551,9 +551,7 @@
             <% } %>
 
 
-            <!-- <%if(products[i].salePrice !== products[i].regularPrice){%>
-              <p class="offer" style="color: green; font-weight: bold;"><%=Math.round((1-products[i].salePrice/products[i].regularPrice)*100)%>%0FF</p>
-              <%}%> -->
+           
             <span class="wishlist-btn" onclick="addToWishlist('<%=products[i]._id%>')">❤</span>
             
             <a href="/productDetails?productId=<%=products[i]._id%>">

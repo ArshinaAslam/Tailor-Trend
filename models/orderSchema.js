@@ -88,7 +88,7 @@ const orderSchema = new Schema ({
         type : Boolean ,
         default : false
     },
-    // coupon: { type: mongoose.Schema.Types.ObjectId, ref: 'Coupon' }, // Reference to Coupon
+   
     couponMinimumPrice: { 
         type: Number, default: 0 
     },
@@ -100,15 +100,7 @@ const orderSchema = new Schema ({
         type: String,
         enum: ['COD', 'RAZORPAY', 'WALLET']
     },
-    // returnRequest: {  
-    //     reason: { type: String },
-    //     requestedAt:{ type: Date, default: Date.now },
-    //     status: {
-    //       type: String,
-    //       enum: ["pending", "approved", "rejected"],
-    //       default: "pending"
-    //     }
-    //   }
+   
 })
 
 const Order = mongoose.model("Order",orderSchema)

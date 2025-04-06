@@ -17,7 +17,7 @@ const walletSchema = new mongoose.Schema({
       {
         transactionId: {
           type: String,
-          default: () => uuidv4(), // Automatically generate UUID for each transaction
+          default: () => uuidv4(), 
         },
         type: {
           type: String,

@@ -61,15 +61,13 @@
                 </div>
             </div>
             
-            <!-- Related Order Section for Returns and Cancellations -->
+            
             <% if (transaction.description.toLowerCase().includes('returned') || 
                    transaction.description.toLowerCase().includes('cancelled')) { %>
             <div class="mt-6 bg-gray-100 rounded-lg p-4">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-semibold text-gray-700">Related Order</h3>
-                    <!-- <a href="/admin/orders/<%= transaction.orderId %>" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300">
-                        View Order Details
-                    </a> -->
+                   
                     <a href="/admin/orders/<%= relatedOrder._id %>" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300">
                         View Order Details
                     </a>

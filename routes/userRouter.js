@@ -42,7 +42,7 @@ router.get('/shop',userController.loadShopping)
 router.get('/product-sizes/:productId',userController.productSize)
 
 router.get('/filter', userController.filterProduct);
-// router.get('/filterPrice',userController.filterPrice)
+
 router.post('/search',userController.search)
 
 
@@ -109,6 +109,8 @@ router.post('/wallet-payment', userAuth,walletController.walletPayment);
 router.post('/create-razorpay-order',userAuth,walletController.razorpayOrder)
 router.post('/verify-payment',userAuth,walletController.verifyPayment)
 router.post('/cleanup-order',userAuth,walletController.cleanupOrder)
+
+
 
 
 

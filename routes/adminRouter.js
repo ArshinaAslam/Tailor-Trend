@@ -54,7 +54,7 @@ router.post('/AddProducts', adminAuth, uploads.array("images"), productControlle
 router.get('/blockedProduct',adminAuth,productController.blockedProduct)
 router.get('/unblockedProduct',adminAuth,productController.unblockedProduct)
 router.get('/editProduct',adminAuth,productController.getEditProduct)
-//  router.post('/editProduct:id',adminAuth,uploads.array("images"),productController.editProduct)
+
  router.post('/editProduct/:id', adminAuth, uploads.array("images"), productController.editProduct);
  router.post('/addOffer-product',adminAuth,productController.addProductOffer)
  router.post('/removeOffer-product',adminAuth,productController.removeProductOffer)

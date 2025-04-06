@@ -29,7 +29,7 @@ app.use(session({
 
 
 //morgan middleware
-//  app.use(morgan())
+ app.use(morgan())
 
 
 app.use(passport.initialize())

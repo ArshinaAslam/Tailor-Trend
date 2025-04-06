@@ -127,90 +127,36 @@ const getOrderListPageAdmin = async (req, res) => {
   }
 };
 
-// const getOrderListPageAdmin = async (req, res) => {
-//   try {
-//     const itemsPerPage = 7;
-//     const currentPage = parseInt(req.query.page) || 1;
-
-    
-//     const totalOrders = await Order.countDocuments();
-//     const totalPages = Math.ceil(totalOrders / itemsPerPage);
-
-    
-//     const orders = await Order.find({})
-//       .populate("userId", "name")
-//       .populate("orderitems.productId", "name") 
-//       .sort({ createdOn: -1 })
-//       .skip((currentPage - 1) * itemsPerPage)
-//       .limit(itemsPerPage);
-
-   
-//     const flattenedOrders = [];
-//     orders.forEach(order => {
-      
-//       order.orderitems.forEach(item => {
-//         flattenedOrders.push({
-//           _id: order._id,
-//           orderid: order.orderid,
-//           userId: order.userId,
-//           createdOn: order.createdOn,
-//           finalAmount: order.finalAmount,
-//           orderStatus: order.status,
-//           paymentMethod: order.paymentMethod,
-         
-//           productId: item.productId,
-//           productName: item.productId.name,
-//           quantity: item.quantity,
-//           price: item.price,
-//           size: item.size,
-//           itemStatus: item.status || order.status 
-//         });
-//       });
-//     });
-
-//     res.render("order-list", {
-//       orders: flattenedOrders,
-//       totalPages,
-//       currentPage,
-//       hasNextPage: currentPage < totalPages,
-//       hasPreviousPage: currentPage > 1,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.redirect("/pageError");
-//   }
-// };
-
 
 
 const getOrderDetailsPageAdmin = async (req, res) => {
   try {
-    console.log("haiii")
+   
     const orderId = req.params.orderId;
-    console.log("order id?",orderId)
+   
     const findOrder = await Order.findOne({ _id: orderId })
       .populate("userId", "name")
       .populate({
         path: "orderitems.productId",
         select: "productName productImage",
       });
-      console.log("findOrder",findOrder)
+ 
     
     if (!findOrder) {
       return res.status(404).send("Order not found");
     }
 
     const AddressId = findOrder.address._id;
-    console.log("AddressId",AddressId);
+
     
 
     const userId = findOrder.userId;
-    console.log("userId",userId)
+
 
     const findUser = await User.findOne({ _id: userId });
 
     const findAddress = await Address.findOne({ userId: userId });
-    console.log(" findAddress ", findAddress )
+
 
     
 if (!findAddress || !findAddress.address) {
@@ -231,69 +177,6 @@ if (!findAddress || !findAddress.address) {
   }
 };
 
-
-// const updateOrderStatus = async (req, res) => {
-//   try {
-//     const { status, productId, size } = req.body;
-//     const orderId = req.params.orderId;
-
-   
-    
-//     const order = await Order.findById(orderId);
-//     if (!order) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Order not found",
-//       });
-//     }
-
-    
-//     const itemIndex = order.orderitems.findIndex(
-//       item => 
-//         item.productId.toString() === productId && 
-//         item.size === size
-//     );
-
-//     if (itemIndex === -1) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Item not found in order",
-//       });
-//     }
-
-    
-//     order.orderitems[itemIndex].status = status;
-
-   
-//     const allDelivered = order.orderitems.every(item => item.status === 'Delivered');
-//     const allCancelled = order.orderitems.every(item => item.status === 'Cancelled');
-//     const hasReturnRequested = order.orderitems.some(item => item.status === 'Return requested');
-
-//     if (allDelivered) {
-//       order.status = 'Delivered';
-//     } else if (allCancelled) {
-//       order.status = 'Cancelled';
-//     } else if (hasReturnRequested) {
-//       order.status = 'Return requested';
-//     } else {
-//       order.status = 'Pending'; 
-//     }
-
-//     const updatedOrder = await order.save();
-
-//     res.json({
-//       success: true,
-//       message: "Item status updated successfully",
-//       updatedOrder,
-//     });
-//   } catch (error) {
-//     console.error("Item status update error:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: error.message || "Server error",
-//     });
-//   }
-// };
 
 
 const updateOrderStatus = async (req, res) => {

@@ -9,8 +9,7 @@ const User = require('../models/userSchema')
 passport.use(new GoogleStrategy({
     clientID : process.env.GOOGLE_CLIENT_ID ,
     clientSecret : process.env.GOOGLE_CLIENT_SECRET ,
-    // callbackURL : '/auth/google/callback'
-    //  callbackURL : 'http://localhost:3005/google/callback'
+    
      callbackURL : 'http://tailortrend.shop/google/callback'
 },
 
@@ -40,13 +39,13 @@ async (accessToken,refreshToken,profile,done)=>{
 )
 
 
-//user details stored in the session
+
 passport.serializeUser((user,done)=>{
     done(null,user.id)
 
 })
 
-//to fetch the data from session
+
 passport.deserializeUser((id,done)=>{
     User.findById(id)
     .then(user=>{
