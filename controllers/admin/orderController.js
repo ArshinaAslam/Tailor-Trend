@@ -391,7 +391,8 @@ const handleReturn = async (req, res) => {
     }
 
    
-    const userId = req.session.user;
+    // const userId = req.session.user;
+    const userId = order.userId;
   
     const productName = product ? product.productName : "Unknown Product";
 
