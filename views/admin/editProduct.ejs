@@ -855,7 +855,8 @@ function resizeImage(canvas, maxWidth, maxHeight) {
   </script>
  -->
 
-
+ <script>
+  
  function base64ToBlob(base64, mimeType) {
   const byteCharacters = atob(base64);
   const byteArrays = [];
@@ -1267,6 +1268,8 @@ function resizeImage(canvas, maxWidth, maxHeight) {
   ctx.drawImage(canvas, 0, 0, width, height);
   return resizedCanvas;
 }
+
+ </script>
 
   <%- include("../../views/partials/admin/footer") %>
 
