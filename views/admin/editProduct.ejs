@@ -428,7 +428,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js" integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
  
-
+<!-- 
   <script>
     function base64ToBlob(base64, mimeType) {
   const byteCharacters = atob(base64);
@@ -710,6 +710,8 @@ function removeImage(index) {
   }
 }
 
+
+
 function editImage(imageSrc, index) {
   showCropper(imageSrc, index);
 }
@@ -851,8 +853,420 @@ function resizeImage(canvas, maxWidth, maxHeight) {
   return resizedCanvas;
 }
   </script>
+ -->
 
 
+ function base64ToBlob(base64, mimeType) {
+  const byteCharacters = atob(base64);
+  const byteArrays = [];
+  
+  for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+    const slice = byteCharacters.slice(offset, offset + 512);
+    
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+    
+    const byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+  
+  return new Blob(byteArrays, { type: mimeType });
+}
+
+let cropper;
+
+const form = document.querySelector('form');
+
+form.addEventListener('submit', async(e) => {
+  e.preventDefault();
+  
+  if (!validateForm()) {
+    return;
+  }
+  
+  const productId = '<%= product._id %>';
+  const formData = new FormData();
+  
+  const productName = document.getElementsByName('productName')[0].value;
+  const description = document.getElementById('descriptionid').value;
+  const regularPrice = document.getElementsByName('regularPrice')[0].value;
+  const salePrice = document.getElementsByName('salePrice')[0].value;
+  const color = document.getElementsByName('color')[0].value;
+  const category = document.getElementsByName('category')[0].value;
+  
+  formData.append('productName', productName);
+  formData.append('description', description);
+  formData.append('regularPrice', regularPrice);
+  formData.append('salePrice', salePrice);
+  formData.append('color', color);
+  formData.append('category', category);
+  
+  const sizeQuantities = [];
+  document.querySelectorAll('input[name^="sizeQuantity"]').forEach(input => {
+    const size = input.name.match(/\[([A-Za-z]+)\]/)[1]; 
+    sizeQuantities.push({
+      size: size,
+      quantity: parseInt(input.value) || 0
+    });
+  });
+  formData.append('sizeQuantities', JSON.stringify(sizeQuantities));
+  
+  const imageInputs = document.querySelectorAll('input[name="images"]');
+  imageInputs.forEach(input => {
+    formData.append('images', input.value);
+  });
+  
+  const editedImageInputs = document.querySelectorAll('input[name="editedImages"]');
+  editedImageInputs.forEach(input => {
+    formData.append('editedImages', input.value);
+  });
+  
+  const positionInputs = document.querySelectorAll('input[name="editedImagePositions"]');
+  positionInputs.forEach(input => {
+    formData.append('editedImagePositions', input.value);
+  });
+  
+  const removedImageInputs = document.querySelectorAll('input[name="removeImages"]');
+  removedImageInputs.forEach(input => {
+    formData.append('removeImages', input.value);
+  });
+  
+  // Debug what's being sent
+  console.log('Removing images:', Array.from(formData.getAll('removeImages')));
+  console.log('Edited images positions:', Array.from(formData.getAll('editedImagePositions')));
+  console.log('Size quantities:', formData.get('sizeQuantities'));
+  
+  try {
+    const response = await fetch(`/admin/editProduct/${productId}`, {
+      method: 'POST',
+      body: formData
+    });
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      if (data.isNameDuplicate) {
+        Swal.fire({
+          title: "Product Name Already Exists",
+          text: "A product with this name already exists. Please use a different name.",
+          icon: "warning",
+          confirmButtonText: "OK"
+        });
+     
+        document.getElementsByName('productName')[0].focus();
+        showErrorMessage('productName-error', 'Product name already exists. Please use a different name.');
+        return;
+      }
+      
+      throw new Error(data.message || `Server responded with status: ${response.status}`);
+    }
+    
+    if (data.success) {
+      Swal.fire({
+        title: "Success!",
+        text: "Product updated successfully!",
+        icon: "success",
+        confirmButtonText: "OK"
+      }).then(() => {
+        window.location.href = '/admin/Products';
+      });
+    } else {
+      Swal.fire({
+        title: "Error!",
+        text: data.message || "An error occurred.",
+        icon: "error",
+        confirmButtonText: "Try Again"
+      });
+    }
+  } catch (error) {
+    console.error('Fetch error:', error);
+    Swal.fire({
+      title: "Error!",
+      text: `Failed to update the product: ${error.message}`,
+      icon: "error",
+      confirmButtonText: "Try Again"
+    });
+  }
+});
+
+function validateForm() {
+  clearErrorMessages();
+  
+  const name = document.getElementsByName('productName')[0].value.trim();
+  const description = document.getElementById('descriptionid').value.trim();
+  const regularPrice = document.getElementsByName('regularPrice')[0].value.trim();
+  const salePrice = document.getElementsByName('salePrice')[0].value.trim();
+  const color = document.getElementsByName('color')[0].value.trim();
+  const category = document.getElementsByName('category')[0].value;
+  const imageContainer = document.getElementById('addedImagesContainer');
+  const sizeInputs = document.querySelectorAll('input[name^="sizeQuantity"]');
+  
+  let sizeSelected = false;
+  let isValid = true;
+
+  if (name === "") {
+    showErrorMessage('productName-error', 'Product Name is required.');
+    isValid = false;
+  }
+  
+  if (description === "") {
+    showErrorMessage('description-error', 'Description cannot be empty.');
+    isValid = false;
+  }
+  
+  if (regularPrice === "") {
+    showErrorMessage('regularPrice-error', 'Regular price is required.');
+    isValid = false;
+  } else if (isNaN(regularPrice) || parseFloat(regularPrice) <= 0) {
+    showErrorMessage('regularPrice-error', 'Enter a valid price greater than zero.');
+    isValid = false;
+  }
+  
+  if (salePrice === "") {
+    showErrorMessage('salePrice-error', 'Sale price is required.');
+    isValid = false;
+  } else if (isNaN(salePrice) || parseFloat(salePrice) < 0) {
+    showErrorMessage('salePrice-error', 'Enter a valid sale price (can be zero).');
+    isValid = false;
+  } else if (parseFloat(salePrice) > parseFloat(regularPrice)) {
+    showErrorMessage('salePrice-error', 'Sale price cannot be greater than the regular price.');
+    isValid = false;
+  }
+  
+  if (color === "") {
+    showErrorMessage('color-error', 'Color is required.');
+    isValid = false;
+  }
+  
+  if (category === "") {
+    showErrorMessage('category-error', 'Please select a category.');
+    isValid = false;
+  }
+  
+  // Check for visible thumbnails (not including those that are hidden)
+  const visibleThumbnails = Array.from(imageContainer.children).filter(
+    child => child.style.display !== 'none'
+  ).length;
+  
+  if (visibleThumbnails < 3) {
+    showErrorMessage('image-error', 'Please upload at least three images.');
+    isValid = false;
+  }
+  
+  sizeInputs.forEach(input => {
+    if (input.value.trim() !== "" && parseInt(input.value) > 0) {
+      sizeSelected = true;
+    }
+  });
+  
+  if (!sizeSelected) {
+    showErrorMessage('size-error', 'Please enter quantity for at least one size.');
+    isValid = false;
+  }
+  
+  return isValid;
+}
+
+function showErrorMessage(elementId, message) {
+  const errorElement = document.getElementById(elementId);
+  if (errorElement) {
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+  }
+}
+
+function clearErrorMessages() {
+  const errorElements = document.getElementsByClassName('error-message');
+  Array.from(errorElements).forEach(element => {
+    element.textContent = '';
+    element.style.display = 'none';
+  });
+}
+
+function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      showCropper(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+// FIXED: removeImage function to properly handle image removal
+function removeImage(index) {
+  const thumbnail = document.getElementById(`thumbnail-${index}`);
+  if (thumbnail) {
+    const imgSrc = thumbnail.querySelector('img').src;
+    
+    // Store the full URL instead of just the filename
+    const fullImageUrl = imgSrc;
+    
+    // Hide the thumbnail visually
+    thumbnail.style.display = 'none';
+    
+    // Remove any existing hidden inputs for this image
+    document.querySelectorAll(`input[name="removeImages"][value="${fullImageUrl}"]`).forEach(el => el.remove());
+    
+    // Add hidden input with the full image URL
+    const hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'removeImages';
+    hiddenInput.value = fullImageUrl;
+    document.forms[0].appendChild(hiddenInput);
+    
+    // Remove the existingImages input if present
+    const existingImageInput = thumbnail.querySelector('input[name="existingImages"]');
+    if (existingImageInput) {
+      existingImageInput.remove();
+    }
+    
+    // Remove any edited image inputs for this index
+    document.querySelectorAll(`input[name="editedImages"][data-index="${index}"]`).forEach(el => el.remove());
+    document.querySelectorAll(`input[name="editedImagePositions"][value="${index}"]`).forEach(el => el.remove());
+  }
+}
+
+function editImage(imageSrc, index) {
+  showCropper(imageSrc, index);
+}
+
+function showCropper(imageSrc, index) {
+  const cropperContainer = document.getElementById('cropperContainer');
+  const saveButton = document.getElementById('saveButton');
+  cropperContainer.style.display = 'block';
+  saveButton.style.display = 'block';
+  document.getElementById('imageToCrop').src = imageSrc;
+  
+  if (cropper) {
+    cropper.destroy();
+  }
+  
+  cropper = new Cropper(document.getElementById('imageToCrop'), {
+    aspectRatio: 1,
+    viewMode: 1,
+    guides: true,
+    background: false,
+    autoCropArea: 1,
+    zoomable: true,
+  });
+  
+  saveButton.replaceWith(saveButton.cloneNode(true));
+  const newSaveButton = document.getElementById('saveButton');
+  
+  newSaveButton.addEventListener('click', function() {
+    const croppedCanvas = cropper.getCroppedCanvas();
+    const resizedCanvas = resizeImage(croppedCanvas, 500, 500);
+    
+    resizedCanvas.toBlob((blob) => {
+      const reader = new FileReader();
+      reader.onloadend = function() {
+        const dataUrl = reader.result;
+        
+        if (index !== undefined) {
+          const thumbnail = document.getElementById(`thumbnail-${index}`);
+          if (thumbnail) {
+            const img = thumbnail.querySelector('img');
+            const oldSrc = img.src;
+            
+            // Update with full URL instead of just filename
+            img.src = dataUrl;
+            
+            // Remove any existing inputs related to this image
+            document.querySelectorAll(`input[name="removeImages"][value="${oldSrc}"]`).forEach(el => el.remove());
+            document.querySelectorAll(`input[name="editedImages"][data-index="${index}"]`).forEach(el => el.remove());
+            document.querySelectorAll(`input[name="editedImagePositions"][value="${index}"]`).forEach(el => el.remove());
+            
+            // Add hidden input to mark the old image for removal
+            const removeInput = document.createElement('input');
+            removeInput.type = 'hidden';
+            removeInput.name = 'removeImages';
+            removeInput.value = oldSrc;
+            document.forms[0].appendChild(removeInput);
+            
+            // Add hidden input for the edited image
+            const editedInput = document.createElement('input');
+            editedInput.type = 'hidden';
+            editedInput.name = 'editedImages';
+            editedInput.value = dataUrl;
+            editedInput.dataset.index = index; 
+            document.forms[0].appendChild(editedInput);
+            
+            // Add hidden input for the position
+            const positionInput = document.createElement('input');
+            positionInput.type = 'hidden';
+            positionInput.name = 'editedImagePositions';
+            positionInput.value = index;
+            document.forms[0].appendChild(positionInput);
+          }
+        } else {
+          // Add new image
+          const hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = 'images';
+          hiddenInput.value = dataUrl;
+          document.forms[0].appendChild(hiddenInput);
+          
+          // Create new thumbnail
+          const newIndex = Date.now();
+          const thumbnail = document.createElement('div');
+          thumbnail.id = `thumbnail-${newIndex}`;
+          thumbnail.classList.add('thumbnail');
+          
+          const thumbImg = document.createElement('img');
+          thumbImg.src = dataUrl;
+          thumbImg.alt = 'thumbnail';
+          
+          const removeIcon = document.createElement('span');
+          removeIcon.classList.add('remove-icon');
+          removeIcon.innerHTML = '&times;';
+          removeIcon.onclick = function() {
+            thumbnail.remove();
+            hiddenInput.remove();
+          };
+          
+          thumbnail.appendChild(thumbImg);
+          thumbnail.appendChild(removeIcon);
+          document.getElementById('addedImagesContainer').appendChild(thumbnail);
+        }
+        
+        // Clean up
+        cropper.destroy();
+        cropperContainer.style.display = 'none';
+        newSaveButton.style.display = 'none';
+      };
+      
+      reader.readAsDataURL(blob);
+    }, 'image/jpeg', 0.8);
+  });
+}
+
+function resizeImage(canvas, maxWidth, maxHeight) {
+  let width = canvas.width;
+  let height = canvas.height;
+  
+  if (width > height) {
+    if (width > maxWidth) {
+      height *= maxWidth / width;
+      width = maxWidth;
+    }
+  } else {
+    if (height > maxHeight) {
+      width *= maxHeight / height;
+      height = maxHeight;
+    }
+  }
+  
+  const resizedCanvas = document.createElement('canvas');
+  resizedCanvas.width = width;
+  resizedCanvas.height = height;
+  const ctx = resizedCanvas.getContext('2d');
+  ctx.drawImage(canvas, 0, 0, width, height);
+  return resizedCanvas;
+}
 
   <%- include("../../views/partials/admin/footer") %>
 
