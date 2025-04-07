@@ -5,7 +5,7 @@ const {userAuth,adminAuth} = require('../middlewares/auth')
 const customerController = require('../controllers/admin/customerController')
 const categoryController = require('../controllers/admin/categoryController')
 const productController = require('../controllers/admin/productController')
-const brandController = require('../controllers/admin/brandController')
+
 const orderController = require('../controllers/admin/orderController')
 const couponController = require('../controllers/admin/couponController')
 const walletController = require('../controllers/admin/walletController');
