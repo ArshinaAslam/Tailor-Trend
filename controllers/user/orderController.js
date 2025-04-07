@@ -86,8 +86,7 @@ const getOrders = async (req, res) => {
 
 const placeOrder = async (req, res) => {
   try {
-    console.log("Request body:", req.body);
-    console.log("Session user:", req.session.user);
+  
 
     const { addressId, paymentMethod, discountAmount, grandTotal } = req.body;
     const finalAmount = grandTotal;
@@ -169,11 +168,11 @@ const placeOrder = async (req, res) => {
 
     // Stock reduction
     for (const item of cart.items) {
-      console.log("Processing item:", item);
+    
       const productId = item.productId._id;
       const product = await Product.findById(productId);
       if (product) {
-        console.log("Product found:", product);
+      
         const updatedSizeStock = product.sizes.map(size => {
           if (size.size === item.size) {
             size.quantity = Math.max(0, size.quantity - item.quantity);
@@ -182,12 +181,12 @@ const placeOrder = async (req, res) => {
         });
         product.sizes = updatedSizeStock;
         await product.save();
-        console.log("Product updated:", product);
+       
       }
     }
 
     await Cart.findOneAndUpdate({ userId }, { items: [] });
-    console.log("Cart cleared");
+  
 
     res.status(201).json({
       success: true,
@@ -347,7 +346,7 @@ const returnOrder = async (req, res) => {
     if (allReturned) {
       order.status = "Return requested";
       await order.save();
-      console.log("All items Return requested, order status updated");
+
     }
     
     res.json({ success: true, message: "Item return request initiated successfully" });
@@ -476,14 +475,14 @@ const orderInvoice = async (req, res) => {
       const order = await Order.findOne({ orderid: orderId })
           .populate("userId")
           .populate('orderitems.productId');
-      console.log("order ??", order);
+    
       
       if (!order) {
           return res.status(404).json({ success: false, message: "Order not found" });
       }
 
       const addressId = order.address;
-      console.log("address of invoice", addressId);
+
 
       const userAddress = await Address.findOne({ userId: userId });
       if (!userAddress || !userAddress.address) {

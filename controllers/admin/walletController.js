@@ -116,7 +116,7 @@ const getWalletTransactions = async (req, res) => {
 const getTransactionDetails = async (req, res) => {
     try {
         const { transactionId } = req.params;
-        console.log(transactionId, 'gfhdjdgjwegfehjrgfehrgfejhrgfejrferf');
+   
         
      
         if (!mongoose.Types.ObjectId.isValid(transactionId)) {
@@ -172,7 +172,11 @@ const getTransactionDetails = async (req, res) => {
         res.render('walletTransactionDetails', {
             transaction: {
                 ...transaction,
-                date: new Date(transaction.date).toLocaleString()
+                date: new Date(transaction.date).toLocaleDateString('en-US', {
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric'
+                })
             },
             user,
             relatedOrder,

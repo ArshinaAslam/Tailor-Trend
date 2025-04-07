@@ -9,8 +9,7 @@ const mongoose = require("mongoose");
 const env = require("dotenv").config();
 const crypto = require("crypto");
 
-// const { v4: uuidv4 } = require("uuid");
-// const { log } = require("console");
+
 const getOrderListPageAdmin = async (req, res) => {
   try {
     const itemsPerPage = 7;
@@ -233,7 +232,7 @@ const updateOrderStatus = async (req, res) => {
         }
       }
       
-      // Process wallet refund
+   
       const userId = order.userId;
       const productName = product ? product.productName : "Unknown Product";
       
@@ -391,7 +390,7 @@ const handleReturn = async (req, res) => {
     }
 
    
-    // const userId = req.session.user;
+   
     const userId = order.userId;
   
     const productName = product ? product.productName : "Unknown Product";

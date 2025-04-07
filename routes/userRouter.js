@@ -111,6 +111,9 @@ router.post('/verify-payment',userAuth,walletController.verifyPayment)
 router.post('/cleanup-order',userAuth,walletController.cleanupOrder)
 
 
+router.get('/referrals',userAuth,walletController.referralPage)
+router.post('/transfer-wallet', userAuth, walletController.transferWallet);
+
 
 
 

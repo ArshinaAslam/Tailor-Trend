@@ -51,9 +51,9 @@ const userSchema = new Schema({
         ref : "Cart"
     }],
 
-    wallet: {
-        type: Number, 
-    },
+    // wallet: {
+    //     type: Number, 
+    // },
 
     wishlist : [{
         type : Schema.Types.ObjectId ,
@@ -71,21 +71,30 @@ const userSchema = new Schema({
         default : Date.now
     },
 
-    referalCode : {
-        type : String
-        // required : true
+    referralCode: {
+        type: String,
+        unique: true 
     },
-
-    redeemed : {
-        type : Boolean,
-        // default : false
+    
+    wallet: {
+        type: Schema.Types.ObjectId,
+        ref: "Wallet"
     },
-
-    redeemedUsers : [{
-        type : Schema.Types.ObjectId ,
-        ref : "User",
-        // required : true
+    referralWallet: {
+        type: Number,
+        default: 0
+    },
+    
+    referredUsers: [{
+        type: Schema.Types.ObjectId,
+        ref: "User"
     }],
+    
+    referredBy: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+    },
+    
 
     searchHistory : [{
         category : {

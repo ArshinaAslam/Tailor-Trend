@@ -95,7 +95,7 @@ const changeQuantity = async (req, res) => {
     }
 
     const cart = await Cart.findOne({ userId });
-    console.log(":cart is",cart)
+  
     if (!cart) {
       return res.status(404).json({ status: false, error: "Cart not found" });
     }

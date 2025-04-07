@@ -85,6 +85,118 @@ const walletHistory = async (req, res) => {
   }
 };
 
+const referralPage = async (req, res) => {
+  try {
+      const userId = req.session.user;
+      console.log("req,reached here",userId);
+      
+
+      if (!userId) {
+          return res.redirect('/login'); 
+      }
+
+      const user = await User.findById(userId).populate('wallet');
+
+      if (!user) {
+          return res.status(404).send("User not found");
+      }
+
+      const page = parseInt(req.query.page) || 1;
+      const limit = 5;
+      const skip = (page - 1) * limit;
+
+      
+      const referredUsers = user.referredUsers || [];
+      const totalReferredUsers = referredUsers.length;
+
+      const paginatedReferredUsers = await User.find({
+          _id: { $in: referredUsers }
+      })
+          .skip(skip)
+          .limit(limit);
+
+      const totalPages = Math.ceil(totalReferredUsers / limit);
+
+     
+      const wallet = await Wallet.findOne({ userId: userId });
+
+     
+      
+      const walletBalance = wallet ? wallet.balance : 0;
+
+
+
+      const referralWallet = user.referralWallet || 0;
+
+      res.render("referralPage", {
+          user,
+          referredUsers: paginatedReferredUsers,
+          currentPage: page,
+          totalPages,
+          walletBalance,
+          referralWallet, 
+          page: "referrals"
+      });
+  } catch (err) {
+      console.log("Error loading referral page:", err);
+      res.status(500).send("Something went wrong");
+  }
+};
+
+const transferWallet = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    
+    if (!userId) {
+      return res.status(401).json({ success: false, message: "Please log in first" });
+    }
+    
+    
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+    
+
+    const referralAmount = user.referralWallet || 0;
+    if (referralAmount <= 0) {
+      return res.status(400).json({ success: false, message: "No funds in referral wallet to transfer" });
+    }
+    
+    
+    const wallet = await Wallet.findOne({ userId: userId });
+    if (!wallet) {
+     
+      return res.status(404).json({ success: false, message: "Wallet not found" });
+    }
+    
+  
+    wallet.balance += referralAmount;
+    wallet.transactions.push({
+      type: "credit",
+      amount: referralAmount,
+      description: "Transfer from referral wallet"
+    });
+    await wallet.save();
+    
+    
+    user.referralWallet = 0;
+    await user.save();
+    
+    return res.status(200).json({ 
+      success: true, 
+      message: `Successfully transferred ₹${referralAmount} to your main wallet` 
+    });
+    
+  } catch (error) {
+    console.error("Error transferring wallet funds:", error);
+    return res.status(500).json({ 
+      success: false, 
+      message: "An error occurred while transferring funds" 
+    });
+  }
+};
+
 
 const razorpayOrder = async (req, res) => {
   try {
@@ -290,6 +402,7 @@ module.exports = {
 
   walletPayment,
 
-
+  referralPage,
+  transferWallet
 
 };

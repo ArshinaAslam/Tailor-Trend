@@ -171,6 +171,11 @@
             <input type="password" id="confirm-password" name="cPassword" placeholder="Re-enter your password">
             <span class="toggle-password" onclick="togglePassword('confirm-password', 'eye2')">👁️</span>
         </div>
+        <label for="referral">Referral Code (Optional)</label>
+        <div id="error6" class="error-message"></div>
+<input type="text" id="referral" name="referral" placeholder="Enter referral code if you have one">
+
+
         
         <button type="submit">Sign Up</button>
         
@@ -308,6 +313,24 @@
             }
         }
 
+
+        function referralValidateChecking() {
+    const referral = document.getElementById('referral').value;
+    const error6 = document.getElementById('error6');
+    const referralPattern = /^[A-Z0-9]{6}$/; 
+
+    if (referral.trim() !== "" && !referralPattern.test(referral)) {
+        error6.style.display = "block";
+        error6.innerHTML = "Invalid referral code format (6 uppercase letters/numbers)";
+        return false;
+    } else {
+        error6.style.display = "none";
+        error6.innerHTML = "";
+        return true;
+    }
+}
+
+
         function togglePassword(fieldId) {
             const passwordField = document.getElementById(fieldId);
             const toggleIcon = document.querySelector(`[onclick="togglePassword('${fieldId}')"]`);
@@ -328,6 +351,7 @@
             if (!emailValidateChecking()) isValid = false;
             if (!phoneValidateChecking()) isValid = false;
             if (!passwordValidateChecking()) isValid = false;
+            if (!referralValidateChecking()) isValid = false;
 
             if (!isValid) {
                 e.preventDefault();
