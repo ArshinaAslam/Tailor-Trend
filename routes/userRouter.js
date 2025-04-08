@@ -94,6 +94,8 @@ router.get('/deleteAddress',userAuth,profileController.deleteAddress)
 //Cart management 
 router.get('/cart',userAuth,cartController.getCartPage)
 
+router.get("/checkCartStock",userAuth, cartController.checkCartStock);
+
 router.post('/add-to-cart',userAuth, cartController.addToCart)
 router.post('/changeQuantity',userAuth, cartController.changeQuantity)
 router.delete('/removeCartItem', userAuth, cartController.removeCartItem)

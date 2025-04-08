@@ -2,420 +2,426 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-    
-    .cart-container {
-        max-width: 1100px;
-        margin: 50px auto;
-        padding: 20px;
-        background: #ffffff;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-    }
+  .cart-container {
+    max-width: 1100px;
+    margin: 50px auto;
+    padding: 20px;
+    background: #ffffff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
 
-    
-    .cart-wrapper {
-        padding: 20px;
-    }
+  .cart-wrapper {
+    padding: 20px;
+  }
 
-   
-    .cart-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 2px solid #eee;
-        padding-bottom: 15px;
-        font-size: 22px;
-        font-weight: bold;
-    }
+  .cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 15px;
+    font-size: 22px;
+    font-weight: bold;
+  }
 
-    
-    .cart-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
+  .cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
 
-    .cart-table th,
-    .cart-table td {
-        text-align: left;
-        padding: 12px;
-        border-bottom: 1px solid #ddd;
-    }
+  .cart-table th,
+  .cart-table td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+  }
 
-    .cart-table th {
-        background: #f8f9fa;
-        font-weight: bold;
-    }
+  .cart-table th {
+    background: #f8f9fa;
+    font-weight: bold;
+  }
 
-    .cart-table td {
-        vertical-align: middle;
-    }
+  .cart-table td {
+    vertical-align: middle;
+  }
 
-    
-    .product-column {
-        display: flex;
-        align-items: center;
-    }
+  .product-column {
+    display: flex;
+    align-items: center;
+  }
 
-    .product-column img {
-        width: 60px;
-        height: 60px;
-        object-fit: cover;
-        margin-right: 15px;
-        border-radius: 5px;
-    }
+  .product-column img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    margin-right: 15px;
+    border-radius: 5px;
+  }
 
-    
-    .quantity-control {
-        display: flex;
-        align-items: center;
-    }
+  .quantity-control {
+    display: flex;
+    align-items: center;
+  }
 
-    .quantity-control button {
-        background: #ff6b6b;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        cursor: pointer;
-        font-size: 18px;
-        border-radius: 5px;
-    }
+  .quantity-control button {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 18px;
+    border-radius: 5px;
+  }
 
-    .quantity-control input {
-        width: 40px;
-        text-align: center;
-        font-size: 16px;
-        margin: 0 5px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 5px;
-    }
+  .quantity-control input {
+    width: 40px;
+    text-align: center;
+    font-size: 16px;
+    margin: 0 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px;
+  }
 
-    
-    .remove-btn {
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-}
+  .remove-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
 
-.remove-btn i.fas.fa-trash {
-  color: #ff0000; 
-  font-size: 1.2rem; 
-  transition: color 0.3s ease;
-}
+  .remove-btn i.fas.fa-trash {
+    color: #ff0000;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+  }
 
-.remove-btn:hover i.fas.fa-trash {
-  color: #cc0000; 
-}
+  .remove-btn:hover i.fas.fa-trash {
+    color: #cc0000;
+  }
 
-    
-    .cart-summary {
-        margin-top: 20px;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        text-align: right;
-        font-size: 18px;
-    }
+  .cart-summary {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    text-align: right;
+    font-size: 18px;
+  }
 
-    .summary-details div {
-        margin: 5px 0;
-    }
+  .summary-details div {
+    margin: 5px 0;
+  }
 
-    .total {
-        font-weight: bold;
-        font-size: 22px;
-    }
+  .total {
+    font-weight: bold;
+    font-size: 22px;
+  }
 
-    
-    .checkout-btn {
-        display: inline-block;
-        margin-top: 15px;
-        background: #FF3F6c;
-        color: white;
-        padding: 12px 20px;
-        text-decoration: none;
-        font-size: 18px;
-        border-radius: 5px;
-    }
+  .checkout-btn {
+    display: inline-block;
+    margin-top: 15px;
+    background: #ff3f6c;
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 18px;
+    border-radius: 5px;
+  }
 
-    .checkout-btn:hover {
-        background: #FF3F6c;
-    }
+  .checkout-btn:hover {
+    background: #ff3f6c;
+  }
 
-    /* Empty Cart */
-    .empty-cart {
-        text-align: center;
-        padding: 50px;
-    }
+  .checkout-btn.disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 
-    .empty-cart-icon i {
-        font-size: 60px;
-        color: #ddd;
-    }
+  .empty-cart {
+    text-align: center;
+    padding: 50px;
+  }
 
-    .empty-cart-title {
-        font-size: 24px;
-        margin-top: 10px;
-        font-weight: bold;
-    }
+  .empty-cart-icon i {
+    font-size: 60px;
+    color: #ddd;
+  }
 
-    .empty-cart-message {
-        color: #888;
-        margin: 10px 0;
-    }
+  .empty-cart-title {
+    font-size: 24px;
+    margin-top: 10px;
+    font-weight: bold;
+  }
 
-    .start-shopping-btn {
-        display: inline-block;
-        margin-top: 10px;
-        padding: 12px 20px;
-        background: #FF3F6c;
-        color: white;
-        text-decoration: none;
-        font-size: 18px;
-        border-radius: 5px;
-    }
+  .empty-cart-message {
+    color: #888;
+    margin: 10px 0;
+  }
 
-    .start-shopping-btn:hover {
-        background: #FF3F6c;
-    }
+  .start-shopping-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 12px 20px;
+    background: #ff3f6c;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    border-radius: 5px;
+  }
 
-    .pagination-container {
+  .start-shopping-btn:hover {
+    background: #ff3f6c;
+  }
+
+  .pagination-container {
     margin-top: 30px;
     display: flex;
     justify-content: center;
-}
+  }
 
-.pagination {
+  .pagination {
     display: flex;
     gap: 8px;
     list-style: none;
     padding: 0;
-}
+  }
 
-.pagination-link {
+  .pagination-link {
     padding: 8px 16px;
     border: 1px solid #ddd;
     border-radius: 4px;
     text-decoration: none;
     color: #666;
     transition: all 0.3s ease;
-}
+  }
 
-.pagination-link:hover {
+  .pagination-link:hover {
     background-color: #f5f5f5;
-}
+  }
 
-.pagination-link.active {
-    background-color: #FF3F6C;
+  .pagination-link.active {
+    background-color: #ff3f6c;
     color: white;
-    border-color: #FF3F6C;
-}
+    border-color: #ff3f6c;
+  }
 
-   
-    @media (max-width: 768px) {
-        .cart-header {
-            flex-direction: column;
-            text-align: center;
-        }
+  .product-unavailable {
+    color: red;
+    font-weight: bold;
+  }
 
-        .cart-table {
-            font-size: 14px;
-        }
-
-        .quantity-control button {
-            font-size: 14px;
-            padding: 3px 7px;
-        }
-
-        .checkout-btn,
-        .start-shopping-btn {
-            width: 100%;
-            text-align: center;
-        }
+  @media (max-width: 768px) {
+    .cart-header {
+      flex-direction: column;
+      text-align: center;
     }
+
+    .cart-table {
+      font-size: 14px;
+    }
+
+    .quantity-control button {
+      font-size: 14px;
+      padding: 3px 7px;
+    }
+
+    .checkout-btn,
+    .start-shopping-btn {
+      width: 100%;
+      text-align: center;
+    }
+  }
 </style>
 
 <div class="cart-container">
-    <div class="cart-wrapper">
-        <div class="cart-header">
-            <h1>Your Cart</h1>
-            <span><%= data.length %> Items</span>
-        </div>
-
-        <% if (data.length > 0) { %>
-        <table class="cart-table">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>size</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% for (let i = 0; i < data.length; i++) { %>
-                    <tr data-id="<%= data[i].productDetails[0]._id %>" data-size="<%= data[i].size %>">
-                    <td data-label="Product">
-                        <div class="product-column">
-                            <img src="<%= data[i].productDetails[0].productImage[0] %>" alt="<%= data[i].productDetails[0].productName %>">
-                            <span><%= data[i].productDetails[0].productName %></span>
-                            
-                        </div>
-                    </td>
-                    <td data-label="Price">₹<%= data[i].productDetails[0].salePrice %></td>
-                    <td data-label="size"><%= data[i].size %></td>
-                   
-                    <td data-label="Quantity">
-                        <% if (data[i].productDetails[0].isBlocked) { %>
-                            <div class="product-unavailable">Product is no longer available</div>
-                        <% } else { %>
-                            <div class="quantity-control">
-                                <button onclick="changeQuantity('<%= data[i].productDetails[0]._id %>', 0, -1, '<%= data[i].size %>')">-</button>
-                                <input type="number" value="<%= data[i].quantity %>" min="1" readonly>
-                                <button onclick="changeQuantity('<%= data[i].productDetails[0]._id %>', 0, 1, '<%= data[i].size %>')">+</button>
-                            </div>
-                        <% } %>
-                    </td>
-                    
-                                       
-                    <td data-label="Total">₹<%= data[i].productDetails[0].salePrice * data[i].quantity %></td>
-                    <td>
-                        <button class="remove-btn" onclick="removeCartItem('<%= data[i].itemId %>')">
-                            <i class="fas fa-trash "></i>
-                        </button>
-                       
-                    </td>
-                </tr>
-                <% } %>
-            </tbody>
-        </table>
-
-        <div class="cart-summary">
-            <div class="summary-details">
-                <div class="total">Total: <span class="cart-total">₹<%= grandTotal %></span></div>
-            </div>
-            <a href="/checkout" class="checkout-btn" data-blocked="<%= isBlockedItem %>">Proceed to Checkout</a>
-
-           
-            
-        </div>
-        <% } else { %>
-        <div class="empty-cart">
-            <div class="empty-cart-icon">
-                <i class="fas fa-shopping-cart"></i>
-            </div>
-            <h2 class="empty-cart-title">Your cart is empty</h2>
-            <p class="empty-cart-message">Looks like you haven't added any items to your cart yet.</p>
-            <a href="/shop" class="start-shopping-btn">Start Shopping</a>
-        </div>
-        <% } %>
+  <div class="cart-wrapper">
+    <div class="cart-header">
+      <h1>Your Cart</h1>
+      <span><%= data.length %> Items</span>
     </div>
 
-    
-
-
-    <!-- Pagination -->
-    <% if (totalPages > 1) { %>
-        <div class="pagination-container">
-            <div class="pagination">
-                <% if (currentPage > 1) { %>
-                    <a href="/cart?page=<%= currentPage - 1 %>" class="pagination-link">&laquo; Previous</a>
-                <% } %>
-        
-                <% for (let i = 1; i <= totalPages; i++) { %>
-                    <a href="/cart?page=<%= i %>" 
-                       class="pagination-link <%= currentPage === i ? 'active' : '' %>">
-                        <%= i %>
-                    </a>
-                <% } %>
-        
-                <% if (currentPage < totalPages) { %>
-                    <a href="/cart?page=<%= currentPage + 1 %>" class="pagination-link">Next &raquo;</a>
-                <% } %>
+    <% if (data.length > 0) { %>
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Price</th>
+          <th>Size</th>
+          <th>Quantity</th>
+          <th>Total</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (let i = 0; i < data.length; i++) { %>
+        <tr data-id="<%= data[i].productDetails[0]._id %>" data-size="<%= data[i].size %>">
+          <td data-label="Product">
+            <div class="product-column">
+              <img
+                src="<%= data[i].productDetails[0].productImage[0] %>"
+                alt="<%= data[i].productDetails[0].productName %>"
+              />
+              <span><%= data[i].productDetails[0].productName %></span>
             </div>
-        </div>
+          </td>
+          <td data-label="Price">₹<%= data[i].productDetails[0].salePrice %></td>
+          <td data-label="Size"><%= data[i].size %></td>
+          <td data-label="Quantity">
+            <% if (data[i].productDetails[0].isBlocked || data[i].isOutOfStock) { %>
+              <div class="product-unavailable">Product is no longer available</div>
+            <% } else { %>
+              <div class="quantity-control">
+                <button
+                  onclick="changeQuantity('<%= data[i].productDetails[0]._id %>', 0, -1, '<%= data[i].size %>')"
+                >
+                  -
+                </button>
+                <input type="number" value="<%= data[i].quantity %>" min="0" readonly />
+                <button
+                  onclick="changeQuantity('<%= data[i].productDetails[0]._id %>', 0, 1, '<%= data[i].size %>')"
+                >
+                  +
+                </button>
+              </div>
+            <% } %>
+          </td>
+          <td data-label="Total">₹<%= data[i].productDetails[0].salePrice * data[i].quantity %></td>
+          <td>
+            <button class="remove-btn" onclick="removeCartItem('<%= data[i].itemId %>')">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
         <% } %>
+      </tbody>
+    </table>
+
+    <div class="cart-summary">
+      <div class="summary-details">
+        <div class="total">
+          Total: <span class="cart-total">₹<%= grandTotal %></span>
+        </div>
+      </div>
+      <a
+        href="/checkout"
+        class="checkout-btn <%= (isBlockedItem || hasZeroQuantity) ? 'disabled' : '' %>"
+        data-blocked="<%= isBlockedItem %>"
+        data-zero="<%= hasZeroQuantity %>"
+      >
+        Proceed to Checkout
+      </a>
+    </div>
+    <% } else { %>
+    <div class="empty-cart">
+      <div class="empty-cart-icon">
+        <i class="fas fa-shopping-cart"></i>
+      </div>
+      <h2 class="empty-cart-title">Your cart is empty</h2>
+      <p class="empty-cart-message">Looks like you haven't added any items to your cart yet.</p>
+      <a href="/shop" class="start-shopping-btn">Start Shopping</a>
+    </div>
+    <% } %>
+  </div>
+
+  <% if (totalPages > 1) { %>
+  <div class="pagination-container">
+    <div class="pagination">
+      <% if (currentPage > 1) { %>
+      <a href="/cart?page=<%= currentPage - 1 %>" class="pagination-link">« Previous</a>
+      <% } %>
+      <% for (let i = 1; i <= totalPages; i++) { %>
+      <a
+        href="/cart?page=<%= i %>"
+        class="pagination-link <%= currentPage === i ? 'active' : '' %>"
+      >
+        <%= i %>
+      </a>
+      <% } %>
+      <% if (currentPage < totalPages) { %>
+      <a href="/cart?page=<%= currentPage + 1 %>" class="pagination-link">Next »</a>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const checkoutBtn = document.querySelector(".checkout-btn");
+    const hasBlockedItem = checkoutBtn.getAttribute("data-blocked") === "true";
+    const hasZeroQuantity = checkoutBtn.getAttribute("data-zero") === "true";
 
-document.addEventListener("DOMContentLoaded", function () {
-        let checkoutBtn = document.querySelector(".checkout-btn");
-        let hasBlockedItem = checkoutBtn.getAttribute("data-blocked") === "true"; 
-
-        if (hasBlockedItem) {
-            checkoutBtn.classList.add("disabled"); 
-            checkoutBtn.addEventListener("click", function (event) {
-                event.preventDefault();
-                Swal.fire({
-                    icon: "error",
-                    title: "Checkout Not Allowed",
-                    text: "One or more items in your cart have been blocked by the admin. Please remove them to proceed.",
-                    confirmButtonColor: "#d33"
-                });
-            });
-        }
-    });
-
-
-    
-async function removeCartItem(itemId) {
-  
-    const confirmation = await Swal.fire({
-        title: "Are you sure?",
-        text: "Do you really want to remove this item from your cart?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, remove it!"
-    });
-
-    if (!confirmation.isConfirmed) {
-        return;
+    if (hasBlockedItem || hasZeroQuantity) {
+      checkoutBtn.classList.add("disabled");
+      checkoutBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+        Swal.fire({
+          icon: "error",
+          title: "Checkout Not Allowed",
+          text: hasZeroQuantity
+            ? "One or more items in your cart are out of stock. Please remove them."
+            : "One or more items in your cart have been blocked by the admin. Please remove them to proceed.",
+          confirmButtonColor: "#d33",
+        });
+      });
     }
+  });
+
+  async function removeCartItem(itemId) {
+    const confirmation = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to remove this item from your cart?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, remove it!",
+    });
+
+    if (!confirmation.isConfirmed) return;
 
     try {
-        const response = await fetch('/removeCartItem', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ itemId })
+      const response = await fetch("/removeCartItem", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ itemId }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        await Swal.fire({
+          title: "Deleted!",
+          text: "Item successfully removed from the cart.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
         });
-
-        const result = await response.json();
-
-        if (result.success) {
-            await Swal.fire({
-                title: "Deleted!",
-                text: "Item successfully removed from the cart.",
-                icon: "success",
-                timer: 2000, 
-                showConfirmButton: false
-            });
-            window.location.reload();
-        } else {
-            Swal.fire({
-                title: "Error!",
-                text: "Error while deleting from the cart!",
-                icon: "error"
-            });
-        }
-    } catch (error) {
-        console.error("Error:", error);
+        window.location.reload();
+      } else {
         Swal.fire({
-            title: "Oops!",
-            text: "Something went wrong. Please try again.",
-            icon: "error"
+          title: "Error!",
+          text: "Error while deleting from the cart!",
+          icon: "error",
         });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      Swal.fire({
+        title: "Oops!",
+        text: "Something went wrong. Please try again.",
+        icon: "error",
+      });
     }
-}
-async function changeQuantity(productId, cartQuantity, count, size) {
-    const row = document.querySelector(`tr[data-id="${productId}"][data-size="${size}"]`);
+  }
+
+  async function changeQuantity(productId, cartQuantity, count, size) {
+  const row = document.querySelector(`tr[data-id="${productId}"][data-size="${size}"]`);
   if (!row) {
     console.error("Row not found for product ID:", productId, "and size:", size);
     return;
@@ -423,16 +429,6 @@ async function changeQuantity(productId, cartQuantity, count, size) {
 
   const input = row.querySelector("input");
   let currentQuantity = parseInt(input.value);
-  let newQuantity = currentQuantity + count;
-
-  if (newQuantity < 1) {
-    Swal.fire({ icon: "warning", title: "Invalid Quantity", text: "Quantity cannot be less than 1!", position: "top-end", toast: true, timer: 3000, showConfirmButton: false });
-    return;
-  }
-  if (newQuantity > 10) {
-    Swal.fire({ icon: "warning", title: "Quantity Limit", text: "You cannot add more than 10 items of this product.", position: "top-end", toast: true, timer: 3000, showConfirmButton: false });
-    return;
-  }
 
   try {
     const response = await fetch("/changeQuantity", {
@@ -443,72 +439,37 @@ async function changeQuantity(productId, cartQuantity, count, size) {
     const data = await response.json();
 
     if (data.status) {
-        const updatedRow = document.querySelector(`tr[data-id="${productId}"][data-size="${size}"]`);
+      const updatedRow = document.querySelector(`tr[data-id="${productId}"][data-size="${size}"]`);
       if (updatedRow) {
         updatedRow.querySelector("input").value = data.quantityInput;
         updatedRow.querySelector("[data-label='Total']").innerText = `₹${data.totalAmount}`;
         document.querySelector(".cart-total").innerText = `₹${data.grandTotal}`;
       }
     } else {
-      Swal.fire({ icon: "error", title: "Update Failed", text: data.error || "Could not update the cart.", position: "top-end", toast: true, timer: 3000, showConfirmButton: false });
+      Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: data.error || "Could not update the cart.",
+        position: "top-end",
+        toast: true,
+        timer: 3000,
+        showConfirmButton: false,
+      });
     }
   } catch (error) {
     console.error("Fetch error:", error.message);
-    Swal.fire({ icon: "error", title: "Update Failed", text: "Could not update the cart. Please try again.", position: "top-end", toast: true, timer: 2000, showConfirmButton: false });
+    Swal.fire({
+      icon: "error",
+      title: "Update Failed",
+      text: "Could not update the cart. Please try again.",
+      position: "top-end",
+      toast: true,
+      timer: 2000,
+      showConfirmButton: false,
+    });
   }
 }
-    async function confirmRemove(productId) {
-        const confirmation = await Swal.fire({
-            title: "Are you sure?",
-            text: "Do you really want to remove this item from the cart?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "Yes, remove it!"
-        });
 
-        if (confirmation.isConfirmed) {
-            try {
-                const response = await fetch('/deleteItem', {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ id: productId }),
-                });
-
-                if (response.ok) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Removed!",
-                        text: "The item has been removed from your cart.",
-                        position: "top-end",
-                        toast: true,
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 2000);
-                } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error!",
-                        text: "Failed to remove the item. Please try again."
-                    });
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                Swal.fire({
-                    icon: "error",
-                    title: "Error!",
-                    text: "Something went wrong. Please try again later."
-                });
-            }
-        }
-    }
 </script>
 
 <%- include("../../views/partials/user/footer") %>
