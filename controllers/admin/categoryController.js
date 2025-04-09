@@ -161,6 +161,11 @@ const editCategory = async (req, res) => {
             { new: true }
         );
 
+        const updateProduct= await Product.deleteMany({category:id,size:"M",quantity:{$lt:5},productOffer:0})
+
+        console.log("haii")
+
+
         if (updateCategory) {
             return res.status(200).json({ 
                 success: true, 
