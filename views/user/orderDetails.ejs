@@ -441,9 +441,11 @@ button {
                 </span>
   </div>
 
+  <% if (orders.status === 'Delivered') { %>
   <a href="/download-invoice/<%= orders.orderid %>" class="btn btn-primary">
     <i class="fas fa-download"></i> Download Invoice
   </a>
+  <% } %>
   
   
 
@@ -531,9 +533,9 @@ button {
           <table>
             <thead>
               <tr>
-                <th width="15%">ProductId</th>
-                <th>Image</th>
                 <th width="30%">Name</th>
+                <th>Image</th>
+               
                 <th>size</th>
                 <th width="15%">Unit Price</th>
                 <th width="10%">Quantity</th>
@@ -546,8 +548,13 @@ button {
                 <% for (let i=0; i < orders.orderitems.length; i++) { %>
                   <tr>
                     <td>
-                      <%= orders.orderitems[i].productId._id %>
-                    </td>
+                      
+                      <strong><%= orders.orderitems[i].productId.productName %></strong>
+                      
+                  
+                  
+
+                  </td>
                     <td>
                      
 
@@ -555,14 +562,7 @@ button {
                                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;" />
                       
                     </td>
-                    <td>
-                      
-                        <strong><%= orders.orderitems[i].productId.productName %></strong>
-                        
                     
-                    
-
-                    </td>
                     <td>
                        <%= orders.orderitems[i].size %>
 

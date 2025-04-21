@@ -1,7 +1,7 @@
 const Wallet = require('../../models/walletSchema');
 const User = require('../../models/userSchema'); 
 const Order = require('../../models/orderSchema'); 
-
+const Status = require('../statusCodes')
 const mongoose = require('mongoose');
 
 
@@ -103,7 +103,7 @@ const getWalletTransactions = async (req, res) => {
         });
     } catch (error) {
         console.error("Error fetching wallet transactions:", error);
-        res.status(500).render("adminError", {
+        res.status(Status.INTERNAL_SERVER_ERROR).render("adminError", {
             message: "Error fetching wallet transactions",
             error: error.message
         });
@@ -120,7 +120,7 @@ const getTransactionDetails = async (req, res) => {
         
      
         if (!mongoose.Types.ObjectId.isValid(transactionId)) {
-            return res.status(400).render('error', {
+            return res.status(Status.BAD_REQUEST).render('error', {
                 message: 'Invalid transaction ID format'
             });
         }
@@ -131,17 +131,17 @@ const getTransactionDetails = async (req, res) => {
         }).lean();
 
         if (!wallet) {
-            return res.status(404).render('error', { 
+            return res.status(Status.NOT_FOUND).render('error', { 
                 message: 'Transaction not found' 
             });
         }
 
        
         const transaction = wallet.transactions.find(t => t._id.toString() === transactionId);
-        console.log("trabsaction isssss",transaction)
+
         
         if (!transaction) {
-            return res.status(404).render('error', {
+            return res.status(Status.NOT_FOUND).render('error', {
                 message: 'Transaction not found in wallet'
             });
         }
@@ -185,8 +185,8 @@ const getTransactionDetails = async (req, res) => {
 
     } catch (error) {
         console.error('Error in getTransactionDetails:', error);
-        res.status(500).render('adminError', {
-            message: 'Server Error',
+        res.status(Status.INTERNAL_SERVER_ERROR).render('adminError', {
+            message: Message.SERVER_ERROR,
             error: process.env.NODE_ENV === 'development' ? error : null
         });
     }

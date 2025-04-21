@@ -7,6 +7,8 @@ const Wallet = require("../../models/walletSchema");
 const nodemailer = require('nodemailer')
 const bcrypt = require('bcrypt')
 const env = require('dotenv').config()
+const Status = require('../statusCodes')
+const Message = require('../messages')
 
 
 const loadHomepage = async (req,res)=>{
@@ -22,7 +24,7 @@ const loadHomepage = async (req,res)=>{
         res.render("home",{user:userData})
     }catch (error){
         console.log("Home page not found")
-        res.status(500).send("Server error")
+        res.status(Status.INTERNAL_SERVER_ERROR).send(Message.SERVER_ERROR)
     }
 
 }
@@ -38,7 +40,7 @@ const loadSignup=async (req,res)=>{
 
     }catch(error){
         console.log("Home page not loading",error)
-        res.status(500).send("Server error")
+        res.status(Status.INTERNAL_SERVER_ERROR).send(Message.SERVER_ERROR)
     }
     
 }
@@ -167,46 +169,6 @@ async function generateUniqueReferralCode() {
 
 
 
-// const verifyOtp = async(req,res)=>{
-//     try{
-//         const {otp,timer} = req.body
-      
-       
-//         if(otp === req.session.userOtp && timer>0){
-//             const user = req.session.userData
-//             const existingUser = await User.findOne({ email: user.email });
-//             if (existingUser) {
-//                 return res.status(400).json({ success: false, message: "User with this email already exists. Please log in." });
-//             }
-           
-//            const hashPassword = await securePassword(user.password)
-           
-//            const referralCode = await generateUniqueReferralCode();
-//            const saveUserData = new User({
-//             name : user.name ,
-//             email : user.email ,
-//             phone : user.phone ,
-//             password : hashPassword ,
-//             referalCode: referralCode
-
-//            })
-//            await saveUserData.save();
-//            req.session.user = saveUserData._id
-//            res.json({success:true,redirectUrl:'/'})
-//         }else{
-//            res.status(400).json({success:false,message:"Invalid otp,Please try again"})
-//         }
-
-//     }catch(error){
-//         console.error("Error verifying otp",error)
-//         res.status(500).json({success:false,message:"An error occured"})
-
-//     }
-
-
-
-
-// }
 const verifyOtp = async (req, res) => {
     try {
         const { otp, timer } = req.body;
@@ -217,7 +179,7 @@ const verifyOtp = async (req, res) => {
           
             const existingUser = await User.findOne({ email: user.email });
             if (existingUser) {
-                return res.status(400).json({
+                return res.status(Status.BAD_REQUEST).json({
                     success: false,
                     message: "User with this email already exists. Please log in.",
                 });
@@ -314,14 +276,14 @@ const verifyOtp = async (req, res) => {
     
             res.json({ success: true, redirectUrl: "/" });
         } else {
-            res.status(400).json({
+            res.status(Status.BAD_REQUEST).json({
                 success: false,
                 message: "Invalid OTP, please try again",
             });
         }
     } catch (error) {
         console.error("Error verifying OTP", error);
-        res.status(500).json({
+        res.status(Status.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "An error occurred",
         });
@@ -332,7 +294,7 @@ const resendOtp = async(req,res)=>{
     try {
         const {email} = req.session.email
         if(!email){
-          return  res.status(400).send("Email found in session")
+          return  res.status(Status.BAD_REQUEST).send("Email found in session")
         }
 
         const otp = generateOtp()
@@ -341,15 +303,15 @@ const resendOtp = async(req,res)=>{
 
         if(emailSent){
             console.log("resend otp",req.session.userOtp)
-            res.status(200).json({success:true,message:"OTP resend successfully"})
+            res.status(Status.OK).json({success:true,message:"OTP resend successfully"})
         }else{
-            res.status(400).json({success:false,message:"Failed to resend OTP.Please try again"})
+            res.status(Status.BAD_REQUEST).json({success:false,message:"Failed to resend OTP.Please try again"})
         }
         
     } catch (error) {
         
         console.error("Error resending otp",error)
-        res.status(500).json({success:false,message:"Internal Server Error.Please try again"})
+        res.status(Status.INTERNAL_SERVER_ERROR).json({success:false,message:Message.SERVER_ERROR})
     }
 }
 
@@ -518,7 +480,7 @@ const productSize = async (req, res) => {
         res.json(product.sizes);
     } catch (error) {
         console.error("Error fetching sizes:", error);
-        res.status(500).json({ error: 'Error fetching sizes' });
+        res.status(Status.INTERNAL_SERVER_ERROR).json({ error: 'Error fetching sizes' });
     }
 };
 

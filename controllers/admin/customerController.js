@@ -1,4 +1,5 @@
 const User = require('../../models/userSchema')
+const Status = require('../statusCodes')
 
 
 
@@ -37,7 +38,7 @@ const customerInfo = async (req, res) => {
 
     } catch (error) {
         console.error("Error fetching customer data:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(Status.INTERNAL_SERVER_ERROR).send(Message.SERVER_ERROR);
     }
 };
 

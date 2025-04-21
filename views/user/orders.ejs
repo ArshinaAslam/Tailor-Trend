@@ -480,7 +480,7 @@
                     <% if (orders && Array.isArray(orders) && orders.length > 0) { %>
                       <% orders.forEach((order) => { %>
                         <tr class="order-item">
-                          <td data-label="Order ID"><%= order.orderid %></td>
+                          <td data-label="Order ID">#<%= order.orderid.toString().slice(-6) %></td>
                           <td data-label="Date"><%= order.createdOn ? order.createdOn.toLocaleDateString() : 'N/A' %></td>
                           <td data-label="Total">₹<%= order.finalAmount.toFixed(2) %></td>
                           <td data-label="Status"><%= order.status %></td>

@@ -97,20 +97,16 @@
                       <li><a href="?page=<%= currentPage - 1 %>">Previous</a></li>
                     <% } %>
                     
-                    <% for (let i = 1; i <= totalPages; i++) { %>
-                      <li class="<%= currentPage === i ? 'active' : '' %>">
-                        <a href="?page=<%= i %>"><%= i %></a>
-                      </li>
-                    <% } %>
-              
+                    <li class="active">
+                      <a href="?page=<%= currentPage %>"><%= currentPage %></a>
+                    </li>
+                    
                     <% if (currentPage < totalPages) { %>
                       <li><a href="?page=<%= currentPage + 1 %>">Next</a></li>
                     <% } %>
                   </ul>
                 <% } %>
               </div>
-              
-
               
             </div>
           </div>

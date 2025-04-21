@@ -5,6 +5,7 @@ const Order = require("../../models/orderSchema");
 const Wallet = require("../../models/walletSchema");
 const mongodb = require("mongodb");
 const mongoose = require("mongoose");
+const Status = require('../statusCodes')
 
 const env = require("dotenv").config();
 const crypto = require("crypto");
@@ -142,7 +143,7 @@ const getOrderDetailsPageAdmin = async (req, res) => {
  
     
     if (!findOrder) {
-      return res.status(404).send("Order not found");
+      return res.status(Status.NOT_FOUND).send("Order not found");
     }
 
     const AddressId = findOrder.address._id;
@@ -159,7 +160,7 @@ const getOrderDetailsPageAdmin = async (req, res) => {
 
     
 if (!findAddress || !findAddress.address) {
-  return res.status(404).send("Address not found");
+  return res.status(Status.NOT_FOUND).send("Address not found");
 }
 
     const selectedAddress = findAddress.address.find(
@@ -185,7 +186,7 @@ const updateOrderStatus = async (req, res) => {
     
     const order = await Order.findById(orderId);
     if (!order) {
-      return res.status(404).json({
+      return res.status(Status.NOT_FOUND).json({
         success: false,
         message: "Order not found",
       });
@@ -198,7 +199,7 @@ const updateOrderStatus = async (req, res) => {
     );
     
     if (itemIndex === -1) {
-      return res.status(404).json({
+      return res.status(Status.NOT_FOUND).json({
         success: false,
         message: "Item not found in order",
       });
@@ -276,9 +277,9 @@ const updateOrderStatus = async (req, res) => {
     });
   } catch (error) {
     console.error("Item status update error:", error);
-    res.status(500).json({
+    res.status(Status.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: error.message || "Server error",
+      message: error.message || Message.SERVER_ERROR,
     });
   }
 };
@@ -294,7 +295,7 @@ const handleReturn = async (req, res) => {
 
     if (!order) {
       return res
-        .status(404)
+        .status(Status.NOT_FOUND)
         .json({ success: false, message: "Order not found" });
     }
 
@@ -320,7 +321,7 @@ const handleReturn = async (req, res) => {
 
     if (!itemToReturn) {
       return res
-        .status(404)
+        .status(Status.NOT_FOUND)
         .json({ success: false, message: "Item not found in the order" });
     }
 
@@ -361,16 +362,16 @@ const handleReturn = async (req, res) => {
 
     
 
-     order.totalPrice = remainingItemsCost;
+    //  order.totalPrice = remainingItemsCost;
     
      if(order.totalPrice==0  ){
       totalDiscount = 0
 
     
      }
-     order.discount = totalDiscount 
+    //  order.discount = totalDiscount 
     
-    order.finalAmount = order.totalPrice - totalDiscount
+    // order.finalAmount = order.totalPrice - totalDiscount
     
     
    
@@ -431,7 +432,7 @@ const handleReturn = async (req, res) => {
     });
   } catch (error) {
     console.error("Error handling return:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: Message.SERVER_ERROR });
   }
 };
 

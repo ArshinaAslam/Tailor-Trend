@@ -1,4 +1,5 @@
 const Coupon = require('../../models/couponSchema')
+const Status = require('../statusCodes')
 
 const mongoose = require('mongoose')
 
@@ -63,7 +64,7 @@ const createCoupon = async (req, res) => {
 
      
       if (!data.couponName) {
-          return res.status(400).json({ success: false, message: "Coupon name is required" });
+          return res.status(Status.BAD_REQUEST).json({ success: false, message: "Coupon name is required" });
       }
 
      
@@ -71,38 +72,38 @@ const createCoupon = async (req, res) => {
           name: { $regex: new RegExp(`^${data.couponName}$`, 'i') }
       });
       if (existingCoupon) {
-          return res.status(400).json({ 
+          return res.status(Status.BAD_REQUEST).json({ 
               success: false, 
               message: "A coupon with this name already exists" 
           });
       }
 
       if (!data.startDate || isNaN(data.startDate.getTime())) {
-          return res.status(400).json({ 
+          return res.status(Status.BAD_REQUEST).json({ 
               success: false, 
               message: "Invalid start date. Please provide a valid date in YYYY-MM-DD format." 
           });
       }
       if (!data.endDate || isNaN(data.endDate.getTime())) {
-          return res.status(400).json({ 
+          return res.status(Status.BAD_REQUEST).json({ 
               success: false, 
               message: "End date is required. Please provide a valid date in YYYY-MM-DD format." 
           });
       }
       if (data.startDate > data.endDate) {
-          return res.status(400).json({ 
+          return res.status(Status.BAD_REQUEST).json({ 
               success: false, 
               message: "Start date must be before end date" 
           });
       }
       if (isNaN(data.offerPrice) || isNaN(data.minimumPrice)) {
-          return res.status(400).json({ 
+          return res.status(Status.BAD_REQUEST).json({ 
               success: false, 
               message: "Offer price and minimum price must be valid numbers" 
           });
       }
       if (data.offerPrice >= data.minimumPrice) {
-          return res.status(400).json({ 
+          return res.status(Status.BAD_REQUEST).json({ 
               success: false, 
               message: "Offer price must be less than minimum price" 
           });
@@ -120,16 +121,16 @@ const createCoupon = async (req, res) => {
 
       await newCoupon.save();
 
-      return res.status(201).json({
+      return res.status(Status.CREATED).json({
           success: true,
           message: "Coupon created successfully",
           couponId: newCoupon._id 
       });
   } catch (error) {
       console.error("Error creating coupon:", error.message, error.stack);
-      return res.status(500).json({
+      return res.status(Status.INTERNAL_SERVER_ERROR).json({
           success: false,
-          message: error.message || "Internal Server Error"
+          message: error.message || Message.SERVER_ERROR
       });
   }
 };
@@ -160,13 +161,13 @@ const editCoupon = async (req, res) => {
 
       
       if (!couponName || !startDate || !endDate || !offerPrice || !minimumPrice) {
-          return res.status(400).json({ success: false, message: "All fields are required" });
+          return res.status(Status.BAD_REQUEST).json({ success: false, message: "All fields are required" });
       }
 
       const parsedOfferPrice = parseInt(offerPrice);
       const parsedMinimumPrice = parseInt(minimumPrice);
       if (isNaN(parsedOfferPrice) || isNaN(parsedMinimumPrice)) {
-          return res.status(400).json({ success: false, message: "Offer price and minimum price must be valid numbers" });
+          return res.status(Status.BAD_REQUEST).json({ success: false, message: "Offer price and minimum price must be valid numbers" });
       }
 
      
@@ -176,7 +177,7 @@ const editCoupon = async (req, res) => {
       });
 
       if (existingCoupon) {
-          return res.status(400).json({ 
+          return res.status(Status.BAD_REQUEST).json({ 
               success: false, 
               message: "A coupon with this name already exists" 
           });
@@ -184,7 +185,7 @@ const editCoupon = async (req, res) => {
 
       const selectedCoupon = await Coupon.findOne({ _id: objId });
       if (!selectedCoupon) {
-          return res.status(404).json({ success: false, message: "Coupon not found" });
+          return res.status(Status.NOT_FOUND).json({ success: false, message: "Coupon not found" });
       }
 
       const updatedCoupon = await Coupon.updateOne(
@@ -201,21 +202,21 @@ const editCoupon = async (req, res) => {
       );
 
       if (updatedCoupon.modifiedCount > 0) {
-          return res.status(200).json({ 
+          return res.status(Status.OK).json({ 
               success: true, 
               message: "Coupon updated successfully" 
           });
       } else {
-          return res.status(400).json({ 
+          return res.status(Status.BAD_REQUEST).json({ 
               success: false, 
               message: "No changes were made to the coupon" 
           });
       }
   } catch (error) {
       console.error("Error updating coupon:", error);
-      return res.status(500).json({ 
+      return res.status(Status.INTERNAL_SERVER_ERROR).json({ 
           success: false, 
-          message: "Internal Server Error: " + error.message 
+          message: Message.SERVER_ERROR + error.message 
       });
   }
 };
@@ -225,11 +226,11 @@ const deleteCoupon = async(req,res)=>{
     try {
         const couponId = req.query.id
         await Coupon.deleteOne({_id:couponId})
-        res.status(200).json({success:true,message:"Coupon deleted successfully"})
+        res.status(Status.OK).json({success:true,message:"Coupon deleted successfully"})
         
     } catch (error) {
         console.error("Error deleting coupon",error)
-        res.status(500).json({success:false,message:"Failed to delete coupon"})
+        res.status(Status.INTERNAL_SERVER_ERROR).json({success:false,message:"Failed to delete coupon"})
     }
 
 }

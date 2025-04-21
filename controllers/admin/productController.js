@@ -3,6 +3,7 @@ const Category = require('../../models/categorySchema')
 const Brand = require('../../models/brandSchema')
 const User = require('../../models/userSchema')
 const {cloudinary} = require('../../config/cloudinary')
+const Status = require('../statusCodes')
 const { v4: uuidv4 } = require('uuid');
 const fs = require('fs')
 const path = require('path')
@@ -91,7 +92,7 @@ const addProduct = async (req, res) => {
     });
     
     if (productExist) {
-      return res.status(400).json({ 
+      return res.status(Status.BAD_REQUEST).json({ 
         success: false, 
         message: 'Product already exists. Please try with another name' 
       });
@@ -146,7 +147,7 @@ const addProduct = async (req, res) => {
 
     const categoryId = await Category.findOne({ name: products.category });
     if (!categoryId) {
-      return res.status(400).json({ 
+      return res.status(Status.BAD_REQUEST).json({ 
         success: false, 
         message: 'Invalid category name' 
       });
@@ -177,12 +178,20 @@ const addProduct = async (req, res) => {
         .filter(item => item && item.size && !isNaN(item.quantity));
     }
 
-    if (sizes.length === 0) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Please provide at least one valid size with quantity' 
-      });
+    if (Array.isArray(sizes)) {
+      for (const sizeObj of sizes) {
+        if (sizeObj.quantity < 0) {
+          return res.status(Status.BAD_REQUEST).json({ 
+            success: false, 
+            message: 'Quantity cannot be a negative value' 
+          });
+        }
+      }
     }
+
+
+
+
 
     const newProduct = new Product({
       productName: products.productName,
@@ -209,7 +218,7 @@ const addProduct = async (req, res) => {
 
     await newProduct.save();
 
-    return res.status(200).json({ 
+    return res.status(Status.OK).json({ 
       success: true, 
       message: 'Product added successfully',
       redirect: '/admin/products'
@@ -217,9 +226,9 @@ const addProduct = async (req, res) => {
      
   } catch (error) {
     console.error('Error saving product', error);
-    return res.status(500).json({ 
+    return res.status(Status.INTERNAL_SERVER_ERROR).json({ 
       success: false, 
-      message: error.message || 'Internal server error' 
+      message: error.message || Message.SERVER_ERROR 
     });
   }
 };
@@ -308,7 +317,7 @@ const editProduct = async (req, res) => {
       });
       
       if (existingProduct) {
-          return res.status(400).json({ 
+          return res.status(Status.BAD_REQUEST).json({ 
               success: false, 
               message: 'Product name already exists', 
               isNameDuplicate: true
@@ -319,7 +328,7 @@ const editProduct = async (req, res) => {
       const product = await Product.findOne({ _id: id });          
       
       if (!product) {             
-          return res.status(404).json({ success: false, message: 'Product not found' });         
+          return res.status(Status.NOT_FOUND).json({ success: false, message: 'Product not found' });         
       }          
       
       let images = [...product.productImage];                  
@@ -413,7 +422,7 @@ const editProduct = async (req, res) => {
       
       const categoryDoc = await Category.findOne({ name: category });         
       if (!categoryDoc) {             
-          return res.status(404).json({ success: false, message: 'Category not found' });         
+          return res.status(Status.NOT_FOUND).json({ success: false, message: 'Category not found' });         
       }          
       
       
@@ -433,10 +442,10 @@ const editProduct = async (req, res) => {
           { new: true }         
       );          
       
-      res.status(200).json({ success: true, message: 'Successfully updated!', product: updatedProduct });      
+      res.status(Status.OK).json({ success: true, message: 'Successfully updated!', product: updatedProduct });      
   } catch (error) {         
       console.error("Error updating product:", error);         
-      return res.status(500).json({ success: false, message: error.message });     
+      return res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });     
   } 
 };
 
@@ -447,7 +456,7 @@ const addProductOffer = async (req, res) => {
 
         const parsedPercentage = parseInt(percentage);
         if (isNaN(parsedPercentage) || parsedPercentage < 1 || parsedPercentage > 99) {
-            return res.status(400).json({ 
+            return res.status(Status.BAD_REQUEST).json({ 
                 status: false, 
                 message: "Offer must be between 1% and 99%" 
             });
@@ -455,7 +464,7 @@ const addProductOffer = async (req, res) => {
 
         const findProduct = await Product.findOne({ _id: productId });
         if (!findProduct) {
-            return res.status(404).json({ 
+            return res.status(Status.NOT_FOUND).json({ 
                 status: false, 
                 message: "Product not found" 
             });
@@ -463,7 +472,7 @@ const addProductOffer = async (req, res) => {
 
         const findCategory = await Category.findOne({ _id: findProduct.category });
         if (!findCategory) {
-            return res.status(404).json({ 
+            return res.status(Status.NOT_FOUND).json({ 
                 status: false, 
                 message: "Category not found" 
             });
@@ -475,16 +484,16 @@ const addProductOffer = async (req, res) => {
         findProduct.productOffer = parsedPercentage;
         await findProduct.save();
         
-        return res.status(200).json({ 
+        return res.status(Status.OK).json({ 
             status: true, 
             message: "Offer added successfully" 
         });
 
     } catch (error) {
         console.error("Error in addProductOffer:", error);
-        return res.status(500).json({ 
+        return res.status(Status.INTERNAL_SERVER_ERROR).json({ 
             status: false, 
-            message: "Internal Server Error" 
+            message: Message.SERVER_ERROR
         });
     }
 };

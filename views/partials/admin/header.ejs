@@ -18,7 +18,7 @@
 <script src="https://kit.fontawesome.com/16d4885483.js" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-    <style>
+    <!-- <style>
         /* Fixed Sidebar */
         .sidebar {
             background-color: #f8f9fa;
@@ -76,7 +76,101 @@
             }
         }
 
+    </style> -->
+
+    <style>
+        body {
+            overflow-x: hidden;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Fixed Sidebar */
+        .sidebar {
+            background-color: #f8f9fa;
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto; 
+            transition: transform 0.3s ease-in-out;
+            z-index: 30;
+        }
+        
+        .sidebar a {
+            display: block;
+            padding: 12px 20px;
+            color: #333;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: #4a90e2;
+            color: white;
+        }
+
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+       
+        main {
+            margin-left: 250px;
+            padding: 20px;
+            padding-top: 70px; /* Space for fixed header */
+            min-height: calc(100vh - 60px); /* Adjust based on header height */
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 250px; /* Same as sidebar width */
+            right: 0;
+            height: 60px;
+            background-color: #fff;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+       
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            main, header {
+                margin-left: 0;
+                left: 0;
+                width: 100%;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+        }
     </style>
+
 </head>
 <body class="bg-gray-100">
 

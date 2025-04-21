@@ -1,6 +1,8 @@
 const User = require('../../models/userSchema')
 const Product = require('../../models/productSchema');
 const Wishlist = require('../../models/wishlistSchema');
+const Status = require('../statusCodes')
+const Message = require('../messages')
 
 
 
@@ -66,11 +68,11 @@ const addToWishlist = async (req, res) => {
         const userId = req.session.user;
 
         if (!userId) {
-            return res.status(401).json({ status: false, message: "User not logged in" });
+            return res.status(Status.UNAUTHORIZED).json({ status: false, message: "User not logged in" });
         }
         
         if (!productId) {
-            return res.status(400).json({ status: false, message: "Product ID is missing" });
+            return res.status(Status.BAD_REQUEST).json({ status: false, message: "Product ID is missing" });
         }
 
         let wishlist = await Wishlist.findOne({ userId });
@@ -80,7 +82,7 @@ const addToWishlist = async (req, res) => {
             const productExists = wishlist.products.some(item => item.productId.equals(productId));
 
             if (productExists) {
-                return res.status(400).json({ status: false, message: "Product already in wishlist" });
+                return res.status(Status.BAD_REQUEST).json({ status: false, message: "Product already in wishlist" });
             }
 
             wishlist.products.push({ productId });
@@ -97,7 +99,7 @@ const addToWishlist = async (req, res) => {
 
     } catch (error) {
         console.error("Wishlist Error:", error);
-        return res.status(500).json({ status: false, message: "Internal Server Error" });
+        return res.status(Status.INTERNAL_SERVER_ERROR).json({ status: false, message: Message.SERVER_ERROR });
     }
 };
 const removeFromWishlist = async (req, res) => {
@@ -113,13 +115,13 @@ const removeFromWishlist = async (req, res) => {
         );
 
         if (!updatedWishlist) {
-            return res.status(404).json({ status: false, message: "Wishlist not found" });
+            return res.status(Status.NOT_FOUND).json({ status: false, message: "Wishlist not found" });
         }
 
         res.redirect('/wishlist');
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ status: false, message: "Server Error" });
+        return res.status(Status.INTERNAL_SERVER_ERROR).json({ status: false, message: Message.SERVER_ERROR });
     }
 };
 

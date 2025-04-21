@@ -7,6 +7,8 @@ const Cart = require('../../models/cartSchema');
 const Coupon = require('../../models/couponSchema');
 const Product = require('../../models/productSchema');
 const User = require('../../models/userSchema')
+const Status = require('../statusCodes')
+const Message = require('../messages')
 
 
 
@@ -98,7 +100,7 @@ const referralPage = async (req, res) => {
       const user = await User.findById(userId).populate('wallet');
 
       if (!user) {
-          return res.status(404).send("User not found");
+          return res.status(Status.NOT_FOUND).send("User not found");
       }
 
       const page = parseInt(req.query.page) || 1;
@@ -139,7 +141,7 @@ const referralPage = async (req, res) => {
       });
   } catch (err) {
       console.log("Error loading referral page:", err);
-      res.status(500).send("Something went wrong");
+      res.status(Status.INTERNAL_SERVER_ERROR).send("Something went wrong");
   }
 };
 
@@ -148,26 +150,26 @@ const transferWallet = async (req, res) => {
     const userId = req.session.user;
     
     if (!userId) {
-      return res.status(401).json({ success: false, message: "Please log in first" });
+      return res.status(Status.UNAUTHORIZED).json({ success: false, message: "Please log in first" });
     }
     
     
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res.status(Status.NOT_FOUND).json({ success: false, message: "User not found" });
     }
     
 
     const referralAmount = user.referralWallet || 0;
     if (referralAmount <= 0) {
-      return res.status(400).json({ success: false, message: "No funds in referral wallet to transfer" });
+      return res.status(Status.BAD_REQUEST).json({ success: false, message: "No funds in referral wallet to transfer" });
     }
     
     
     const wallet = await Wallet.findOne({ userId: userId });
     if (!wallet) {
      
-      return res.status(404).json({ success: false, message: "Wallet not found" });
+      return res.status(Status.NOT_FOUND).json({ success: false, message: "Wallet not found" });
     }
     
   
@@ -183,14 +185,14 @@ const transferWallet = async (req, res) => {
     user.referralWallet = 0;
     await user.save();
     
-    return res.status(200).json({ 
+    return res.status(Status.OK).json({ 
       success: true, 
       message: `Successfully transferred ₹${referralAmount} to your main wallet` 
     });
     
   } catch (error) {
     console.error("Error transferring wallet funds:", error);
-    return res.status(500).json({ 
+    return res.status(Status.INTERNAL_SERVER_ERROR).json({ 
       success: false, 
       message: "An error occurred while transferring funds" 
     });
@@ -221,7 +223,7 @@ const razorpayOrder = async (req, res) => {
     });
   } catch (error) {
     console.error('Razorpay Error:', error);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
   }
 };
   
@@ -235,14 +237,14 @@ const verifyPayment = async (req, res) => {
     const generatedSignature = hmac.digest('hex');
 
     if (generatedSignature !== signature) {
-      return res.status(400).json({ success: false, message: 'Invalid signature' });
+      return res.status(Status.BAD_REQUEST).json({ success: false, message: 'Invalid signature' });
     }
 
 
     if (walletTopup) {
             const userId = req.session.user; 
             if (!userId) {
-              return res.status(401).json({ success: false, message: 'User not authenticated' });
+              return res.status(Status.UNAUTHORIZED).json({ success: false, message: 'User not authenticated' });
             }
             
             const wallet = await Wallet.findOneAndUpdate(
@@ -294,13 +296,13 @@ const verifyPayment = async (req, res) => {
     }
 
     if (!order) {
-      return res.status(404).json({ success: false, message: 'Order not found' });
+      return res.status(Status.NOT_FOUND).json({ success: false, message: 'Order not found' });
     }
 
     res.json({ success: true, message: 'Payment verified successfully' });
   } catch (error) {
     console.error('Verification Error:', error);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
   }
 };
 
@@ -316,7 +318,7 @@ const cleanupOrder = async (req, res) => {
       res.json({ success: true, message: 'Order remains in Pending Payment state' });
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
   }
 };
 
@@ -330,7 +332,7 @@ const walletPayment = async (req, res) => {
 
    
     if (!userId) {
-      return res.status(401).json({ 
+      return res.status(Status.UNAUTHORIZED).json({ 
         success: false, 
         message: 'User not authenticated' 
       });
@@ -341,7 +343,7 @@ const walletPayment = async (req, res) => {
 
    
     if (!wallet || wallet.balance < amount) {
-      return res.status(400).json({ 
+      return res.status(Status.BAD_REQUEST).json({ 
         success: false, 
         message: 'Insufficient wallet balance' 
       });
@@ -351,7 +353,7 @@ const walletPayment = async (req, res) => {
     const order = await Order.findById(mongoOrderId);
 
     if (!order) {
-      return res.status(404).json({ 
+      return res.status(Status.NOT_FOUND).json({ 
         success: false, 
         message: 'Order not found' 
       });
@@ -385,7 +387,7 @@ const walletPayment = async (req, res) => {
 
   } catch (error) {
     console.error('Wallet Payment Error:', error);
-    res.status(500).json({ 
+    res.status(Status.INTERNAL_SERVER_ERROR).json({ 
       success: false, 
       message: 'An error occurred during wallet payment' 
     });

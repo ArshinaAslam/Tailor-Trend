@@ -1,6 +1,9 @@
 const User = require('../../models/userSchema')
 const Order = require('../../models/orderSchema')
 const Coupon = require('../../models/couponSchema')
+const Status = require('../statusCodes')
+const  Message = require('../messages')
+
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 
@@ -110,13 +113,13 @@ switch (selectedPeriod) {
       
      
       if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-        return res.status(400).json({ error: 'Invalid date format' });
+        return res.status(Status.BAD_REQUEST).json({ error: 'Invalid date format' });
       }
     }
 
     
     if (isNaN(startDate) || isNaN(endDate) || startDate > endDate) {
-      return res.status(400).json({ error: 'Invalid date range' });
+      return res.status(Status.BAD_REQUEST).json({ error: 'Invalid date range' });
     }
 
     
@@ -338,7 +341,7 @@ switch (selectedPeriod) {
   } catch (error) {
     console.error("Error loading dashboard:", error);
     if (req.xhr || req.headers.accept.includes('application/json')) {
-      return res.status(500).json({ error: 'Internal Server Error', details: error.message });
+      return res.status(Status.INTERNAL_SERVER_ERROR).json({ error: Message.SERVER_ERROR, details: error.message });
     }
     res.redirect('/pageError');
   }
@@ -350,7 +353,7 @@ switch (selectedPeriod) {
 
   const exportExcel = async (req, res) => {
     if (!req.session.admin) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(Status.UNAUTHORIZED).json({ error: 'Unauthorized' });
     }
   
     try {
@@ -639,7 +642,7 @@ switch (selectedPeriod) {
       res.end();
     } catch (error) {
       console.error('Error generating Excel report:', error);
-      res.status(500).json({ 
+      res.status(Status.INTERNAL_SERVER_ERROR).json({ 
         success: false, 
         message: 'Failed to generate Excel report', 
         details: error.message 
@@ -650,7 +653,7 @@ switch (selectedPeriod) {
 
   const exportPdf = async (req, res) => {
     if (!req.session.admin) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(Status.UNAUTHORIZED).json({ error: 'Unauthorized' });
     }
   
     try {
@@ -945,7 +948,7 @@ switch (selectedPeriod) {
       doc.end();
     } catch (error) {
       console.error('Error generating PDF report:', error);
-      return res.status(500).json({ 
+      return res.status(Status.INTERNAL_SERVER_ERROR).json({ 
         success: false, 
         message: 'Failed to generate sales report', 
         error: error.message 
@@ -1041,7 +1044,7 @@ switch (selectedPeriod) {
       });
     } catch (error) {
       console.error('Error fetching sales report:', error);
-      res.status(500).send('Error generating sales report');
+      res.status(Status.INTERNAL_SERVER_ERROR).send('Error generating sales report');
     }
   }
 

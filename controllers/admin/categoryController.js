@@ -1,5 +1,6 @@
 const Category  = require('../../models/categorySchema')
 const Product = require('../../models/productSchema')
+const Status = require('../statusCodes')
 
 
 const categoryInfo = async(req,res)=>{
@@ -59,14 +60,14 @@ const addCategory = async (req, res) => {
 
         const categoryName = name.trim();
         if (!categoryName) {
-            return res.status(400).json({ error: "Category name cannot be empty" });
+            return res.status(Status.BAD_REQUEST).json({ error: "Category name cannot be empty" });
         }
         
         const existingCategory = await Category.findOne({ 
             name: { $regex: new RegExp(`^${categoryName}$`, 'i') }
         });
         if (existingCategory) {
-            return res.status(400).json({ error: "Category already exists" });
+            return res.status(Status.BAD_REQUEST).json({ error: "Category already exists" });
         }
 
         const newCategory = new Category({
@@ -78,10 +79,10 @@ const addCategory = async (req, res) => {
         await newCategory.save();
         
        
-        return res.status(200).json({ success: true, message: "Category added successfully" });
+        return res.status(Status.OK).json({ success: true, message: "Category added successfully" });
         
     } catch (error) {
-        return res.status(500).json({ error: "Internal server error" });
+        return res.status(Status.INTERNAL_SERVER_ERROR).json({ error: Message.SERVER_ERROR });
     }
 };
 
@@ -114,8 +115,8 @@ const getUnlistCategory = async(req,res)=>{
 
 const getEditCategory = async (req,res)=>{
     try {
-       const id = req.query.id
-       const category = await Category.findOne({_id:id})
+       const categoryId = req.query.id
+       const category = await Category.findOne({_id:categoryId})
        res.render("editCategory",{category:category})
 
 
@@ -130,13 +131,13 @@ const getEditCategory = async (req,res)=>{
 
 const editCategory = async (req, res) => {
     try {
-        const id = req.params.id;
+        const categoryId = req.params.id;
         const { name, description } = req.body;
 
        
         const categoryName = name.trim();
         if (!categoryName) {
-            return res.status(400).json({ error: "Category name cannot be empty" });
+            return res.status(Status.BAD_REQUEST).json({ error: "Category name cannot be empty" });
         }
 
         
@@ -145,39 +146,36 @@ const editCategory = async (req, res) => {
         });
 
         
-        if (existCategory && existCategory._id.toString() !== id) {
-            return res.status(400).json({ 
+        if (existCategory && existCategory._id.toString() !== categoryId) {
+            return res.status(Status.BAD_REQUEST).json({ 
                 error: "Category already exists. Please choose another name" 
             });
         }
 
        
         const updateCategory = await Category.findByIdAndUpdate(
-            id,
+            categoryId,
             {
                 name: categoryName,  
                 description: description.trim()
             }, 
             { new: true }
         );
-
-        const updateProduct= await Product.deleteMany({category:id,size:"M",quantity:{$lt:5},productOffer:0})
-
-        console.log("haii")
-
+        
+    
 
         if (updateCategory) {
-            return res.status(200).json({ 
+            return res.status(Status.OK).json({ 
                 success: true, 
                 message: "Category updated successfully" 
             });
         } else {
-            return res.status(404).json({ error: "Category not found" });
+            return res.status(Status.NOT_FOUND).json({ error: "Category not found" });
         }
 
     } catch (error) {
         console.error("Error editing category:", error);
-        return res.status(500).json({ error: "Internal server error" });
+        return res.status(Status.INTERNAL_SERVER_ERROR).json({ error: Message.SERVER_ERROR });
     }
 };
 
@@ -190,12 +188,12 @@ const addCategoryOffer = async (req, res) => {
         const category = await Category.findById(categoryId);
 
         if (!category) {
-            return res.status(404).json({ status: false, message: "Category not found" });
+            return res.status(Status.NOT_FOUND).json({ status: false, message: "Category not found" });
         }
 
 
         if (percentage < 1 || percentage > 99) {
-            return res.status(400).json({ status: false, message: "Offer must be between 1% and 99%" });
+            return res.status(Status.BAD_REQUEST).json({ status: false, message: "Offer must be between 1% and 99%" });
         }
 
         const products = await Product.find({ category: category._id });
@@ -210,7 +208,7 @@ const addCategoryOffer = async (req, res) => {
 
         res.json({ status: true,message: "Category offer added successfully." });
     } catch (error) {
-        res.status(500).json({ status: false, message: "Internal Server Error" });
+        res.status(Status.INTERNAL_SERVER_ERROR).json({ status: false, message: Message.SERVER_ERROR });
     }
 };
 
@@ -223,7 +221,7 @@ const removeCategoryOffer = async (req, res) => {
         const category = await Category.findById(categoryId);
 
         if (!category) {
-            return res.status(404).json({ status: false, message: "Category not found" });
+            return res.status(Status.NOT_FOUND).json({ status: false, message: "Category not found" });
         }
 
         
@@ -240,7 +238,7 @@ const removeCategoryOffer = async (req, res) => {
           await category.save()
         res.json({ status: true });
     } catch (error) {
-        res.status(500).json({ status: false, message: "Internal Server Error" });
+        res.status(Status.INTERNAL_SERVER_ERROR).json({ status: false, message: Message.SERVER_ERROR });
     }
 };
 

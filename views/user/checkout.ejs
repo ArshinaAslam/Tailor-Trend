@@ -368,6 +368,48 @@
         font-weight: 600;
     }
 
+    .btn-danger {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
     .summary-table {
         width: 100%;
         margin-bottom: 20px;
@@ -397,6 +439,12 @@
         font-weight: 700;
         color: var(--primary-color);
     }
+
+    .btn-small {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    min-width: 60px;
+}
 
     @media (max-width: 768px) {
         .address-grid {
@@ -518,7 +566,7 @@
                             <% } %>
                         </div>
                         <div class="address-actions">
-                            <a href="/editAddress?id=<%= address._id %>" class="btn-secondary">Edit</a>
+                            <a href="/editAddress?id=<%= address._id %>" class="btn-primary btn-small">Edit</a>
                         </div>
                     </div>
                 <% }) %>
@@ -558,7 +606,7 @@
                             <button onclick="useCoupon('<%= Coupon[i].name %>')" id="useButton_<%= Coupon[i].name %>" class="btn-primary">
                                 Use
                             </button>
-                            <button onclick="cancelCoupon('<%= Coupon[i].name %>')" id="cancelButton_<%= Coupon[i].name %>" class="btn-danger" style="display: none;">
+                            <button onclick="cancelCoupon('<%= Coupon[i].name %>')" id="cancelButton_<%= Coupon[i].name %>" class="btn-primary" style="display: none;">
                                 Cancel
                             </button>
                         </div>

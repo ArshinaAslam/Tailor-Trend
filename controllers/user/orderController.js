@@ -6,7 +6,8 @@ const Cart = require('../../models/cartSchema')
 const Address = require("../../models/addressSchema"); 
 const Order = require('../../models/orderSchema');
 const Coupon = require('../../models/couponSchema');
-
+const Status = require('../statusCodes')
+const Message = require('../messages')
 
 const Wallet = require('../../models/walletSchema');
 const Razorpay = require("razorpay");
@@ -15,6 +16,9 @@ const path = require("path");
 const PDFDocument = require("pdfkit");
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
+
+
+
 
 const getOrders = async (req, res) => {
   try {
@@ -55,6 +59,7 @@ const getOrders = async (req, res) => {
     if (isAjaxRequest) {
       return res.json({ 
         orders,
+        dOrderId : orders.orderid.toString().slice(-6),
         currentPage: page,
         totalPages: totalPages,
         totalOrders: totalOrders
@@ -76,7 +81,7 @@ const getOrders = async (req, res) => {
     
     
     if (req.xhr || req.query.ajax === 'true' || req.headers.accept.includes('application/json')) {
-      return res.status(500).json({ error: "An error occurred while fetching orders" });
+      return res.status(Status.INTERNAL_SERVER_ERROR).json({ error: "An error occurred while fetching orders" });
     }
     
     res.redirect("/pageNotFound");
@@ -93,26 +98,26 @@ const placeOrder = async (req, res) => {
     const userId = req.session.user;
 
     if (!userId) {
-      return res.status(401).json({ success: false, message: "User not logged in" });
+      return res.status(Status.UNAUTHORIZED).json({ success: false, message: "User not logged in" });
     }
 
     if (!addressId) {
-      return res.status(400).json({ success: false, message: "Address ID is required" });
+      return res.status(Status.BAD_REQUEST).json({ success: false, message: "Address ID is required" });
     }
 
     const userAddress = await Address.findOne({ userId });
     if (!userAddress) {
-      return res.status(404).json({ success: false, message: "User address not found" });
+      return res.status(Status.NOT_FOUND).json({ success: false, message: "User address not found" });
     }
 
     const selectedAddress = userAddress.address.find(addr => addr._id.toString() === addressId);
     if (!selectedAddress) {
-      return res.status(404).json({ success: false, message: "Selected address not found" });
+      return res.status(Status.NOT_FOUND).json({ success: false, message: "Selected address not found" });
     }
 
     const cart = await Cart.findOne({ userId }).populate('items.productId');
     if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ success: false, message: "Cart is empty" });
+      return res.status(Status.BAD_REQUEST).json({ success: false, message: "Cart is empty" });
     }
 
     const orderItems = cart.items.map(item => ({
@@ -125,7 +130,7 @@ const placeOrder = async (req, res) => {
 
     const blockedProducts = cart.items.filter(item => item.productId.isBlocked);
     if (blockedProducts.length > 0) {
-      return res.status(403).json({
+      return res.status(Status.FORBIDDEN).json({
         success: false,
         message: `The product "${blockedProducts[0].productId.productName}" has been blocked by the admin. Please remove it from the cart before placing the order.`,
       });
@@ -188,7 +193,7 @@ const placeOrder = async (req, res) => {
     await Cart.findOneAndUpdate({ userId }, { items: [] });
   
 
-    res.status(201).json({
+    res.status(Status.OK).json({
       success: true,
       message: "Order placed successfully",
       order: newOrder,
@@ -196,7 +201,7 @@ const placeOrder = async (req, res) => {
     });
   } catch (error) {
     console.error("Detailed error while placing order:", error.stack);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: Message.SERVER_ERROR });
   }
 };
 
@@ -217,7 +222,7 @@ const getOrderDetails = async (req, res) => {
           
 
         if (!order) {
-            return res.status(404).send("Order not found");
+            return res.status(Status.NOT_FOUND).send("Order not found");
         }
 
        
@@ -241,7 +246,7 @@ const getOrderDetails = async (req, res) => {
 
     } catch (error) {
         console.error("Error:", error);
-        res.status(500).send("Server error");
+        res.status(Status.INTERNAL_SERVER_ERROR).send(Message.SERVER_ERROR);
     }
 };
 
@@ -281,25 +286,25 @@ const orderFailure = async(req,res)=>{
    
     const order = await Order.findById(orderId);
     if (!order) {
-      return res.status(404).send('Order not found');
+      return res.status(Status.NOT_FOUND).send('Order not found');
     }
 
    
     const userId = req.session.user; 
     if (!userId) {
-      return res.status(401).send('User not authenticated');
+      return res.status(Status.UNAUTHORIZED).send('User not authenticated');
     }
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).send('User not found');
+      return res.status(Status.NOT_FOUND).send('User not found');
     }
 
 
     res.render('orderFailure', { order, user });
   } catch (error) {
     console.error('Error in orderFailure route:', error);
-    res.status(500).send('Internal Server Error');
+    res.status(Status.INTERNAL_SERVER_ERROR).send(Message.SERVER_ERROR);
   }
 
 }
@@ -315,7 +320,7 @@ const returnOrder = async (req, res) => {
   
     const order = await Order.findOne({ _id: orderId });
     if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+      return res.status(Status.NOT_FOUND).json({ success: false, message: "Order not found" });
     }
     
    
@@ -325,7 +330,7 @@ const returnOrder = async (req, res) => {
     
     if (itemIndex === -1) {
       console.log("Item not found in order items");
-      return res.status(404).json({ success: false, message: "Item not found in order" });
+      return res.status(Status.NOT_FOUND).json({ success: false, message: "Item not found in order" });
     }
     
     
@@ -352,7 +357,7 @@ const returnOrder = async (req, res) => {
     res.json({ success: true, message: "Item return request initiated successfully" });
   } catch (error) {
     console.error("Error in return order:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: Message.SERVER_ERROR });
   }
 };
 
@@ -363,7 +368,7 @@ const cancelOrder = async (req, res) => {
 
     const order = await Order.findOne({ _id: orderId });
     if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+      return res.status(Status.NOT_FOUND ).json({ success: false, message: "Order not found" });
     }
     
     const itemToCancel = order.orderitems.find(
@@ -371,7 +376,7 @@ const cancelOrder = async (req, res) => {
     );
    
     if (!itemToCancel) {
-      return res.status(404).json({ success: false, message: "Item not found in the order" });
+      return res.status(Status.NOT_FOUND).json({ success: false, message: "Item not found in the order" });
     }
 
     const itemOriginalCost = itemToCancel.price * itemToCancel.quantity;
@@ -411,7 +416,7 @@ const cancelOrder = async (req, res) => {
     );
 
     if (!updatedOrder) {
-      return res.status(404).json({ success: false, message: "Order update failed" });
+      return res.status(Status.BAD_REQUEST).json({ success: false, message: "Order update failed" });
     }
 
    
@@ -461,7 +466,7 @@ const cancelOrder = async (req, res) => {
     }
   } catch (error) {
     console.error("Error in cancelOrder:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: Message.SERVER_ERROR });
   }
 };
 
@@ -478,7 +483,7 @@ const orderInvoice = async (req, res) => {
     
       
       if (!order) {
-          return res.status(404).json({ success: false, message: "Order not found" });
+          return res.status(Status.NOT_FOUND).json({ success: false, message: "Order not found" });
       }
 
       const addressId = order.address;
@@ -486,7 +491,7 @@ const orderInvoice = async (req, res) => {
 
       const userAddress = await Address.findOne({ userId: userId });
       if (!userAddress || !userAddress.address) {
-          return res.status(404).json({ success: false, message: "Address not found" });
+          return res.status(Status.NOT_FOUND).json({ success: false, message: "Address not found" });
       }
 
       const addresses = userAddress.address;
@@ -500,7 +505,7 @@ const orderInvoice = async (req, res) => {
       }
 
       if (!selectedAddress) {
-          return res.status(404).json({ success: false, message: "Selected address not found" });
+          return res.status(Status.NOT_FOUND).json({ success: false, message: "Selected address not found" });
       }
 
       const invoicesDir = path.join(__dirname, "../invoices");
@@ -641,7 +646,7 @@ const orderInvoice = async (req, res) => {
           res.download(filePath, `invoice-${orderId}.pdf`, (err) => {
               if (err) {
                   console.error("Error sending file:", err);
-                  res.status(500).json({ success: false, message: "Failed to download invoice" });
+                  res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to download invoice" });
               }
              
               if (fs.existsSync(filePath)) {
@@ -652,12 +657,12 @@ const orderInvoice = async (req, res) => {
 
       writeStream.on("error", (err) => {
           console.error("File writing error:", err);
-          res.status(500).json({ success: false, message: "Error generating invoice" });
+          res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error generating invoice" });
       });
 
   } catch (error) {
       console.error("Error:", error);
-      res.status(500).json({ success: false, message: "Internal Server Error" });
+      res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: Message.SERVER_ERROR });
   }
 };
 

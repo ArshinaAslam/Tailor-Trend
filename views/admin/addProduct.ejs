@@ -21,28 +21,46 @@
     border-radius: 16px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
-    }
+    display: flex;           /* Add this line */
+    flex-direction: column;  /* Add this line */
+    align-items: center;     /* Add this line */
+}
 
-   
-    .content-header h2 {
+.content-header {
+    text-align: center;      /* Add this line */
+    width: 100%;             /* Add this line */
+}
+
+.content-header h2 {
     font-size: 28px;
     font-weight: 600;
     color: #2c3e50;
     margin-bottom: 25px;
     position: relative;
+    margin-left: 100px;
     padding-bottom: 10px;
-    }
+    display: inline-block;   /* Add this line */
+}
 
-    .content-header h2:after {
+.content-header h2:after {
     content: '';
     position: absolute;
     bottom: 0;
-    left: 0;
+    left: 50%;               /* Change from left: 0 to left: 50% */
+    transform: translateX(-50%);  /* Add this line */
     width: 60px;
     height: 3px;
     background: linear-gradient(to right, #3498db, #2ecc71);
     border-radius: 3px;
-    }
+}
+
+/* Adjust the form container width */
+.col-lg-6 {
+    width: 100%;             /* Add this line */
+    max-width: 600px;        /* Add this line */
+    margin-left: 170px;
+
+}
 
     
     .card {
@@ -398,7 +416,6 @@
                                 XXL :<input type="number" placeholder="XXL" name="sizeQuantity[XXL]" class="form-control size-input" min="1" required>
                             </div>
                             <div id="size-error" class="error-message"></div>
-                        
                         </div>
                     </div>
                 </div>
@@ -410,10 +427,11 @@
                         <div class="col-sm-6 mb-3">
                         <label class="form-label">Category</label>
                         <select class="form-select" name="category">
-                            <% for (let i = 0 ; i < cat.length ; i++){ %>
-                            <option value="<%=cat[i].name%>"><%=cat[i].name%></option>
+                            <option value="">Select Category</option>
+                            <% for (let i = 0; i < cat.length; i++){ %>
+                              <option value="<%=cat[i].name%>"><%=cat[i].name%></option>
                             <% } %>
-                        </select>
+                          </select>
                         <div id="category-error" class="error-message"></div>
                         </div>
                     </div>
@@ -696,17 +714,29 @@ function validateForm() {
     }
 
    
+   
+    
+    let hasNegativeQuantity = false;
     sizeInputs.forEach(input => {
-        if (input.value.trim() !== "" && parseInt(input.value) > 0) {
-            sizeSelected = true;
+        const quantity = input.value.trim();
+        if (quantity !== "") {
+            const quantityValue = parseInt(quantity);
+            if (quantityValue > 0) {
+                sizeSelected = true;
+            }
+            if (quantityValue < 0) {
+                hasNegativeQuantity = true;
+            }
         }
     });
 
-    if (!sizeSelected) {
+    if (hasNegativeQuantity) {
+        showErrorMessage('size-error', 'Quantity cannot be a negative value');
+        isValid = false;
+    } else if (!sizeSelected) {
         showErrorMessage('size-error', 'Please enter quantity for at least one size.');
         isValid = false;
     }
-
     return isValid;
 }
 

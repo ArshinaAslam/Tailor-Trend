@@ -7,6 +7,8 @@ const session = require('express-session')
 const { login } = require('./userController')
 const Order = require('../../models/orderSchema')
 const Wallet = require('../../models/walletSchema')
+const Status = require('../statusCodes')
+const Message = require('../messages')
 
 
 
@@ -115,17 +117,17 @@ const verifyForgotPassOtp = async (req, res) => {
         console.log('this is the timer: ', timer)
 
         if (!otp) {
-            return res.status(400).json({ success: false, message: "OTP is required" });
+            return res.status(Status.BAD_REQUEST).json({ success: false, message: "OTP is required" });
         }
 
         if (otp === req.session.userOtp && timer > 0) {
             return res.json({ success: true, message:"Otp verified successfully"});
         } else {
-            return res.status(400).json({ success: false, message: "The OTP you entered is incorrect. Please try again." });
+            return res.status(Status.BAD_REQUEST).json({ success: false, message: "The OTP you entered is incorrect. Please try again." });
         }
     } catch (error) {
         console.error("OTP Verification Error:", error);
-        res.status(500).json({ success: false, message: "An error occurred. Please try again." });
+        res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: "An error occurred. Please try again." });
     }
 };
 
@@ -184,7 +186,7 @@ const resendOtp = async (req, res) => {
 
         if (!email) {
             console.error("No email found in session");
-            return res.status(400).json({ success: false, message: "No email found in session. Please restart the process." });
+            return res.status(Status.BAD_REQUEST).json({ success: false, message: "No email found in session. Please restart the process." });
         }
 
         
@@ -198,14 +200,14 @@ const resendOtp = async (req, res) => {
         const emailSent = await sendVerificationEmail(email, otp);
         
         if (emailSent) {
-            return res.status(200).json({ success: true, message: "OTP resent successfully" });
+            return res.status(Status.OK).json({ success: true, message: "OTP resent successfully" });
         } else {
-            return res.status(400).json({ success: false, message: "Failed to resend OTP. Please try again." });
+            return res.status(Status.BAD_REQUEST).json({ success: false, message: "Failed to resend OTP. Please try again." });
         }
 
     } catch (error) {
         console.error("Error resending OTP:", error);
-        return res.status(500).json({ success: false, message: "Internal Server Error. Please try again." });
+        return res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: Message.SERVER_ERROR });
     }
 };
 
@@ -262,7 +264,7 @@ const userProfile = async (req, res) => {
 
        
         if (!name || !nameRegex.test(name)) {
-            return res.status(400).json({ 
+            return res.status(Status.BAD_REQUEST).json({ 
                 success: false, 
                 message: "Name must contain only alphabets and spaces!" 
             });
@@ -271,7 +273,7 @@ const userProfile = async (req, res) => {
 
 
         if (!phone || !phoneRegex.test(phone)) {
-            return res.status(400).json({ 
+            return res.status(Status.BAD_REQUEST).json({ 
                 success: false, 
                 message: "Phone number must be 10 digits!" 
             });
@@ -280,7 +282,7 @@ const userProfile = async (req, res) => {
         const updatedUser = await User.findByIdAndUpdate(userId, { name, phone }, { new: true });
 
         if (!updatedUser) {
-            return res.status(404).json({ message: "User not found!" });
+            return res.status(Status.NOT_FOUND).json({ message: "User not found!" });
         }
 
         res.json({ 
@@ -292,7 +294,7 @@ const userProfile = async (req, res) => {
     
     } catch (error) {
         console.error("Error updating user details:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(Status.INTERNAL_SERVER_ERROR).json({ message: Message.SERVER_ERROR });
     }
 };
 
@@ -404,7 +406,7 @@ const resendOtpUpdateEmail = async(req,res)=>{
         }
     } catch (error) {
         console.error("Error resending OTP:", error);
-        return res.status(500).json({ success: false, message: "Server error" });
+        return res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: Message.SERVER_ERROR });
     }
 }
 
@@ -447,7 +449,7 @@ const saveNewEmail = async (req, res) => {
 
     } catch (error) {
         console.error("Error in saveNewEmail:", error);
-        return res.status(500).json({ success: false, message: "Server error" });
+        return res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: Message.SERVER_ERROR });
     }
 };
 
@@ -484,13 +486,13 @@ const updatePassword = async(req,res)=>{
         const user = await User.findById(userId);
 
         if (!user) {
-            return res.status(400).json({ success: false, message: 'User not found' });
+            return res.status(Status.BAD_REQUEST).json({ success: false, message: 'User not found' });
         }
 
         
         const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
-            return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+            return res.status(Status.BAD_REQUEST).json({ success: false, message: 'Current password is incorrect' });
         }
 
         
@@ -504,7 +506,7 @@ const updatePassword = async(req,res)=>{
         res.json({ success: true, message: 'Password updated successfully' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: Message.SERVER_ERROR });
     }
 }
 
@@ -652,7 +654,7 @@ const getEditAddress = async (req, res) => {
         res.render("editAddress", { address:addressData ,user:userId,user:userData});
     } catch (error) {
         console.error("Error in edit address",error);
-        res.status(500).send("Server Error");
+        res.status(Status.INTERNAL_SERVER_ERROR).send(Message.SERVER_ERROR);
     }
 };
 const editAddress = async(req,res)=>{
@@ -705,7 +707,7 @@ const deleteAddress = async(req,res)=>{
         
        
         if (!findAddress) {
-            return res.status(404).send("Address not found")
+            return res.status(Status.NOT_FOUND).send("Address not found")
         }
 
         await Address.updateOne({
