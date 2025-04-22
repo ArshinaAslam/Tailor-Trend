@@ -6,6 +6,7 @@ const Wallet = require("../../models/walletSchema");
 const mongodb = require("mongodb");
 const mongoose = require("mongoose");
 const Status = require('../statusCodes')
+const Message = require('../messages')
 
 const env = require("dotenv").config();
 const crypto = require("crypto");

@@ -1,6 +1,7 @@
 const Category  = require('../../models/categorySchema')
 const Product = require('../../models/productSchema')
 const Status = require('../statusCodes')
+const Message = require('../messages')
 
 
 const categoryInfo = async(req,res)=>{

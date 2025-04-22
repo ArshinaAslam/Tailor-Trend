@@ -6,6 +6,8 @@ const Cart = require('../../models/cartSchema')
 const Address = require("../../models/addressSchema"); 
 const Coupon = require("../../models/couponSchema")
 const Status = require('../statusCodes')
+const Message = require('../messages')
+const Wallet = require('../../models/walletSchema');
 
 
 
@@ -322,6 +324,8 @@ const loadCheckout = async (req, res) => {
 
     
     const cart = await Cart.findOne({ userId }).populate("items.productId");
+    const wallet = await Wallet.findOne({ userId });
+    const walletBalance = wallet ? wallet.balance : 0;
 
     let grandTotal = 0;
     let hasOutOfStock = false; 
@@ -377,6 +381,7 @@ const loadCheckout = async (req, res) => {
       Coupon: coupons,
       isCart: !!cart,
       hasOutOfStock, 
+      walletBalance
     });
   } catch (error) {
     console.error("Error loading checkout:", error);
