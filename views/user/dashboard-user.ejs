@@ -1,6 +1,6 @@
 <%- include("../../views/partials/user/header") %>
 <style>
-  :root {
+  .profile-page {
     --color-bg: #f5f4f0;
     --color-surface: #ffffff;
     --color-text: #1a1a1a;
@@ -8,46 +8,47 @@
     --color-accent: #1a1a1a;
     --color-accent-hover: #333333;
     --color-border: #e0e0e0;
+    --color-danger: #c0392b;
+    --color-danger-hover: #a5301f;
+    --space-1: 0.5rem;
+    --space-2: 0.75rem;
+    --space-3: 1rem;
+    --space-4: 1.5rem;
+    --space-5: 2rem;
   }
 
-  .text-danger {
-    display: none;
-    font-size: 0.8rem;
-    margin-top: 0.35rem;
-    color: #c0392b;
+  .profile-page .card {
+    border: none !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
+    background: var(--color-surface) !important;
   }
 
-  .card {
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  .profile-page .card-header {
+    background: var(--color-surface) !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    padding: var(--space-4) var(--space-5) !important;
   }
 
-  .card-header {
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
-    padding: 1.25rem 1.5rem;
+  .profile-page .card-header h5 {
+    color: var(--color-text) !important;
+    font-weight: 700 !important;
   }
 
-  .card-header h5 {
-    color: var(--color-text);
-    font-weight: 700;
+  .profile-page .card-body {
+    padding: var(--space-5) !important;
   }
 
-  .card-body {
-    padding: 1.75rem;
-  }
-
-  .profile-card .card-body {
+  /* --- Profile view --- */
+  .profile-page .profile-card .card-body {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
+    gap: var(--space-4);
   }
 
-  .profile-avatar {
-    width: 72px;
-    height: 72px;
+  .profile-page .profile-avatar {
+    width: 76px;
+    height: 76px;
     border-radius: 50%;
     background: var(--color-accent);
     color: #fff;
@@ -59,84 +60,129 @@
     flex-shrink: 0;
   }
 
-  .profile-info h3 {
-    margin-bottom: 0.5rem;
-    color: var(--color-text);
-    font-weight: 700;
+  .profile-page .profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
   }
 
-  .profile-info p {
+  .profile-page .profile-info h3 {
+    color: var(--color-text) !important;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .profile-page .profile-info p {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-1);
     color: var(--color-text-muted);
-    margin-bottom: 0.25rem;
+    margin: 0;
     font-size: 0.95rem;
   }
 
-  .form-label {
-    font-weight: 600;
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
+  .profile-page .profile-info .btn-primary {
+    margin-top: var(--space-2);
+    align-self: flex-start;
   }
 
-  .form-control {
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    padding: 0.75rem 1rem;
-    background-color: var(--color-bg);
-    color: var(--color-text);
+  /* --- Edit form --- */
+  .profile-page .field {
+    margin-bottom: var(--space-4);
+  }
+
+  .profile-page .field-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: var(--space-1);
+  }
+
+  .profile-page .form-label {
+    font-weight: 600 !important;
+    color: var(--color-text-muted) !important;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .profile-page .form-control {
+    width: 100%;
+    border: 1px solid var(--color-border) !important;
+    border-radius: 10px !important;
+    padding: 0.75rem 1rem !important;
+    background-color: var(--color-bg) !important;
+    color: var(--color-text) !important;
     transition: all 0.3s ease;
   }
 
-  .form-control:focus {
-    border-color: var(--color-accent);
+  .profile-page .form-control:focus {
+    border-color: var(--color-accent) !important;
     outline: none;
-    background-color: var(--color-surface);
+    background-color: var(--color-surface) !important;
     box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.06);
   }
 
-  .form-control[readonly] {
-    background-color: #eeeeeb;
-    color: var(--color-text-muted);
+  .profile-page .form-control[readonly] {
+    background-color: #eeeeeb !important;
+    color: var(--color-text-muted) !important;
   }
 
-  .form-group {
-    margin-bottom: 1.1rem;
+  .profile-page .text-danger {
+    display: none;
+    font-size: 0.8rem;
+    margin-top: var(--space-1);
+    color: var(--color-danger) !important;
   }
 
-  .btn-primary {
-    background: var(--color-accent);
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    padding: 0.6rem 1.1rem;
+  .profile-page .field-action {
+    margin-top: var(--space-2);
+  }
+
+  /* --- Buttons --- */
+  .profile-page .btn-primary {
+    background: var(--color-accent) !important;
+    border: none !important;
+    border-radius: 10px !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    padding: 0.6rem 1.1rem !important;
     transition: all 0.3s ease;
   }
 
-  .btn-primary:hover {
-    background: var(--color-accent-hover);
+  .profile-page .btn-primary:hover {
+    background: var(--color-accent-hover) !important;
     transform: translateY(-1px);
   }
 
-  .btn-danger {
-    background: #c0392b;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    padding: 0.6rem 1.1rem;
+  .profile-page .btn-danger {
+    background: transparent !important;
+    color: var(--color-danger) !important;
+    border: 1px solid #f1c3bc !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    padding: 0.6rem 1.1rem !important;
   }
 
-  .btn-danger:hover {
-    background: #a5301f;
+  .profile-page .btn-danger:hover {
+    background: #fdecea !important;
   }
 
-  #editProfile .d-flex.mt-3 {
-    gap: 0.75rem;
+  .profile-page .form-actions {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .profile-page .form-actions .btn {
+    flex: 0 0 auto;
+    min-width: 140px;
+    text-align: center;
   }
 </style>
 
-<main class="main">
+<main class="main profile-page">
   <div class="breadcrumb-wrap">
     <div class="container">
       <div class="breadcrumb">
@@ -166,7 +212,7 @@
                 <h3><%= user.name %></h3>
                 <p><i class="fi-rs-phone"></i><%= user.phone %></p>
                 <p><i class="fi-rs-envelope"></i><%= user.email %></p>
-                <a class="btn btn-primary mt-3" onclick="editProfile()">Edit Profile</a>
+                <a class="btn btn-primary" onclick="editProfile()">Edit Profile</a>
               </div>
             </div>
           </div>
@@ -179,29 +225,41 @@
             </div>
             <div class="card-body">
               <form id="editProfileForm">
-                <div class="form-group">
-                  <label class="form-label">Name</label>
-                  <span class="text-danger" id="nameError" style="display: none;">Name cannot be empty!</span>
+                <div class="field">
+                  <div class="field-header">
+                    <label class="form-label">Name</label>
+                  </div>
                   <input type="text" name="name" class="form-control" value="<%= user.name %>">
+                  <span class="text-danger" id="nameError">Name cannot be empty!</span>
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Email</label>
+
+                <div class="field">
+                  <div class="field-header">
+                    <label class="form-label">Email</label>
+                  </div>
                   <input type="email" name="email" class="form-control" value="<%= user.email %>" readonly>
-                  <a href="/updateEmail" class="btn btn-primary mt-2">Edit Email</a>
+                  <div class="field-action">
+                    <a href="/updateEmail" class="btn btn-primary">Edit Email</a>
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label class="form-label">Phone</label>
-                  <span class="text-danger" id="phoneError" style="display: none;">Phone cannot be empty!</span>
+
+                <div class="field">
+                  <div class="field-header">
+                    <label class="form-label">Phone</label>
+                  </div>
                   <input type="tel" name="phone" class="form-control" value="<%= user.phone %>">
+                  <span class="text-danger" id="phoneError">Phone cannot be empty!</span>
                 </div>
-                <div class="form-group">
-                  <% if (!user.googleId) { %>
+
+                <% if (!user.googleId) { %>
+                  <div class="field">
                     <a href="/updatePassword" class="btn btn-primary">Edit Password</a>
-                  <% } %>
-                </div>
-                <div class="d-flex mt-3">
+                  </div>
+                <% } %>
+
+                <div class="form-actions">
                   <button type="submit" class="btn btn-primary">Save Changes</button>
-                  <button type="button" class="btn btn-danger ml-2" onclick="cancelEdit()">Cancel</button>
+                  <button type="button" class="btn btn-danger" onclick="cancelEdit()">Cancel</button>
                 </div>
               </form>
             </div>
