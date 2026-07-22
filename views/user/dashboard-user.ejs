@@ -5,9 +5,8 @@
     --color-surface: #ffffff;
     --color-text: #1a1a1a;
     --color-text-muted: #888888;
-    --color-accent: #6366f1;
-    --color-accent-hover: #4f46e5;
-    --color-accent-soft: #ede9fe;
+    --color-accent: #1a1a1a;
+    --color-accent-hover: #333333;
     --color-border: #e5e5e5;
     --color-danger: #c0392b;
     --space-1: 0.5rem;
@@ -121,7 +120,7 @@
     border-color: var(--color-accent) !important;
     outline: none;
     background-color: var(--color-surface) !important;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+    box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.06);
   }
 
   .profile-page .form-control[readonly] {
@@ -140,21 +139,26 @@
     margin-top: var(--space-2);
   }
 
-  /* --- Buttons --- */
+  /* --- Buttons: matches shop page's .add-to-cart-btn styling --- */
   .profile-page .btn-primary {
-    background: var(--color-accent) !important;
+    background-color: var(--color-accent-hover) !important;
     border: none !important;
     border-radius: 10px !important;
     color: #fff !important;
     font-weight: 600 !important;
     padding: 0.65rem 1.3rem !important;
-    transition: all 0.2s ease;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
   }
 
   .profile-page .btn-primary:hover {
-    background: var(--color-accent-hover) !important;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 14px rgba(99, 102, 241, 0.25);
+    background-color: var(--color-accent) !important;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .profile-page .btn-primary:active {
+    transform: translateY(0);
   }
 
   .profile-page .btn-danger {
