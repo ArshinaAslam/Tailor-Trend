@@ -8,9 +8,9 @@
 <style>
 
 body {
-  background: linear-gradient(135deg, #f0f2f5 0%, #e9ecef 100%);
+  background: var(--admin-bg-gradient);
   font-family: 'Poppins', sans-serif;
-  color: #2c3e50;
+  color: var(--admin-text);
   margin: 0;
   padding: 0;
 }
@@ -25,33 +25,33 @@ body {
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 2rem;
-  color: #1a202c;
+  color: var(--admin-text);
   letter-spacing: -0.025em;
   text-transform: uppercase;
 }
 
 
 .stats-card {
-  background: #ffffff;
+  background: var(--admin-surface);
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--admin-border);
 }
 
 .stats-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
 }
 
 .card-header {
   font-weight: 600;
   font-size: 1.1rem;
   padding: 1.25rem 1.5rem;
-  color: #4a5568;
-  background: linear-gradient(90deg, #f7fafc 0%, #edf2f7 100%);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  color: var(--admin-text-muted);
+  background: var(--admin-surface-alt);
+  border-bottom: 1px solid var(--admin-border);
 }
 
 .card-body {
@@ -64,14 +64,14 @@ body {
 .card-value {
   font-size: 2rem;
   font-weight: 700;
-  color: #1a202c;
+  color: var(--admin-text);
   margin: 0;
   line-height: 1.2;
 }
 
 .card-percentage {
   font-size: 0.95rem;
-  color: #718096;
+  color: var(--admin-text-muted);
   font-weight: 500;
 }
 
@@ -94,47 +94,50 @@ body {
   font-size: 1.75rem;
 }
 
+/* All stat card accent backgrounds now use a translucent tint over the dark
+   surface instead of pastel light colors, keeping one consistent theme. */
+.bg-light-blue   { background: linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(59,130,246,0.04) 100%); }
+.bg-light-green  { background: linear-gradient(135deg, rgba(16,185,129,0.12) 0%, rgba(16,185,129,0.04) 100%); }
+.bg-light-yellow { background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.04) 100%); }
+.bg-light-red    { background: linear-gradient(135deg, rgba(239,68,68,0.12) 0%, rgba(239,68,68,0.04) 100%); }
+.bg-light-purple { background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%); }
 
-.bg-light-blue { background: linear-gradient(135deg, #e6f0ff 0%, #d1e3ff 100%); }
-.bg-light-green { background: linear-gradient(135deg, #e6fff4 0%, #d1fae5 100%); }
-.bg-light-yellow { background: linear-gradient(135deg, #fff7e6 0%, #ffedd5 100%); }
-.bg-light-red { background: linear-gradient(135deg, #ffeeee 0%, #ffdede 100%); }
-.bg-light-purple { background: linear-gradient(135deg, #f3e8ff 0%, #e9d8fd 100%); }
-
-.icon-blue { background: #3b82f6; color: #ffffff; }
-.icon-green { background: #10b981; color: #ffffff; }
-.icon-yellow { background: #f59e0b; color: #ffffff; }
-.icon-red { background: #ef4444; color: #ffffff; }
-.icon-purple { background: #8b5cf6; color: #ffffff; }
+.icon-blue   { background: var(--admin-blue); color: #ffffff; }
+.icon-green  { background: var(--admin-green); color: #ffffff; }
+.icon-yellow { background: var(--admin-yellow); color: #ffffff; }
+.icon-red    { background: var(--admin-red); color: #ffffff; }
+.icon-purple { background: var(--admin-purple); color: #ffffff; }
 
 
 .filters-section {
-  background: #ffffff;
+  background: var(--admin-surface);
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--admin-border);
 }
 
 .btn-filter {
   padding: 0.75rem 1.25rem;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--admin-surface-alt);
+  border: 1px solid var(--admin-border);
   border-radius: 8px;
   font-weight: 600;
-  color: #4a5568;
+  color: var(--admin-text-muted);
   transition: all 0.3s ease;
 }
 
 .btn-filter:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+  background: var(--admin-surface-hover);
+  border-color: var(--admin-accent);
+  color: var(--admin-text);
 }
 
 .btn-filter.active {
-  background: #1a202c;
+  background: var(--admin-accent);
   color: #ffffff;
-  border-color: #1a202c;
+  border-color: var(--admin-accent);
 }
 
 .date-input-group {
@@ -145,25 +148,26 @@ body {
 }
 
 .date-input {
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--admin-border);
   border-radius: 8px;
   padding: 0.5rem;
   font-size: 0.9rem;
-  color: #4a5568;
-  background: #fafafa;
+  color: var(--admin-text);
+  background: var(--admin-surface-alt);
   transition: border-color 0.3s ease;
   width: 140px;
+  color-scheme: dark;
 }
 
 .date-input:focus {
-  border-color: #3b82f6;
+  border-color: var(--admin-accent);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 0 3px var(--admin-accent-soft);
 }
 
 .date-separator {
   font-size: 0.9rem;
-  color: #718096;
+  color: var(--admin-text-muted);
   font-weight: 500;
 }
 
@@ -185,24 +189,36 @@ body {
   font-size: 0.9rem;
 }
 
+/* Report buttons now share the same accent-driven palette instead of
+   independent green/red/purple brand colors. */
 .excel-btn {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: var(--admin-green);
   color: #ffffff;
   border: none;
 }
 
 .excel-btn:hover {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  filter: brightness(1.1);
 }
 
 .pdf-btn {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  background: var(--admin-accent);
   color: #ffffff;
   border: none;
 }
 
 .pdf-btn:hover {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  background: var(--admin-accent-hover);
+}
+
+.sales-btn {
+  background: var(--admin-purple);
+  color: #ffffff;
+  border: none;
+}
+
+.sales-btn:hover {
+  filter: brightness(1.1);
 }
 
 .report-btn i {
@@ -218,21 +234,21 @@ body {
 }
 
 .data-table th {
-  background: #f8fafc;
-  color: #64748b;
+  background: var(--admin-surface-alt);
+  color: var(--admin-text-muted);
   font-weight: 700;
   text-transform: uppercase;
   font-size: 0.85rem;
   padding: 1.25rem;
   letter-spacing: 0.05em;
   text-align: left;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 2px solid var(--admin-border);
 }
 
 .data-table td {
   padding: 1.25rem;
-  border-bottom: 1px solid #edf2f7;
-  color: #2d3748;
+  border-bottom: 1px solid var(--admin-border);
+  color: var(--admin-text);
 }
 
 .data-table tbody tr {
@@ -240,42 +256,44 @@ body {
 }
 
 .data-table tbody tr:hover {
-  background: #f1f5f9;
+  background: var(--admin-surface-hover);
 }
 
 .table-container {
-  background: #ffffff;
+  background: var(--admin-surface);
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   overflow: hidden;
   margin-bottom: 2.5rem;
+  border: 1px solid var(--admin-border);
 }
 
 .table-header {
   padding: 1.75rem;
-  border-bottom: 1px solid #edf2f7;
+  border-bottom: 1px solid var(--admin-border);
 }
 
 .table-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a202c;
+  color: var(--admin-text);
   margin: 0;
 }
 
 
 .chart-container {
-  background: #ffffff;
+  background: var(--admin-surface);
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   margin-bottom: 2.5rem;
   padding: 2rem;
+  border: 1px solid var(--admin-border);
 }
 
 .chart-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a202c;
+  color: var(--admin-text);
   margin-top: 0;
   margin-bottom: 1.5rem;
 }
@@ -289,7 +307,7 @@ body {
 .section-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #1a202c;
+  color: var(--admin-text);
   margin-bottom: 1.5rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -348,16 +366,6 @@ body {
   .date-input {
     width: 100%;
   }
-
-  .sales-btn {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-  color: #ffffff;
-  border: none;
-}
-
-.sales-btn:hover {
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-}
 }
 </style>
 
@@ -385,7 +393,7 @@ body {
             </div>
           </div>
 
-         
+
 
           <!-- Date Range and Reports -->
 <div class="col-md-8 text-end">
@@ -433,7 +441,6 @@ body {
   </div>
 
 
-  
 
   <!-- Sales -->
   <div class="row mb-4" id="sales-orders-overview">
@@ -592,18 +599,22 @@ body {
 
 
  <script>
- 
+
 let salesChartInstance = null;
 let orderStatusChartInstance = null;
 let salesTimeChartInstance = null;
 
+/* Chart.js global defaults so axis/legend text is readable on the dark theme */
+Chart.defaults.color = '#a0a0a0';
+Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.08)';
+
 function updateDashboard(data) {
-  
+
   const formatNumber = (value, isCurrency = false) => {
-    return (value ?? 0).toLocaleString() + (isCurrency ? '' : ''); 
+    return (value ?? 0).toLocaleString() + (isCurrency ? '' : '');
   };
 
-  
+
   document.querySelector('[data-field="total-sales"]').textContent = `₹${formatNumber(data.totalSales)}`;
   document.querySelector('[data-field="total-orders"]').textContent = formatNumber(data.totalOrders);
   document.querySelector('[data-field="cancelled-orders"]').textContent = formatNumber(data.cancelledOrders);
@@ -611,14 +622,14 @@ function updateDashboard(data) {
   document.querySelector('[data-field="pending-orders"]').textContent = formatNumber(data.pendingOrders);
   document.querySelector('[data-field="pending-orders-extra"]').textContent = `₹${formatNumber(data.pendingAmount)} (${formatNumber(data.pendingPercentage)}%)`;
 
- 
+
   document.querySelector('[data-field="processing-orders"]').textContent = formatNumber(data.processingOrders);
   document.querySelector('[data-field="processing-orders-extra"]').textContent = `₹${formatNumber(data.processingAmount)} (${formatNumber(data.processingPercentage)}%)`;
   document.querySelector('[data-field="delivered-orders"]').textContent = formatNumber(data.deliveredOrders);
   document.querySelector('[data-field="delivered-orders-extra"]').textContent = `₹${formatNumber(data.deliveredAmount)} (${formatNumber(data.deliveredPercentage)}%)`;
   document.querySelector('[data-field="total-users"]').textContent = formatNumber(data.totalUsers);
 
-  
+
   document.querySelector('[data-field="total-discounts"]').textContent = `₹${formatNumber(data.totalDiscounts)}`;
   document.querySelector('[data-field="total-discounts-extra"]').textContent = `${formatNumber(data.discountPercentage)}% of total sales`;
   document.querySelector('[data-field="active-coupons"]').textContent = formatNumber(data.activeCoupons);
@@ -629,35 +640,35 @@ function updateDashboard(data) {
 function updateCharts(monthlySales, orderStatusDistribution) {
   const orderStatuses = ['Pending', 'Processing', 'Delivered', 'Cancelled', 'Returned'];
   const salesColors = {
-    'Pending': 'rgba(245, 158, 11, 0.6)',    
-    'Processing': 'rgba(59, 130, 246, 0.6)', 
-    'Delivered': 'rgba(16, 185, 129, 0.6)',  
-    'Cancelled': 'rgba(239, 68, 68, 0.6)',   
-    'Returned': 'rgba(139, 92, 246, 0.6)'    
+    'Pending': 'rgba(245, 158, 11, 0.7)',
+    'Processing': 'rgba(59, 130, 246, 0.7)',
+    'Delivered': 'rgba(16, 185, 129, 0.7)',
+    'Cancelled': 'rgba(239, 68, 68, 0.7)',
+    'Returned': 'rgba(139, 92, 246, 0.7)'
   };
 
-  
+
   const statusSalesData = orderStatuses.map(status => {
-    const matchingStatus = orderStatusDistribution.find(item => 
+    const matchingStatus = orderStatusDistribution.find(item =>
       item.status.toLowerCase() === status.toLowerCase()
     );
     return matchingStatus ? matchingStatus.amount || 0 : 0;
   });
 
-  
+
   const filteredStatuses = orderStatuses.filter((status, index) => statusSalesData[index] > 0);
   const filteredSalesData = statusSalesData.filter(amount => amount > 0);
   const filteredColors = filteredStatuses.map(status => salesColors[status]);
-  const filteredBorderColors = filteredStatuses.map(status => salesColors[status].replace('0.6)', '1)'));
+  const filteredBorderColors = filteredStatuses.map(status => salesColors[status].replace('0.7)', '1)'));
 
   if (salesChartInstance) salesChartInstance.destroy();
   salesChartInstance = new Chart(document.getElementById('salesChart').getContext('2d'), {
     type: 'bar',
     data: {
-      labels: filteredStatuses, 
+      labels: filteredStatuses,
       datasets: [{
         label: 'Sales Amount (₹)',
-        data: filteredSalesData, 
+        data: filteredSalesData,
         backgroundColor: filteredColors,
         borderColor: filteredBorderColors,
         borderWidth: 1
@@ -667,26 +678,32 @@ function updateCharts(monthlySales, orderStatusDistribution) {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
-        y: { 
-          beginAtZero: true, 
-          title: { 
-            display: true, 
-            text: 'Sales Amount (₹)' 
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Sales Amount (₹)',
+            color: '#a0a0a0'
           },
           ticks: {
+            color: '#a0a0a0',
             callback: function(value) {
               return '₹' + value.toLocaleString();
             }
-          }
+          },
+          grid: { color: 'rgba(255, 255, 255, 0.06)' }
         },
-        x: { 
-          title: { 
-            display: true, 
-            text: 'Order Status' 
-          } 
+        x: {
+          title: {
+            display: true,
+            text: 'Order Status',
+            color: '#a0a0a0'
+          },
+          ticks: { color: '#a0a0a0' },
+          grid: { color: 'rgba(255, 255, 255, 0.06)' }
         }
       },
-      plugins: { 
+      plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
@@ -699,7 +716,7 @@ function updateCharts(monthlySales, orderStatusDistribution) {
     }
   });
 
-  
+
   const orderLabels = orderStatusDistribution.map(item => item.status || 'Unknown');
   const orderData = orderStatusDistribution.map(item => parseInt(item.count) || 0);
 
@@ -710,15 +727,19 @@ function updateCharts(monthlySales, orderStatusDistribution) {
       labels: orderLabels,
       datasets: [{
         data: orderData,
-        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'], // Added purple for Returned
-        borderWidth: 0
+        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'],
+        borderWidth: 2,
+        borderColor: '#2a2a2a'
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'right' }
+        legend: {
+          position: 'right',
+          labels: { color: '#a0a0a0' }
+        }
       }
     }
   });
@@ -734,7 +755,7 @@ document.addEventListener('DOMContentLoaded', () => {
       button.classList.add('active');
 
       try {
-       
+
         Swal.fire({
           title: 'Loading...',
           text: 'Fetching dashboard data',
@@ -746,10 +767,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const response = await fetch(`/admin/dashboard?period=${period}`, {
           method: 'GET',
-          headers: { 
-            'Content-Type': 'application/json', 
+          headers: {
+            'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest' 
+            'X-Requested-With': 'XMLHttpRequest'
           }
         });
 
@@ -758,23 +779,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const responseData = await response.json();
-        
-        
+
+
         if (!responseData || !responseData.data) {
           throw new Error('Invalid data structure returned from server');
         }
 
-      
+
         Swal.close();
-        
-       
+
+
         updateDashboard(responseData.data);
-     
+
         updateCharts(
-          responseData.monthlySales || [], 
+          responseData.monthlySales || [],
           responseData.orderStatusDistribution || []
         );
-        
+
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
         Swal.fire('Error', `Unable to load dashboard data: ${error.message}`, 'error');
@@ -796,7 +817,7 @@ excelButton.addEventListener('click', async () => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json(); 
+      const errorData = await response.json();
       throw new Error(`HTTP error! Status: ${response.status} - ${errorData.details || 'No details provided'}`);
     }
 
@@ -831,7 +852,7 @@ pdfButton.addEventListener('click', async () => {
     });
 
     if (!response.ok) {
-      const errorData = await response.json(); 
+      const errorData = await response.json();
       throw new Error(`HTTP error! Status: ${response.status} - ${errorData.details || 'No details provided'}`);
     }
 
@@ -861,7 +882,7 @@ salesButton.addEventListener('click', async () => {
     const startDate = document.querySelector('.date-input:first-child').value;
     const endDate = document.querySelector('.date-input:last-child').value;
 
-   
+
     Swal.fire({
       title: 'Loading...',
       text: 'Generating Sales Report',
@@ -871,7 +892,7 @@ salesButton.addEventListener('click', async () => {
       }
     });
 
-    
+
     window.location.href = `/admin/sales-report?period=${period}&startDate=${startDate}&endDate=${endDate}`;
   } catch (error) {
     console.error('Error redirecting to sales report:', error);
@@ -908,7 +929,7 @@ const initialData = {
 
 updateDashboard(initialData);
 updateCharts(initialData.monthlySales, initialData.orderStatusDistribution);
- </script> 
+ </script>
 
 
 
