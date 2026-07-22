@@ -36,7 +36,7 @@
         border-radius: 16px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
         width: 100%;
-        max-width: 400px;
+        max-width: 480px;
     }
 
     form h2 {
@@ -55,9 +55,20 @@
         font-size: 0.9rem;
     }
 
+    /* Two-column row for pairing fields */
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .field-group {
+        margin-bottom: 1rem;
+    }
+
     .input-container {
         position: relative;
-        margin-bottom: 1rem;
+        margin-bottom: 0;
     }
 
     input {
@@ -68,12 +79,7 @@
         font-size: 1rem;
         background-color: var(--color-bg);
         color: var(--color-text);
-        margin-bottom: 1rem;
         transition: all 0.3s ease;
-    }
-
-    .input-container input {
-        margin-bottom: 0;
     }
 
     input:focus {
@@ -106,6 +112,7 @@
         cursor: pointer;
         transition: all 0.3s ease;
         letter-spacing: 0.5px;
+        margin-top: 0.5rem;
     }
 
     button:hover {
@@ -166,6 +173,13 @@
         margin-bottom: 0.4rem;
         min-height: 14px;
     }
+
+    /* Stack columns on small screens so it doesn't get cramped */
+    @media (max-width: 480px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
     </style>
 </head>
 <body>
@@ -176,37 +190,49 @@
                 <%= message %>
             </div>
         <% } %>
-        
-        <label for="fullname">Full Name</label>
-        <div id="error1" class="error-message"></div>
-        <input type="text" id="name" name="name" placeholder="Enter your full name">
-        
-        <label for="email">Email Address</label>
-        <div id="error2" class="error-message"></div>
-        <input type="email" id="email" name="email" placeholder="Enter your email address">
-        
-        <label for="phone">Phone Number</label>
-        <div id="error3" class="error-message"></div>
-        <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
-        
-        <label for="password">Password</label>
-        <div id="error4" class="error-message"></div>
-        <div class="input-container">
-            <input type="password" id="password" name="password" placeholder="Enter your password">
-            <span class="toggle-password" onclick="togglePassword('password', 'eye1')">👁️</span>
-        </div>
-        
-        <label for="confirm-password">Confirm Password</label>
-        <div id="error5" class="error-message"></div>
-        <div class="input-container">
-            <input type="password" id="confirm-password" name="cPassword" placeholder="Re-enter your password">
-            <span class="toggle-password" onclick="togglePassword('confirm-password', 'eye2')">👁️</span>
-        </div>
-        
 
-        
+        <div class="form-row">
+            <div class="field-group">
+                <label for="name">Full Name</label>
+                <div id="error1" class="error-message"></div>
+                <input type="text" id="name" name="name" placeholder="Enter your full name">
+            </div>
+
+            <div class="field-group">
+                <label for="email">Email Address</label>
+                <div id="error2" class="error-message"></div>
+                <input type="email" id="email" name="email" placeholder="Enter your email address">
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label for="phone">Phone Number</label>
+            <div id="error3" class="error-message"></div>
+            <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+        </div>
+
+        <div class="form-row">
+            <div class="field-group">
+                <label for="password">Password</label>
+                <div id="error4" class="error-message"></div>
+                <div class="input-container">
+                    <input type="password" id="password" name="password" placeholder="Enter your password">
+                    <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="confirm-password">Confirm Password</label>
+                <div id="error5" class="error-message"></div>
+                <div class="input-container">
+                    <input type="password" id="confirm-password" name="cPassword" placeholder="Re-enter your password">
+                    <span class="toggle-password" onclick="togglePassword('confirm-password')">👁️</span>
+                </div>
+            </div>
+        </div>
+
         <button type="submit">Sign Up</button>
-        
+
         <a href="/auth/google" class="google-tag">
             Sign Up with <span>Google</span>
         </a>
@@ -282,15 +308,15 @@
                 error3.style.display = "block";
                 error3.innerHTML = "Enter a valid 10-digit phone number";
                 return false;
-            }else if (allZerosPattern.test(phoneVal)) {
-        error3.style.display = "block";
-        error3.innerHTML = "Phone number cannot be all zeros";
-        return false;
-    } else if (allSameDigitsPattern.test(phoneVal)) {
-        error3.style.display = "block";
-        error3.innerHTML = "Phone number cannot contain all the same digits";
-        return false;
-    }  else {
+            } else if (allZerosPattern.test(phoneVal)) {
+                error3.style.display = "block";
+                error3.innerHTML = "Phone number cannot be all zeros";
+                return false;
+            } else if (allSameDigitsPattern.test(phoneVal)) {
+                error3.style.display = "block";
+                error3.innerHTML = "Phone number cannot contain all the same digits";
+                return false;
+            } else {
                 error3.style.display = "none";
                 error3.innerHTML = "";
                 return true;
@@ -341,20 +367,16 @@
             }
         }
 
-
-  
-
-
         function togglePassword(fieldId) {
             const passwordField = document.getElementById(fieldId);
             const toggleIcon = document.querySelector(`[onclick="togglePassword('${fieldId}')"]`);
 
             if (passwordField.type === "password") {
                 passwordField.type = "text";
-                toggleIcon.textContent = "👁️‍🗨️"; 
+                toggleIcon.textContent = "👁️‍🗨️";
             } else {
                 passwordField.type = "password";
-                toggleIcon.textContent = "👁️"; 
+                toggleIcon.textContent = "👁️";
             }
         }
 
@@ -365,7 +387,6 @@
             if (!emailValidateChecking()) isValid = false;
             if (!phoneValidateChecking()) isValid = false;
             if (!passwordValidateChecking()) isValid = false;
-           
 
             if (!isValid) {
                 e.preventDefault();
