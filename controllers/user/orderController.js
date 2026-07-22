@@ -372,12 +372,16 @@ const cancelOrder = async (req, res) => {
     }
     
     const itemToCancel = order.orderitems.find(
-      item => item._id.toString() === productId && item.size === size
+      item => item._id.toString() === productId && item.size === size 
     );
+
+
    
     if (!itemToCancel) {
       return res.status(Status.NOT_FOUND).json({ success: false, message: "Item not found in the order" });
     }
+
+    // const cancelProduct = await Product.find({productOffer:{$gt:0}},{$elemMatch:{quantity:{$lt:5}}})
 
     const itemOriginalCost = itemToCancel.price * itemToCancel.quantity;
     const totalItemsCost = order.totalPrice;

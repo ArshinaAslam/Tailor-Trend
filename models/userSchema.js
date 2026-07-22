@@ -26,10 +26,10 @@ const userSchema = new Schema({
     },
 
     googleId : {
-        type : String ,
-        unique : true,
-
-    },
+    type : String ,
+    unique : true,
+    sparse : true,
+},
 
     password : {
         type : String ,
@@ -73,7 +73,8 @@ const userSchema = new Schema({
 
     referralCode: {
         type: String,
-        unique: true 
+        unique: true,
+        sparse: true
     },
     
     wallet: {
