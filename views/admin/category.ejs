@@ -1,321 +1,356 @@
 <%- include("../../views/partials/admin/header") %>
-<head>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
-  <style>
-    
-    .content-main {
-      padding: 20px;
-    }
+<title>Category</title>
 
-    .content-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
 
-    .content-title {
-      font-size: 24px;
-      font-weight: bold;
-    }
+<style>
 
-    .search-container {
-      display: flex;
-      align-items: center;
-    }
-
-    .search-container input {
-      width: 300px;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      margin-right: 10px;
-    }
-
-    .search-container button {
-      padding: 8px 16px;
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .search-container button:hover {
-      background-color: #0056b3;
-    }
-
-    .add-category-btn {
-      padding: 8px 16px;
-      background-color: #28a745;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .add-category-btn:hover {
-      background-color: #218838;
-    }
-
-    .table-responsive {
-      margin-top: 20px;
-    }
-
-    .table {
-      width: 100%;
-      border-collapse: collapse;
-      border: 1px solid #ddd;
-    }
-da
-    .table th,
-    .table td {
-      padding: 10px;
-      text-align: left;
-      border: 1px solid #ddd;
-    }
-
-    .table th {
-      background-color: #f8f9fa;
-      font-weight: bold;
-    }
-
-    .table tr:hover {
-      background-color: #f1f1f1;
-    }
-
-    .btn {
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      text-decoration: none;
-      color: #fff;
-
-      display: inline-block;
-      font-size: 12px;
-      text-align: center;
-      width: 90px;
-    }
-
-    .btn-toggle {
-  transition: all 0.3s ease-in-out;
+body {
+  background: var(--admin-bg-gradient);
+  font-family: 'Poppins', sans-serif;
+  color: var(--admin-text);
+  margin: 0;
+  padding: 0;
 }
 
+.dashboard-container {
+  padding: 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
 
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
 
+.dashboard-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--admin-text);
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+}
 
-    .btn-info {
-      background-color: #17a2b8;
-      border: none;
-    }
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
 
-    .btn-info:hover {
-      background-color: #138496;
-    }
+.search-form {
+  display: flex;
+  align-items: center;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
 
-    .btn-danger {
-      background-color: #dc3545;
-      border: none;
-    
-    }
+.search-form input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--admin-text);
+  padding: 0.75rem 1.25rem;
+  font-size: 0.95rem;
+  width: 240px;
+}
 
-    .btn-danger:hover {
-      background-color: #c82333;
-    }
+.search-form input::placeholder {
+  color: var(--admin-text-dim);
+}
 
-    .btn-success {
-      background-color: #28a745;
-      border: none;
-   
-    }
+.search-form button {
+  background: var(--admin-accent);
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
 
-    .btn-success:hover {
-      background-color: #218838;
-    }
+.search-form button:hover {
+  background: var(--admin-accent-hover);
+}
 
-    .badge {
-      padding: 6px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: bold;
-    }
+.add-category-btn {
+  padding: 0.75rem 1.5rem;
+  background: var(--admin-green);
+  color: #ffffff;
+  border: none;
+  border-radius: 30px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.3s ease;
+  white-space: nowrap;
+}
 
-    .alert-success {
-      background-color: #d4edda;
-      color: #155724;
-    }
+.add-category-btn:hover {
+  filter: brightness(1.1);
+}
 
-    .alert-danger {
-      background-color: #f8d7da;
-      color: #721c24;
-    }
+/* Table, matching dashboard's table-container / data-table */
+.table-container {
+  background: var(--admin-surface);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+  margin-bottom: 2.5rem;
+}
 
-    .pagination-container {
-      margin-top: 20px;
-      text-align: center;
-    }
+.data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95rem;
+}
 
-    .pagination a {
-      display: inline-block;
-      padding: 8px 12px;
-      margin: 0 4px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      text-decoration: none;
-      color: #007bff;
-    }
-
-    .pagination a:hover {
-      background-color: #f1f1f1;
-    }
-
-    .current-page {
-      display: inline-block;
-      padding: 8px 12px;
-      margin: 0 4px;
-      border: 1px solid #007bff;
-      border-radius: 4px;
-      background-color: #007bff;
-      color: #fff;
-    }
-    .pagination-container {
+.data-table th {
+  background: var(--admin-surface-alt);
+  color: var(--admin-text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  padding: 1.25rem;
+  letter-spacing: 0.05em;
   text-align: center;
-  margin-top: 20px;
+  border-bottom: 2px solid var(--admin-border);
 }
 
-.pagination a, .pagination .current-page {
+.data-table td {
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--admin-border);
+  color: var(--admin-text);
+  text-align: center;
+}
+
+.data-table tbody tr {
+  transition: background 0.3s ease;
+}
+
+.data-table tbody tr:hover {
+  background: var(--admin-surface-hover);
+}
+
+/* Action buttons, consistent pill style using dashboard accent colors */
+.btn {
   display: inline-block;
-  padding: 5px 10px;
-  margin: 2px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 0.5rem 1.1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #ffffff;
   text-decoration: none;
-  color: #007bff;
 }
 
-.pagination .current-page {
-  background-color: #007bff;
-  color: white;
-  font-weight: bold;
+.btn-offer {
+  background: var(--admin-blue);
 }
 
-.pagination a:hover {
-  background-color: #f1f1f1;
+.btn-offer:hover {
+  filter: brightness(1.1);
 }
 
-  </style>
-</head>
-<body>
-  <section class="content-main">
-   
-    
-    <div class="content-header">
-      <div class="search-container">
-        <form action="/admin/category/" method="get" class="d-inline">
-          <input
-            type="text"
-            placeholder="Search categories"
-            name="search"
-            value="<%= search || '' %>" 
-          />
-          <button type="submit">Search</button>
-        </form>
-      </div>
+.btn-list {
+  background: var(--admin-green);
+}
+
+.btn-list:hover {
+  filter: brightness(1.1);
+}
+
+.btn-unlist {
+  background: var(--admin-red);
+}
+
+.btn-unlist:hover {
+  filter: brightness(1.1);
+}
+
+.btn-edit {
+  background: var(--admin-surface-hover);
+  border: 1px solid var(--admin-border);
+}
+
+.btn-edit:hover {
+  background: var(--admin-accent);
+  border-color: var(--admin-accent);
+}
+
+.badge {
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: inline-block;
+}
+
+.badge-listed {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--admin-green);
+}
+
+.badge-unlisted {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--admin-red);
+}
+
+/* Pagination, matching dashboard's btn-filter styling */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.pagination-container a,
+.pagination-container span {
+  display: inline-block;
+  padding: 0.6rem 1.1rem;
+  background: var(--admin-surface-alt);
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  color: var(--admin-text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.pagination-container a:hover {
+  background: var(--admin-surface-hover);
+  border-color: var(--admin-accent);
+  color: var(--admin-text);
+}
+
+.pagination-container .current-page {
+  background: var(--admin-accent);
+  color: #ffffff;
+  border-color: var(--admin-accent);
+}
+
+@media (max-width: 768px) {
+  .content-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-form input {
+    width: 100%;
+  }
+}
+</style>
+
+<div class="dashboard-container">
+  <div class="content-header">
+    <h2 class="dashboard-title">Category</h2>
+    <div class="header-actions">
+      <form action="/admin/category/" method="get" class="search-form">
+        <input type="text" placeholder="Search categories" name="search" value="<%= search || '' %>">
+        <button type="submit">Search</button>
+      </form>
       <button class="add-category-btn" onclick="window.location.href='/admin/addCategory'">Create Category</button>
     </div>
+  </div>
 
-    <!-- Table Section -->
-    <div class="table-responsive">
-      <table class="table">
-        <thead>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Offer Price</th>
+          <th>Offer</th>
+          <th>Status</th>
+          <th>List/Unlist</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% cat.forEach((category, index) => { %>
           <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Offer Price</th>
-            <th>Offer</th>
-            <th>Status</th>
-            <th>List/Unlist</th>
-            <th>Edit</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% cat.forEach((category, index) => { %>
-            <tr>
-              <td><%= index + 1 %></td>
-              <td><%= category.name %></td>
-              <td><%= category.description %></td>
-              <td>
-                <%if(category.categoryOffer){%>
-                  <%= category.categoryOffer%>
-
-                <%}else{%>
-                  0%
-                <%}%>
-
-                </td>
-              <td>
-                <%if(category.categoryOffer===0){%>
-               
-                <button class="btn btn-info">
-                  <a href="#" class="text-white" onclick="addOffer('<%=category._id%>')">Add Offer</a>
-                </button>
+            <td><%= index + 1 %></td>
+            <td><%= category.name %></td>
+            <td><%= category.description %></td>
+            <td>
+              <%if(category.categoryOffer){%>
+                <%= category.categoryOffer%>%
               <%}else{%>
-                <button class="btn btn-info">
-                  <a href="#" class="text-white"  onclick="removeOffer('<%=category._id%>')">Remove</a>
-                </button>
+                0%
               <%}%>
-              </td>
-              <td>
-                <%if(category.isListed){%>
-                <span class="badge alert-success">Listed</span>
-                <%}else{%>
-                <span class="badge alert-danger">Unlisted</span>
-                <%}%>
-              </td>
-              <td>
-                <% if(category.isListed) { %>
-                  <button class="btn btn-danger btn-toggle" onclick="confirmAction('/admin/listCategory?id=<%=category._id%>', 'Unlist this category?')">
-                    Unlist
-                  </button>
-                <% } else { %>
-                  <button class="btn btn-success btn-toggle" onclick="confirmAction('/admin/unlistCategory?id=<%=category._id%>', 'List this category?')">
-                    List
-                  </button>
-                <% } %>
-              </td>
-              
-              <td>
-                <a href="/admin/editCategory?id=<%=category._id%>" class="btn btn-info text-white">Edit</a>
-              </td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    </div>
-    <div class="pagination-container">
-      <% if (currentPage > 1) { %>
-        <a href="?page=<%= currentPage - 1 %><%= search ? `&search=${search}` : '' %>">&laquo; Previous</a>
-      <% } %>
-      <% for (let i = 1; i <= totalPages; i++) { %>
-        <% if (i === currentPage) { %>
-          <span class="current-page"><%= i %></span>
-        <% } else { %>
-          <a href="?page=<%= i %><%= search ? `&search=${search}` : '' %>"><%= i %></a>
-        <% } %>
-      <% } %>
-      <% if (currentPage < totalPages) { %>
-        <a href="?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>">Next &raquo;</a>
-      <% } %>
-    </div>
-    
-  </section>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  
+            </td>
+            <td>
+              <%if(category.categoryOffer===0){%>
+                <a href="#" class="btn btn-offer" onclick="addOffer('<%=category._id%>')">Add Offer</a>
+              <%}else{%>
+                <a href="#" class="btn btn-offer" onclick="removeOffer('<%=category._id%>')">Remove</a>
+              <%}%>
+            </td>
+            <td>
+              <%if(category.isListed){%>
+                <span class="badge badge-listed">Listed</span>
+              <%}else{%>
+                <span class="badge badge-unlisted">Unlisted</span>
+              <%}%>
+            </td>
+            <td>
+              <% if(category.isListed) { %>
+                <button class="btn btn-unlist" onclick="confirmAction('/admin/listCategory?id=<%=category._id%>', 'Unlist this category?')">
+                  Unlist
+                </button>
+              <% } else { %>
+                <button class="btn btn-list" onclick="confirmAction('/admin/unlistCategory?id=<%=category._id%>', 'List this category?')">
+                  List
+                </button>
+              <% } %>
+            </td>
+            <td>
+              <a href="/admin/editCategory?id=<%=category._id%>" class="btn btn-edit">Edit</a>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
 
-</body>
+  <div class="pagination-container">
+    <% if (currentPage > 1) { %>
+      <a href="?page=<%= currentPage - 1 %><%= search ? `&search=${search}` : '' %>">&laquo; Previous</a>
+    <% } %>
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <% if (i === currentPage) { %>
+        <span class="current-page"><%= i %></span>
+      <% } else { %>
+        <a href="?page=<%= i %><%= search ? `&search=${search}` : '' %>"><%= i %></a>
+      <% } %>
+    <% } %>
+    <% if (currentPage < totalPages) { %>
+      <a href="?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>">Next &raquo;</a>
+    <% } %>
+  </div>
+</div>
 
+<%- include("../../views/partials/admin/footer") %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <script>
   function confirmAction(url, message) {
@@ -324,9 +359,11 @@ da
       text: message,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#28a745',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, proceed!'
+      confirmButtonColor: '#10b981',
+      cancelButtonColor: '#ef4444',
+      confirmButtonText: 'Yes, proceed!',
+      background: '#2a2a2a',
+      color: '#ffffff'
     }).then((result) => {
       if (result.isConfirmed) {
         window.location.href = url;
@@ -334,17 +371,14 @@ da
     });
   }
 
-
-
-
-
   async function addOffer(categoryId){
-    const {value:amount} = await swal.fire({
+    const {value:amount} = await Swal.fire({
       title : "Offer in Percentage",
       input : "number" ,
       inputLabel : "Percentage" ,
       inputPlaceholder : "%" ,
-
+      background: '#2a2a2a',
+      color: '#ffffff'
     })
 
     if(amount){
@@ -357,30 +391,34 @@ da
         body : JSON.stringify({
           percentage : amount ,
           categoryId : categoryId
-          
+
         })
       })
 
       const data = await response.json()
 
       if(response.ok && data.status === true){
-        swal.fire(
-          "Offer added",
-          "The offer has been added",
-          "success"
-        ).then(()=>{
+        Swal.fire({
+          title: "Offer added",
+          text: "The offer has been added",
+          icon: "success",
+          background: '#2a2a2a',
+          color: '#ffffff'
+        }).then(()=>{
           location.reload()
 
         })
       }else{
-        swal.fire("Failed",data.message || "Adding offer failed" , 'error')
+        Swal.fire({title:"Failed", text:data.message || "Adding offer failed", icon:'error', background:'#2a2a2a', color:'#ffffff'})
       }
     } catch (error) {
-      swal.fire(
-        "Error",
-        "An error occured while adding the offer",
-        "error"
-      )
+      Swal.fire({
+        title: "Error",
+        text: "An error occured while adding the offer",
+        icon: "error",
+        background: '#2a2a2a',
+        color: '#ffffff'
+      })
         console.log("Error adding the offer",error)
       }
   }
@@ -401,32 +439,35 @@ async function removeOffer(categoryId){
       })
     })
 
-    
+
 
     const data = await response.json()
     if(response.ok && data.status === true){
-      swal.fire(
-        "Offer removed",
-        "The offer has been removed",
-        "Success"
-      ).then(()=>{
+      Swal.fire({
+        title: "Offer removed",
+        text: "The offer has been removed",
+        icon: "success",
+        background: '#2a2a2a',
+        color: '#ffffff'
+      }).then(()=>{
         location.reload()
       })
 
     }else{
-      swal.fire("Failed",data.message || "Removing offer failed","error")
+      Swal.fire({title:"Failed", text:data.message || "Removing offer failed", icon:"error", background:'#2a2a2a', color:'#ffffff'})
     }
 
-    
+
   } catch (error) {
-    swal.fire(
-      "Error",
-      "an error occured while removing the offer",
-      "error"
-    )
+    Swal.fire({
+      title: "Error",
+      text: "an error occured while removing the offer",
+      icon: "error",
+      background: '#2a2a2a',
+      color: '#ffffff'
+    })
     console.error("Error removing offer",error)
-    
+
   }
 }
 </script>
-<%- include("../../views/partials/admin/footer") %>

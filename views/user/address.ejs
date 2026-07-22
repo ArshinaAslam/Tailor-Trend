@@ -6,7 +6,7 @@
     --color-surface: #ffffff;
     --color-text: #1a1a1a;
     --color-text-muted: #888888;
-    --color-accent: #6366f1;
+    --color-accent: #333333;
     --color-accent-hover: #1a1a1a;
     --color-border: #e0e0e0;
   }
@@ -113,6 +113,7 @@
     border-radius: 10px !important;
     font-weight: 600 !important;
     padding: 0.8rem !important;
+    letter-spacing: 0.5px;
     transition: all 0.3s ease;
   }
 
@@ -121,8 +122,12 @@
   #address .w-50:active {
     background-color: var(--color-accent-hover) !important;
     color: #fff !important;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  #address .w-50:active {
+    transform: translateY(0);
   }
 
   #address .address-item {
