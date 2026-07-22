@@ -5,94 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up Form</title>
     <style>
-   body{
+body{
+    margin:0;
+    font-family:Inter,sans-serif;
     background:#f5f4f0;
     display:flex;
     justify-content:center;
     align-items:center;
     min-height:100vh;
-    padding:30px;
+    padding:25px;
 }
 
 form{
+
     width:100%;
-    max-width:1000px;
-}
+    max-width:820px;
 
-.signup-container{
-
-    display:grid;
-    grid-template-columns:40% 60%;
-
-    background:white;
+    background:#fff;
 
     border-radius:24px;
 
-    overflow:hidden;
+    padding:45px;
 
-    box-shadow:0 20px 50px rgba(0,0,0,.08);
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.08);
 
 }
 
-/* LEFT */
-
-.left-panel{
-
-    background:#1a1a1a;
-
-    color:white;
-
-    padding:60px 40px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    align-items:center;
+h2{
 
     text-align:center;
 
-}
-
-.left-panel h1{
-
-    font-size:40px;
-
-    margin-bottom:20px;
-
-}
-
-.left-panel p{
-
-    line-height:1.8;
-
-    color:#d6d6d6;
-
     margin-bottom:35px;
 
-}
+    font-size:34px;
 
-.left-panel img{
-
-    width:220px;
-
-}
-
-/* RIGHT */
-
-.right-panel{
-
-    padding:45px;
-
-}
-
-.right-panel h2{
-
-    margin-bottom:30px;
-
-    font-size:32px;
+    color:#1a1a1a;
 
 }
 
@@ -102,7 +50,7 @@ form{
 
     grid-template-columns:1fr 1fr;
 
-    gap:18px;
+    gap:20px;
 
 }
 
@@ -116,7 +64,7 @@ form{
 
 .full-width{
 
-    margin-top:18px;
+    margin-top:20px;
 
 }
 
@@ -126,13 +74,15 @@ label{
 
     margin-bottom:8px;
 
+    color:#555;
+
 }
 
 input{
 
     width:100%;
 
-    height:50px;
+    height:52px;
 
     border:1px solid #ddd;
 
@@ -140,9 +90,11 @@ input{
 
     padding:0 15px;
 
+    background:#fafafa;
+
     font-size:15px;
 
-    background:#fafafa;
+    transition:.3s;
 
 }
 
@@ -151,6 +103,8 @@ input:focus{
     outline:none;
 
     border-color:#1a1a1a;
+
+    box-shadow:0 0 0 4px rgba(0,0,0,.06);
 
 }
 
@@ -178,9 +132,9 @@ button{
 
     width:100%;
 
-    height:55px;
+    height:56px;
 
-    margin-top:25px;
+    margin-top:30px;
 
     border:none;
 
@@ -188,7 +142,7 @@ button{
 
     background:#1a1a1a;
 
-    color:white;
+    color:#fff;
 
     font-size:16px;
 
@@ -196,9 +150,13 @@ button{
 
     cursor:pointer;
 
+    transition:.3s;
+
 }
 
 button:hover{
+
+    transform:translateY(-2px);
 
     background:#333;
 
@@ -214,7 +172,9 @@ button:hover{
 
     align-items:center;
 
-    height:55px;
+    gap:10px;
+
+    height:54px;
 
     border:1px solid #ddd;
 
@@ -226,27 +186,31 @@ button:hover{
 
     font-weight:600;
 
+    transition:.3s;
+
 }
 
-.google-tag span{
+.google-tag:hover{
 
-    margin-left:6px;
+    background:#fafafa;
 
 }
 
 .login-link{
 
+    text-align:center;
+
     margin-top:20px;
 
-    text-align:center;
+    color:#666;
 
 }
 
 .login-link a{
 
-    text-decoration:none;
-
     color:#1a1a1a;
+
+    text-decoration:none;
 
     font-weight:bold;
 
@@ -254,9 +218,9 @@ button:hover{
 
 .server-error{
 
-    background:#ffe9e9;
+    background:#ffeaea;
 
-    color:red;
+    color:#d32f2f;
 
     padding:12px;
 
@@ -268,145 +232,119 @@ button:hover{
 
 .error-message{
 
-    color:red;
+    color:#d32f2f;
 
     font-size:12px;
 
-    min-height:16px;
+    min-height:15px;
 
     margin-bottom:5px;
 
 }
 
-@media(max-width:850px){
+@media(max-width:768px){
 
-    .signup-container{
+.form-grid{
 
-        grid-template-columns:1fr;
+grid-template-columns:1fr;
 
-    }
+}
 
-    .left-panel{
+form{
 
-        display:none;
+padding:30px 22px;
 
-    }
-
-    .form-grid{
-
-        grid-template-columns:1fr;
-
-    }
-
-    .right-panel{
-
-        padding:30px;
-
-    }
+}
 
 }
     </style>
 </head>
 <body>
-   <form action="/signup" method="post" id="form">
+  <h2>Create Account</h2>
 
-    <div class="signup-container">
+<% if (locals.message && message.length > 0) { %>
+<div id="errorMessage" class="server-error">
+    <%= message %>
+</div>
+<% } %>
 
-        <!-- Left Side -->
-        <div class="left-panel">
+<div class="form-grid">
 
-            <h1>Welcome!</h1>
-
-            <p>
-                Create your account and start exploring amazing features.
-                Fast, secure and simple.
-            </p>
-
-            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="signup">
-
-        </div>
-
-        <!-- Right Side -->
-        <div class="right-panel">
-
-            <h2>Create Account</h2>
-
-            <% if (locals.message && message.length > 0) { %>
-                <div id="errorMessage" class="server-error">
-                    <%= message %>
-                </div>
-            <% } %>
-
-            <div class="form-grid">
-
-                <div class="field">
-                    <label>Full Name</label>
-                    <div id="error1" class="error-message"></div>
-                    <input type="text" id="name" name="name" placeholder="John Doe">
-                </div>
-
-                <div class="field">
-                    <label>Email</label>
-                    <div id="error2" class="error-message"></div>
-                    <input type="email" id="email" name="email" placeholder="john@gmail.com">
-                </div>
-
-                <div class="field">
-                    <label>Phone</label>
-                    <div id="error3" class="error-message"></div>
-                    <input type="tel" id="phone" name="phone" placeholder="9876543210">
-                </div>
-
-                <div class="field">
-                    <label>Password</label>
-                    <div id="error4" class="error-message"></div>
-
-                    <div class="input-container">
-                        <input type="password" id="password" name="password" placeholder="********">
-                        <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="field full-width">
-
-                <label>Confirm Password</label>
-
-                <div id="error5" class="error-message"></div>
-
-                <div class="input-container">
-                    <input
-                        type="password"
-                        id="confirm-password"
-                        name="cPassword"
-                        placeholder="********">
-
-                    <span class="toggle-password"
-                        onclick="togglePassword('confirm-password')">👁️</span>
-                </div>
-
-            </div>
-
-            <button type="submit">
-                Create Account
-            </button>
-
-            <a href="/auth/google" class="google-tag">
-                Continue with <span>Google</span>
-            </a>
-
-            <div class="login-link">
-                Already have an account?
-                <a href="/login">Login</a>
-            </div>
-
-        </div>
-
+    <div class="field">
+        <label>Full Name</label>
+        <div id="error1" class="error-message"></div>
+        <input type="text" id="name" name="name" placeholder="Enter your full name">
     </div>
 
-</form>
+    <div class="field">
+        <label>Email Address</label>
+        <div id="error2" class="error-message"></div>
+        <input type="email" id="email" name="email" placeholder="Enter your email">
+    </div>
+
+    <div class="field">
+        <label>Phone Number</label>
+        <div id="error3" class="error-message"></div>
+        <input type="tel" id="phone" name="phone" placeholder="Enter your phone">
+    </div>
+
+    <div class="field">
+        <label>Password</label>
+        <div id="error4" class="error-message"></div>
+
+        <div class="input-container">
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter password">
+
+            <span class="toggle-password"
+                onclick="togglePassword('password')">
+                👁️
+            </span>
+        </div>
+    </div>
+
+</div>
+
+<div class="field full-width">
+
+    <label>Confirm Password</label>
+
+    <div id="error5" class="error-message"></div>
+
+    <div class="input-container">
+        <input
+            type="password"
+            id="confirm-password"
+            name="cPassword"
+            placeholder="Confirm password">
+
+        <span class="toggle-password"
+            onclick="togglePassword('confirm-password')">
+            👁️
+        </span>
+    </div>
+
+</div>
+
+<button type="submit">
+    Create Account
+</button>
+
+<a href="/auth/google" class="google-tag">
+    <img
+        src="https://www.svgrepo.com/show/475656/google-color.svg"
+        width="20">
+
+    <span>Continue with Google</span>
+</a>
+
+<div class="login-link">
+    Already have an account?
+    <a href="/login">Login</a>
+</div>
 
     <script>
         const name = document.getElementById('name');
