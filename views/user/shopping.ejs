@@ -24,12 +24,19 @@
   }
 
   
+  .sidebar-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 280px;
+    flex-shrink: 0;
+  }
+
   .shop-topbar {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 14px;
-    margin-bottom: 32px;
+    gap: 10px;
+    margin-bottom: 0;
   }
 
   .search-form {
@@ -39,8 +46,8 @@
     border: 1px solid var(--color-border);
     border-radius: 12px;
     overflow: hidden;
-    width: 100%;
-    max-width: 1680px;
+    flex: 1;
+    min-width: 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
     transition: all 0.3s ease;
   }
@@ -123,8 +130,6 @@
     background-color: var(--color-surface);
     border-radius: 16px;
     margin-bottom: 30px;
-    width: 280px;
-    flex-shrink: 0;
     text-align: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     position: sticky;
@@ -523,24 +528,25 @@
 
 <div class="main-container">
   <section class="shop-page container">
-    <div class="shop-topbar">
-      <div class="search-bar">
-        <form action="/search" method="POST" class="search-form">
-          <input type="text" name="query" placeholder="Search items..." class="search-input" />
-          <button type="submit" class="search-button">Search</button>
-        </form>
-      </div>
-      <button type="button" class="refresh-icon-btn" onclick="window.location.href='/shop'" title="Reset Filters">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M23 4v6h-6"/>
-          <path d="M1 20v-6h6"/>
-          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-        </svg>
-      </button>
-    </div>
-
     <div class="product-list-container">
-      <aside class="sidebar">
+      <div class="sidebar-column">
+        <div class="shop-topbar">
+          <div class="search-bar">
+            <form action="/search" method="POST" class="search-form">
+              <input type="text" name="query" placeholder="Search items..." class="search-input" />
+              <button type="submit" class="search-button">Search</button>
+            </form>
+          </div>
+          <button type="button" class="refresh-icon-btn" onclick="window.location.href='/shop'" title="Reset Filters">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M23 4v6h-6"/>
+              <path d="M1 20v-6h6"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+          </button>
+        </div>
+
+        <aside class="sidebar">
         <div class="filter-section">
           <div class="filter-title">Categories</div>
           <div class="category-brand-container">
@@ -581,7 +587,8 @@
           </div>
         </div>
 
-      </aside>
+        </aside>
+      </div>
 
       <main class="product-grid">
         <%for(let i=0;i<products.length;i++){%>
