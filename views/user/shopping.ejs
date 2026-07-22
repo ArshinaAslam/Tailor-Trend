@@ -1,6 +1,21 @@
 <%- include("../../views/partials/user/header") %>
 
 <style>
+  :root {
+    --color-bg: #f5f4f0;
+    --color-surface: #ffffff;
+    --color-text: #1a1a1a;
+    --color-text-muted: #888888;
+    --color-accent: #1a1a1a;
+    --color-accent-hover: #333333;
+    --color-badge: #b5895c;
+    --color-border: #e0e0e0;
+  }
+
+  body {
+    background-color: var(--color-bg);
+  }
+
   .main-container {
     max-width: 1400px;
     margin: 0 auto;
@@ -19,16 +34,17 @@
   .search-form {
     display: flex;
     align-items: center;
-    background-color: #f5f5f7;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: 12px;
     overflow: hidden;
     max-width: 320px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
     transition: all 0.3s ease;
   }
 
   .search-form:hover, .search-form:focus-within {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
     transform: translateY(-2px);
   }
 
@@ -39,12 +55,12 @@
     border: none;
     outline: none;
     background-color: transparent;
-    color: #333;
+    color: var(--color-text);
   }
 
   .search-button {
     padding: 12px 22px;
-    background-color: #1e918b;
+    background-color: var(--color-accent);
     color: #fff;
     border: none;
     font-weight: 600;
@@ -56,28 +72,31 @@
   }
 
   .search-button:hover {
-    background-color: #167a74;
+    background-color: var(--color-accent-hover);
     transform: scale(1.05);
   }
 
-  /* Filter Refresh Button */
+  
+  .sidebar-refresh {
+    width: 100%;
+  }
+
   .refresh-button {
-    background-color: #f5f5f7;
-    color: #333;
-    border: none;
+    background-color: transparent;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
     padding: 10px 18px;
     border-radius: 10px;
     font-weight: 500;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    width: 100%;
   }
 
   .refresh-button:hover {
-    background-color: #e5e5e7;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    background-color: var(--color-bg);
+    color: var(--color-text);
   }
 
   
@@ -90,15 +109,15 @@
   
   .sidebar {
     padding: 24px;
-    background-color: #ffffff;
+    background-color: var(--color-surface);
     border-radius: 16px;
     margin-bottom: 30px;
     width: 280px;
+    flex-shrink: 0;
     text-align: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     position: sticky;
     top: 20px;
-    align-self: flex-start;
   }
 
   .filter-section {
@@ -109,7 +128,7 @@
     font-weight: 700;
     margin-bottom: 16px;
     font-size: 17px;
-    color: #333;
+    color: var(--color-text);
     position: relative;
     padding-bottom: 10px;
   }
@@ -122,7 +141,7 @@
     transform: translateX(-50%);
     width: 40px;
     height: 3px;
-    background-color: #1e918b;
+    background-color: var(--color-accent);
     border-radius: 2px;
   }
 
@@ -133,7 +152,7 @@
 
   .filter-item a {
     text-decoration: none;
-    color: #555;
+    color: var(--color-text-muted);
     font-size: 15px;
     padding: 6px 10px;
     border-radius: 8px;
@@ -142,14 +161,14 @@
   }
 
   .filter-item a:hover {
-    color: #1e918b;
-    background-color: #f5f5f7;
+    color: var(--color-text);
+    background-color: var(--color-bg);
   }
 
   
   .price-filter {
     padding: 20px;
-    background-color: #f9f9f9;
+    background-color: var(--color-bg);
     border-radius: 12px;
     margin-top: 20px;
   }
@@ -161,41 +180,45 @@
   }
 
   .price-button {
+    display: block;
     padding: 12px 20px;
-    background-color: #f1f1f1;
-    color: #333;
-    border: 1px solid #e0e0e0;
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
     text-align: center;
+    text-decoration: none;
     font-size: 14px;
     font-weight: 500;
   }
 
   .price-button:hover {
-    background-color: #e5e5e7;
+    background-color: var(--color-accent);
+    color: #fff;
+    border-color: var(--color-accent);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
   }
 
   .price-button.active-sort {
-    background-color: #1e918b;
+    background-color: var(--color-accent);
     color: white;
+    border-color: var(--color-accent);
   }
 
   
   .product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 250px);
-  justify-content: start;
-  gap: 25px;
-   align-items: start; 
-  width: calc(100% - 310px);
-}
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+    flex: 1;
+    min-width: 0;
+  }
 
   .product-card {
-    background-color: #fff;
+    background-color: var(--color-surface);
     border: none;
     padding: 20px;
     border-radius: 16px;
@@ -230,7 +253,7 @@
     font-size: 16px;
     font-weight: 600;
     margin: 12px 0;
-    color: #333;
+    color: var(--color-text);
     height: 40px;
     overflow: hidden;
     display: -webkit-box;
@@ -248,13 +271,13 @@
     position: absolute;
     top: 10px;
     left: 10px;
-    background-color: #ff3366;
+    background-color: var(--color-badge);
     color: white;
     font-size: 12px;
     font-weight: 700;
     padding: 5px 10px;
     border-radius: 4px;
-    box-shadow: 0 2px 6px rgba(255, 51, 102, 0.3);
+    box-shadow: 0 2px 6px rgba(181, 137, 92, 0.3);
     z-index: 1;
     display: inline-block;
     letter-spacing: 0.5px;
@@ -271,14 +294,14 @@
   }
 
   .text-muted {
-    color: #888;
+    color: var(--color-text-muted);
     font-size: 14px;
     text-decoration: line-through;
   }
 
   .sale-price {
     font-weight: 600;
-    color: #333;
+    color: var(--color-text);
   }
 
   
@@ -287,7 +310,7 @@
     top: 15px;
     right: 15px;
     background-color: rgba(255, 255, 255, 0.9);
-    color: #ff3366;
+    color: var(--color-text-muted);
     width: 36px;
     height: 36px;
     display: flex;
@@ -301,14 +324,14 @@
   }
 
   .wishlist-btn:hover {
-    background-color: #ff3366;
+    background-color: var(--color-badge);
     color: white;
     transform: scale(1.1);
   }
 
   
   .add-to-cart-btn {
-    background-color: #1e918b;
+    background-color: var(--color-accent);
     color: #fff;
     padding: 12px 10px;
     border: none;
@@ -323,9 +346,9 @@
   }
 
   .add-to-cart-btn:hover {
-    background-color: #167a74;
+    background-color: var(--color-accent-hover);
     transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(30, 145, 139, 0.2);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
   }
 
   .add-to-cart-btn:active {
@@ -342,9 +365,9 @@
 
   .pagination a {
     padding: 10px 16px;
-    background-color: #f5f5f7;
-    border: 1px solid #e0e0e0;
-    color: #333;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
     text-decoration: none;
     border-radius: 8px;
     transition: all 0.3s ease;
@@ -352,31 +375,31 @@
   }
 
   .pagination a:hover {
-    background-color: #e5e5e7;
+    background-color: var(--color-bg);
     transform: translateY(-2px);
   }
 
   .pagination .active {
-    background-color: #1e918b;
+    background-color: var(--color-accent);
     color: #fff;
-    border-color: #1e918b;
+    border-color: var(--color-accent);
   }
 
   
   #sizeModal .modal-content {
-    background-color: #fff;
+    background-color: var(--color-surface);
     margin: 15% auto;
     padding: 30px;
     width: 350px;
     border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   }
 
   #sizeModal h3 {
     font-size: 20px;
     font-weight: 600;
     margin-bottom: 20px;
-    color: #333;
+    color: var(--color-text);
     text-align: center;
   }
 
@@ -391,15 +414,15 @@
   .size-option-btn {
     margin: 5px;
     padding: 10px 15px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    background-color: #f5f5f7;
+    background-color: var(--color-bg);
     transition: all 0.3s ease;
     cursor: pointer;
   }
 
   .size-option-btn:hover:not([disabled]) {
-    background-color: #e5e5e7;
+    background-color: var(--color-border);
     transform: translateY(-2px);
   }
 
@@ -411,7 +434,7 @@
   #confirmAddToCart {
     margin-top: 20px;
     padding: 12px 25px;
-    background-color: #1e918b;
+    background-color: var(--color-accent);
     color: white;
     border: none;
     border-radius: 10px;
@@ -423,9 +446,9 @@
   }
 
   #confirmAddToCart:hover {
-    background-color: #167a74;
+    background-color: var(--color-accent-hover);
     transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(30, 145, 139, 0.2);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
   }
 
   .close {
@@ -433,12 +456,12 @@
     font-size: 24px;
     font-weight: bold;
     cursor: pointer;
-    color: #888;
+    color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
 
   .close:hover {
-    color: #333;
+    color: var(--color-text);
   }
 
  
@@ -468,7 +491,7 @@
   }
 
   @media (max-width: 576px) {
-     .product-grid {
+    .product-grid {
       grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 15px;
     }
@@ -493,11 +516,7 @@
         </form>
       </div>
     </div>
-   
-    <div class="filter-section">
-      <button onclick="window.location.href='/shop'" class="refresh-button">Refresh Filters</button>
-    </div>
-   
+
     <div class="product-list-container">
       <aside class="sidebar">
         <div class="filter-section">
@@ -518,29 +537,30 @@
        
         <div class="price-filter">
           <div class="filter-title">Sort by Price</div>
-          <form id="price-filter-form">
-            <div class="price-options">
-              <a href="/shop?category=<%= selectedCategory %>&price=<%= selectedPrice %>&sort=price_asc">
-                <button type="button" class="price-button">Low to High</button>
-              </a>
-              <a href="/shop?category=<%= selectedCategory %>&price=<%= selectedPrice %>&sort=price_desc">
-                <button type="button" class="price-button">High to Low</button>
-              </a>
-              
-              <a href="/shop?category=<%= selectedCategory %>&price=0-500">
-                <button type="button" class="price-button">Under ₹500</button>
-              </a>
-              <a href="/shop?category=<%= selectedCategory %>&price=500-1000">
-                <button type="button" class="price-button">₹500 - ₹1000</button>
-              </a>
-              <a href="/shop?category=<%= selectedCategory %>&price=1000-1500">
-                <button type="button" class="price-button">₹1000 - ₹1500</button>
-              </a>
-              <a href="/shop?category=<%= selectedCategory %>&price=1500-100000">
-                <button type="button" class="price-button">Above ₹1500</button>
-              </a>
-            </div>
-          </form>
+          <div class="price-options">
+            <a class="price-button" href="/shop?category=<%= selectedCategory %>&price=<%= selectedPrice %>&sort=price_asc">
+              Low to High
+            </a>
+            <a class="price-button" href="/shop?category=<%= selectedCategory %>&price=<%= selectedPrice %>&sort=price_desc">
+              High to Low
+            </a>
+            <a class="price-button" href="/shop?category=<%= selectedCategory %>&price=0-500">
+              Under ₹500
+            </a>
+            <a class="price-button" href="/shop?category=<%= selectedCategory %>&price=500-1000">
+              ₹500 - ₹1000
+            </a>
+            <a class="price-button" href="/shop?category=<%= selectedCategory %>&price=1000-1500">
+              ₹1000 - ₹1500
+            </a>
+            <a class="price-button" href="/shop?category=<%= selectedCategory %>&price=1500-100000">
+              Above ₹1500
+            </a>
+          </div>
+        </div>
+
+        <div class="sidebar-refresh">
+          <button onclick="window.location.href='/shop'" class="refresh-button">Reset Filters</button>
         </div>
       </aside>
 
@@ -553,31 +573,27 @@
               </div>
             <% } %>
 
-
-           
             <span class="wishlist-btn" onclick="addToWishlist('<%=products[i]._id%>')">❤</span>
-            
+
             <a href="/productDetails?productId=<%=products[i]._id%>">
               <div class="product-image-container">
                 <img src="<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>" />
-
               </div>
               <h4><%=products[i].productName%></h4>
-              
+
               <p class="price">
                 <%if(products[i].regularPrice !== products[i].salePrice){%>
                 <span class="text-muted">₹<%= products[i].regularPrice.toLocaleString('en-IN') %></span>
                 <%}%>
                 <span class="sale-price">₹<%= products[i].salePrice.toLocaleString('en-IN') %></span>
-                
               </p>
             </a>
-          
+
             <button class="add-to-cart-btn" onclick="showSizeModal('<%=products[i]._id%>')">Add to Cart</button>
           </div>
         <%}%>
       </main>
-        
+
       <div id="sizeModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
         <div class="modal-content">
           <span class="close">&times;</span>
@@ -650,10 +666,11 @@
             document.querySelectorAll('.size-option-btn').forEach(btn => {
               btn.style.backgroundColor = '';
               btn.style.borderColor = '';
+              btn.style.color = '';
             });
           
-            button.style.backgroundColor = '#1e918b';
-            button.style.borderColor = '#1e918b';
+            button.style.backgroundColor = '#1a1a1a';
+            button.style.borderColor = '#1a1a1a';
             button.style.color = 'white';
             selectedSize = size.size;
           };
@@ -666,15 +683,13 @@
     });
   }
 
- 
-  
   document.getElementById('confirmAddToCart').onclick = function() {
   if (!selectedSize) {
     Swal.fire({
       title: "Size Required!",
       text: "Please select a size before proceeding.",
       icon: "warning",
-      confirmButtonColor: "#ef4444",
+      confirmButtonColor: "#b5895c",
       confirmButtonText: "OK"
     });
     return;
@@ -693,14 +708,14 @@
           title: "Success!",
           text: "Item added to cart successfully.",
           icon: "success",
-          confirmButtonColor: "#1e918b"
+          confirmButtonColor: "#1a1a1a"
         });
       } else {
         Swal.fire({
           title: "Cannot Add to Cart",
           text: response.message || "Failed to add item to cart",
           icon: "warning",
-          confirmButtonColor: "#ef4444"
+          confirmButtonColor: "#b5895c"
         });
       }
     },
@@ -715,7 +730,7 @@
         title: "Cannot Add to Cart",
         text: errorMessage,
         icon: "warning",
-        confirmButtonColor: "#ef4444"
+        confirmButtonColor: "#b5895c"
       });
     }
   });
