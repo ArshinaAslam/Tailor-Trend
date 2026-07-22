@@ -1,7 +1,7 @@
 <%- include("../../views/partials/user/header") %>
 
 <style>
-  :root {
+  #address {
     --color-bg: #f5f4f0;
     --color-surface: #ffffff;
     --color-text: #1a1a1a;
@@ -12,99 +12,115 @@
   }
 
   #address .card {
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: none !important;
+    border-radius: 16px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06) !important;
   }
 
   #address .card-header {
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
-    padding: 1.1rem 1.4rem;
+    background: var(--color-surface) !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    padding: 1.1rem 1.4rem !important;
   }
 
   #address .card-header h5 {
-    color: var(--color-text);
-    font-weight: 700;
+    color: var(--color-text) !important;
+    font-weight: 700 !important;
   }
 
   #address .card-body {
-    padding: 1.4rem;
+    padding: 1.4rem !important;
   }
 
   #address address {
-    color: var(--color-text);
+    color: var(--color-text) !important;
     font-style: normal;
     line-height: 1.6;
     margin-bottom: 0.75rem;
   }
 
   #address .card-body p {
-    color: var(--color-text-muted);
+    color: var(--color-text-muted) !important;
     margin-bottom: 0.35rem;
     font-size: 0.92rem;
   }
 
   #address .btn-primary {
-    background: var(--color-accent);
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    padding: 0.45rem 1rem;
+    background-color: var(--color-accent) !important;
+    border-color: var(--color-accent) !important;
+    color: #fff !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    padding: 0.45rem 1rem !important;
     transition: all 0.3s ease;
   }
 
-  #address .btn-primary:hover {
-    background: var(--color-accent-hover);
+  #address .btn-primary:hover,
+  #address .btn-primary:focus,
+  #address .btn-primary:active {
+    background-color: var(--color-accent-hover) !important;
+    border-color: var(--color-accent-hover) !important;
+    color: #fff !important;
     transform: translateY(-1px);
   }
 
   #address .btn-danger {
-    background: transparent;
-    color: #c0392b;
-    border: 1px solid #f1c3bc;
-    border-radius: 10px;
-    font-weight: 600;
-    padding: 0.45rem 1rem;
+    background-color: transparent !important;
+    color: #c0392b !important;
+    border: 1px solid #f1c3bc !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    padding: 0.45rem 1rem !important;
   }
 
-  #address .btn-danger:hover {
-    background: #fdecea;
+  #address .btn-danger:hover,
+  #address .btn-danger:focus,
+  #address .btn-danger:active {
+    background-color: #fdecea !important;
+    border-color: #f1c3bc !important;
+    color: #c0392b !important;
   }
 
   #address .btn-secondary {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    color: var(--color-text);
-    border-radius: 10px;
-    font-weight: 600;
+    background-color: var(--color-surface) !important;
+    border: 1px solid var(--color-border) !important;
+    color: var(--color-text) !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
   }
 
-  #address .btn-secondary:hover {
-    background: var(--color-bg);
-    border-color: var(--color-text-muted);
+  #address .btn-secondary:hover,
+  #address .btn-secondary:focus,
+  #address .btn-secondary:active {
+    background-color: var(--color-bg) !important;
+    border-color: var(--color-text-muted) !important;
+    color: var(--color-text) !important;
   }
 
   #address .btn-light {
-    background: var(--color-accent);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
+    background-color: var(--color-accent) !important;
+    border-color: var(--color-accent) !important;
+    color: #fff !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
     pointer-events: none;
   }
 
   #address .w-50 {
-    background: var(--color-accent);
-    border: none;
-    border-radius: 10px;
-    font-weight: 600;
-    padding: 0.8rem;
+    background-color: var(--color-accent) !important;
+    border: none !important;
+    color: #fff !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    padding: 0.8rem !important;
     transition: all 0.3s ease;
   }
 
-  #address .w-50:hover {
-    background: var(--color-accent-hover);
+  #address .w-50:hover,
+  #address .w-50:focus,
+  #address .w-50:active {
+    background-color: var(--color-accent-hover) !important;
+    color: #fff !important;
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
   }
