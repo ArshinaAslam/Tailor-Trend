@@ -381,8 +381,6 @@ const cancelOrder = async (req, res) => {
       return res.status(Status.NOT_FOUND).json({ success: false, message: "Item not found in the order" });
     }
 
-    // const cancelProduct = await Product.find({productOffer:{$gt:0}},{$elemMatch:{quantity:{$lt:5}}})
-
     const itemOriginalCost = itemToCancel.price * itemToCancel.quantity;
     const totalItemsCost = order.totalPrice;
     const remainingCost = totalItemsCost - itemOriginalCost;
@@ -430,8 +428,10 @@ const cancelOrder = async (req, res) => {
     }
 
 
-    let refundProcessed = false;
-    if (order.paymentMethod !== "COD") {
+let refundProcessed = false;
+    const paymentWasSuccessful = order.paymentMethod !== "COD" && !!order.paymentId;
+
+    if (paymentWasSuccessful) {
       const userId = req.session.user;
       const productName = product ? product.productName : "Unknown Product";
 
@@ -452,22 +452,13 @@ const cancelOrder = async (req, res) => {
       refundProcessed = true;
     }
 
-   
-    if (order.paymentMethod === "COD") {
-      res.json({ 
-        success: true, 
-        message: "Item cancelled successfully", 
-        refundAmount: 0,
-        paymentMethod: "COD"
-      });
-    } else {
-      res.json({ 
-        success: true, 
-        message: "Item cancelled successfully", 
-        refundAmount: priceToRefund,
-        paymentMethod: order.paymentMethod
-      });
-    }
+    res.json({
+      success: true,
+      message: "Item cancelled successfully",
+      refundAmount: refundProcessed ? priceToRefund : 0,
+      paymentMethod: order.paymentMethod
+    });
+    
   } catch (error) {
     console.error("Error in cancelOrder:", error);
     res.status(Status.INTERNAL_SERVER_ERROR).json({ success: false, message: Message.SERVER_ERROR });
