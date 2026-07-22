@@ -5,11 +5,11 @@
     --color-surface: #ffffff;
     --color-text: #1a1a1a;
     --color-text-muted: #888888;
-    --color-accent: #1a1a1a;
-    --color-accent-hover: #333333;
-    --color-border: #e0e0e0;
+    --color-accent: #6366f1;
+    --color-accent-hover: #4f46e5;
+    --color-accent-soft: #ede9fe;
+    --color-border: #e5e5e5;
     --color-danger: #c0392b;
-    --color-danger-hover: #a5301f;
     --space-1: 0.5rem;
     --space-2: 0.75rem;
     --space-3: 1rem;
@@ -39,42 +39,48 @@
     padding: var(--space-5) !important;
   }
 
-  /* --- Profile view --- */
+  /* --- Profile view: centered vertical layout --- */
   .profile-page .profile-card .card-body {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: var(--space-4);
+    text-align: center;
+    padding-top: var(--space-5) !important;
+    padding-bottom: var(--space-5) !important;
   }
 
   .profile-page .profile-avatar {
-    width: 76px;
-    height: 76px;
+    width: 88px;
+    height: 88px;
     border-radius: 50%;
     background: var(--color-accent);
     color: #fff;
-    font-size: 1.75rem;
+    font-size: 2rem;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    margin-bottom: var(--space-3);
   }
 
   .profile-page .profile-info {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
+    align-items: center;
+    gap: 0.3rem;
   }
 
   .profile-page .profile-info h3 {
     color: var(--color-text) !important;
     font-weight: 700;
-    margin: 0;
+    margin: 0 0 var(--space-1) 0;
   }
 
   .profile-page .profile-info p {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--space-1);
     color: var(--color-text-muted);
     margin: 0;
@@ -82,8 +88,7 @@
   }
 
   .profile-page .profile-info .btn-primary {
-    margin-top: var(--space-2);
-    align-self: flex-start;
+    margin-top: var(--space-4);
   }
 
   /* --- Edit form --- */
@@ -92,9 +97,6 @@
   }
 
   .profile-page .field-header {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
     margin-bottom: var(--space-1);
   }
 
@@ -119,7 +121,7 @@
     border-color: var(--color-accent) !important;
     outline: none;
     background-color: var(--color-surface) !important;
-    box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.06);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
   }
 
   .profile-page .form-control[readonly] {
@@ -145,13 +147,14 @@
     border-radius: 10px !important;
     color: #fff !important;
     font-weight: 600 !important;
-    padding: 0.6rem 1.1rem !important;
-    transition: all 0.3s ease;
+    padding: 0.65rem 1.3rem !important;
+    transition: all 0.2s ease;
   }
 
   .profile-page .btn-primary:hover {
     background: var(--color-accent-hover) !important;
     transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(99, 102, 241, 0.25);
   }
 
   .profile-page .btn-danger {
