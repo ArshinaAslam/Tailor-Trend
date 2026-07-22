@@ -1,10 +1,139 @@
 <%- include("../../views/partials/user/header") %>
 <style>
+  :root {
+    --color-bg: #f5f4f0;
+    --color-surface: #ffffff;
+    --color-text: #1a1a1a;
+    --color-text-muted: #888888;
+    --color-accent: #1a1a1a;
+    --color-accent-hover: #333333;
+    --color-border: #e0e0e0;
+  }
+
   .text-danger {
     display: none;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
+    font-size: 0.8rem;
+    margin-top: 0.35rem;
+    color: #c0392b;
+  }
+
+  .card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+
+  .card-header {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    padding: 1.25rem 1.5rem;
+  }
+
+  .card-header h5 {
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  .card-body {
+    padding: 1.75rem;
+  }
+
+  .profile-card .card-body {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .profile-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: #fff;
+    font-size: 1.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .profile-info h3 {
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  .profile-info p {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.25rem;
+    font-size: 0.95rem;
+  }
+
+  .form-label {
+    font-weight: 600;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .form-control {
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    transition: all 0.3s ease;
+  }
+
+  .form-control:focus {
+    border-color: var(--color-accent);
+    outline: none;
+    background-color: var(--color-surface);
+    box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.06);
+  }
+
+  .form-control[readonly] {
+    background-color: #eeeeeb;
+    color: var(--color-text-muted);
+  }
+
+  .form-group {
+    margin-bottom: 1.1rem;
+  }
+
+  .btn-primary {
+    background: var(--color-accent);
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.6rem 1.1rem;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background: var(--color-accent-hover);
+    transform: translateY(-1px);
+  }
+
+  .btn-danger {
+    background: #c0392b;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.6rem 1.1rem;
+  }
+
+  .btn-danger:hover {
+    background: #a5301f;
+  }
+
+  #editProfile .d-flex.mt-3 {
+    gap: 0.75rem;
+  }
 </style>
 
 <main class="main">
@@ -19,12 +148,11 @@
 
   <section class="py-4">
     <div class="dashboard-container">
-    
+
       <%- include("../../views/partials/user/profile-sidebar") %>
 
-     
       <div class="content-area">
-      
+
         <div id="dashboard">
           <div class="card profile-card">
             <div class="card-header">
@@ -44,42 +172,41 @@
           </div>
         </div>
 
-       
-<div id="editProfile" style="display: none;">
-  <div class="card">
-    <div class="card-header">
-      <h5 class="mb-0">Edit Profile</h5>
-    </div>
-    <div class="card-body">
-      <form id="editProfileForm">
-        <div class="form-group">
-          <label class="form-label">Name</label>
-          <span class="text-danger" id="nameError" style="display: none;">Name cannot be empty!</span>
-          <input type="text" name="name" class="form-control" value="<%= user.name %>" >
+        <div id="editProfile" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">Edit Profile</h5>
+            </div>
+            <div class="card-body">
+              <form id="editProfileForm">
+                <div class="form-group">
+                  <label class="form-label">Name</label>
+                  <span class="text-danger" id="nameError" style="display: none;">Name cannot be empty!</span>
+                  <input type="text" name="name" class="form-control" value="<%= user.name %>">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email</label>
+                  <input type="email" name="email" class="form-control" value="<%= user.email %>" readonly>
+                  <a href="/updateEmail" class="btn btn-primary mt-2">Edit Email</a>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Phone</label>
+                  <span class="text-danger" id="phoneError" style="display: none;">Phone cannot be empty!</span>
+                  <input type="tel" name="phone" class="form-control" value="<%= user.phone %>">
+                </div>
+                <div class="form-group">
+                  <% if (!user.googleId) { %>
+                    <a href="/updatePassword" class="btn btn-primary">Edit Password</a>
+                  <% } %>
+                </div>
+                <div class="d-flex mt-3">
+                  <button type="submit" class="btn btn-primary">Save Changes</button>
+                  <button type="button" class="btn btn-danger ml-2" onclick="cancelEdit()">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Email</label>
-          <input type="email" name="email" class="form-control" value="<%= user.email %>" readonly>
-          <a href="/updateEmail" class="btn btn-primary mt-2">Edit Email</a>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Phone</label>
-          <span class="text-danger" id="phoneError" style="display: none;">Phone cannot be empty!</span>
-          <input type="tel" name="phone" class="form-control" value="<%= user.phone %>" >
-        </div>
-        <div class="form-group">
-          <%if(!user.googleId){%>
-            <a href="/updatePassword" class="btn btn-primary">Edit Password</a>
-          <%}%>
-        </div>
-        <div class="d-flex mt-3">
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-          <button type="button" class="btn btn-danger ml-2" onclick="cancelEdit()">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
       </div>
     </div>
   </section>
@@ -87,22 +214,17 @@
 
 <%- include("../../views/partials/user/footer") %>
 
-
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
 <script>
-  
   function editProfile() {
     document.getElementById('dashboard').style.display = "none";
     document.getElementById('editProfile').style.display = "block";
 
-   
-    
     document.querySelector('#editProfileForm input[name="name"]').value = "<%= user.name %>";
     document.querySelector('#editProfileForm input[name="phone"]').value = "<%= user.phone %>";
-    
+
     document.getElementById('nameError').style.display = 'none';
     document.getElementById('phoneError').style.display = 'none';
   }
@@ -112,23 +234,18 @@
     document.getElementById('dashboard').style.display = "block";
   }
 
-  
   document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
 
-
-    
     const nameError = document.getElementById('nameError');
     const phoneError = document.getElementById('phoneError');
-    
- 
+
     nameError.style.display = 'none';
     phoneError.style.display = 'none';
-    
-    
+
     let hasError = false;
     if (!data.name.trim()) {
       nameError.style.display = 'block';
@@ -138,15 +255,15 @@
       phoneError.style.display = 'block';
       hasError = true;
     }
-    
+
     if (hasError) {
       return;
     }
 
     const nameRegex = /^[A-Za-z\s]+$/;
-    const phoneRegex = /^\d{10}$/;   
+    const phoneRegex = /^\d{10}$/;
     const allSameDigitsPattern = /^(\d)\1+$/;
-    
+
     if (!nameRegex.test(data.name)) {
       Swal.fire({
         icon: 'error',
@@ -166,16 +283,13 @@
     }
 
     if (data.phone && allSameDigitsPattern.test(data.phone)) {
-        Swal.fire({
-            title: 'Error',
-            text: 'Phone number cannot contain all the same digits.',
-            icon: 'error'
-        });
-        return false;
+      Swal.fire({
+        title: 'Error',
+        text: 'Phone number cannot contain all the same digits.',
+        icon: 'error'
+      });
+      return false;
     }
-
-
-
 
     try {
       const response = await fetch('/updateUserDetails', {
@@ -195,7 +309,7 @@
           title: 'Profile Updated!',
           text: result.message,
         }).then(() => {
-          window.location.reload(); 
+          window.location.reload();
         });
       } else {
         Swal.fire({

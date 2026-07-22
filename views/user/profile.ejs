@@ -1,6 +1,142 @@
 <%- include("../../views/partials/user/profile-sidebar") %>
 
+<style>
+  :root {
+    --color-bg: #f5f4f0;
+    --color-surface: #ffffff;
+    --color-text: #1a1a1a;
+    --color-text-muted: #888888;
+    --color-accent: #1a1a1a;
+    --color-accent-hover: #333333;
+    --color-border: #e0e0e0;
+  }
 
+  .content-area .card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  }
+
+  .content-area .card-header {
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    padding: 1.25rem 1.5rem;
+  }
+
+  .content-area .card-header h5 {
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  .content-area .card-body {
+    padding: 1.75rem;
+  }
+
+  .content-area .form-label {
+    font-weight: 600;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .content-area .form-control,
+  .content-area .form-select {
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    transition: all 0.3s ease;
+  }
+
+  .content-area .form-control:focus,
+  .content-area .form-select:focus {
+    border-color: var(--color-accent);
+    outline: none;
+    background-color: var(--color-surface);
+    box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.06);
+  }
+
+  .content-area .form-group {
+    margin-bottom: 1.1rem;
+  }
+
+  .content-area .btn-primary {
+    background: var(--color-accent);
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .content-area .btn-primary:hover {
+    background: var(--color-accent-hover);
+    transform: translateY(-1px);
+  }
+
+  .content-area .btn-success {
+    background: var(--color-accent);
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.6rem 1.25rem;
+    transition: all 0.3s ease;
+  }
+
+  .content-area .btn-success:hover {
+    background: var(--color-accent-hover);
+    transform: translateY(-1px);
+  }
+
+  .content-area .btn-danger {
+    background: #c0392b;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.6rem 1.25rem;
+  }
+
+  .content-area .btn-danger:hover {
+    background: #a5301f;
+  }
+
+  .content-area .btn-secondary {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: 10px;
+    font-weight: 600;
+  }
+
+  .content-area .btn-secondary:hover {
+    background: var(--color-bg);
+    border-color: var(--color-text-muted);
+  }
+
+  .content-area .h4 {
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  .content-area .table {
+    color: var(--color-text);
+  }
+
+  .content-area .table thead th {
+    color: var(--color-text-muted);
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .content-area .table td {
+    border-color: var(--color-border);
+    vertical-align: middle;
+  }
+
+  .content-area .wallet-item td:last-child {
+    font-weight: 600;
+  }
+</style>
 
   <div class="content-area">
 
@@ -27,9 +163,9 @@
           </div>
 
           <div class="form-group">
-            <%if(!user.googleId){%>
+            <% if (!user.googleId) { %>
               <a href="/updatePassword" class="btn btn-primary btn-sm">Edit Password</a>
-              <%}%>
+            <% } %>
           </div>
 
           <div class="text-center mt-4">
@@ -39,8 +175,6 @@
         </form>
       </div>
     </div>
-
-
 
     <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
       <div class="card">
@@ -66,7 +200,6 @@
                   <select class="form-select" id="paymentMethod" name="paymentMethod" required>
                     <option value="">Select Payment Method</option>
                     <option value="razorpay">GPay/PhonePe/UPI/Cards</option>
-
                   </select>
                 </div>
 
@@ -79,7 +212,6 @@
         </div>
       </div>
     </div>
-
 
     <div class="tab-pane fade" id="wallet-history" role="tabpanel" aria-labelledby="orders-tab">
       <div class="card">
@@ -98,32 +230,24 @@
                 </tr>
               </thead>
               <tbody id="walletTableBody">
-                <% if (walletTransactions.length> 0) { %>
-                  <% walletTransactions.forEach(transaction=> { %>
+                <% if (walletTransactions.length > 0) { %>
+                  <% walletTransactions.forEach(transaction => { %>
                     <tr class="wallet-item">
-                      <td>
-                        <%= new Date(transaction.date).toLocaleDateString() %>
-                      </td>
-                      <td>
-                        <%= transaction.type==='credit' ? 'Credited' : 'Debited' %>
-                      </td>
-                      <td>
-                        <%= transaction.description || 'N/A' %>
-                      </td>
-                      <td>₹<%= transaction.amount.toFixed(2) %>
-                      </td>
+                      <td><%= new Date(transaction.date).toLocaleDateString() %></td>
+                      <td><%= transaction.type === 'credit' ? 'Credited' : 'Debited' %></td>
+                      <td><%= transaction.description || 'N/A' %></td>
+                      <td>₹<%= transaction.amount.toFixed(2) %></td>
                     </tr>
-                    <% }) %>
-                      <% } else { %>
-                        <tr>
-                          <td colspan="4" class="text-center">No Transactions Found</td>
-                        </tr>
-                        <% } %>
+                  <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="4" class="text-center">No Transactions Found</td>
+                  </tr>
+                <% } %>
               </tbody>
             </table>
           </div>
         </div>
-
 
         <div class="d-flex justify-content-center mt-3">
           <button id="prevWalletBtn" class="btn btn-secondary me-2" onclick="prevWallet()">Previous</button>
@@ -144,6 +268,7 @@
                   </div>
                 </div>
               </div> -->
+  </div>
   </div>
   </div>
   </div>
