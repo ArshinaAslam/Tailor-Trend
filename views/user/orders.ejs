@@ -1,11 +1,10 @@
 <%- include("../../views/partials/user/header") %>
 <style>
     :root {
-      --primary: #6366f1;
-      --primary-dark: #4f46e5;
-      --secondary: #ec4899;
-      --dark: #1e293b;
-      --light: #f1f5f9;
+      --primary: #333333;
+      --primary-dark: #1a1a1a;
+      --dark: #1a1a1a;
+      --light: #f5f4f0;
       --success: #10b981;
       --danger: #ef4444;
       --warning: #f59e0b;
@@ -115,7 +114,7 @@
     }
   
     .dashboard-menu .nav-link.active {
-      background-color: rgba(99, 102, 241, 0.1);
+      background-color: rgba(51, 51, 51, 0.08);
       color: var(--primary);
       border-left: 3px solid var(--primary);
     }
@@ -146,9 +145,9 @@
     }
   
     .card-header {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      background: var(--dark);
       color: white;
-      padding: 16px 20px;
+      padding: 16px 24px;
       font-weight: 600;
       border-bottom: none;
     }
@@ -170,7 +169,7 @@
   
     .form-control:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+      box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.15);
       outline: none;
     }
   
@@ -228,6 +227,7 @@
     .table td {
       padding: 16px;
       text-align: left;
+      vertical-align: middle;
     }
   
     .table th {
@@ -276,7 +276,12 @@
   
     .table th.order-actions,
     .table td:nth-child(5) {
-      width: 15%; 
+      width: 15%;
+      text-align: center;
+    }
+
+    .table th.order-actions {
+      text-align: center;
     }
   
     
@@ -306,7 +311,7 @@
       .table td {
         display: block;
         width: 100% !important;
-        text-align: left;
+        text-align: left !important;
       }
   
       .table thead {
@@ -344,7 +349,8 @@
   font-size: 15px;
 }
 
-.pagination a {
+.pagination a,
+.pagination span {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -358,6 +364,7 @@
   transition: all 0.2s ease;
   box-shadow: var(--shadow);
   font-weight: 500;
+  box-sizing: border-box;
 }
 
 .pagination a:hover {
@@ -369,15 +376,9 @@
 
 .pagination .current-page {
   font-weight: 600;
-  color: var(--dark);
-  background-color: white;
-  height: 40px;
-  min-width: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+  color: white;
+  background-color: var(--dark);
+  box-shadow: none;
 }
 
 .pagination .disabled {
@@ -393,16 +394,17 @@
     gap: 8px;
   }
   
-  .pagination a, .pagination .current-page {
+  .pagination a, .pagination span {
     height: 36px;
     min-width: 36px;
     font-size: 14px;
+    padding: 0 10px;
   }
 }
     
     .search-container {
       margin: 0 24px;
-      padding-top: 16px;
+      padding-top: 20px;
     }
 
     .search-input {
@@ -416,7 +418,7 @@
 
     .search-input:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+      box-shadow: 0 0 0 3px rgba(51, 51, 51, 0.15);
       outline: none;
     }
   
@@ -508,17 +510,17 @@
     <% if (currentPage > 1) { %>
       <a href="?page=<%= currentPage - 1 %>&search=<%= searchQuery %>">Prev</a>
     <% } else { %>
-      <a class="disabled">Prev</a>
+      <span class="disabled">Prev</span>
     <% } %>
     
     
-    <div class="current-page"><%= currentPage %></div>
+    <span class="current-page"><%= currentPage %></span>
     
     
     <% if (currentPage < totalPages) { %>
       <a href="?page=<%= currentPage + 1 %>&search=<%= searchQuery %>">Next</a>
     <% } else { %>
-      <a class="disabled">Next</a>
+      <span class="disabled">Next</span>
     <% } %>
   </div>
 </main>
@@ -614,7 +616,7 @@ function updatePagination(currentPage, totalPages, searchValue) {
   }
   
   
-  paginationHTML += `<span>${currentPage}</span>`;
+  paginationHTML += `<span class="current-page">${currentPage}</span>`;
   
   
   if (currentPage < totalPages) {
