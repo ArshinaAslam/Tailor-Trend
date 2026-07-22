@@ -76,10 +76,15 @@
         padding: 0.8rem;
         border: 1px solid var(--color-border);
         border-radius: 10px;
-        font-size: 1rem;
+        font-size: 0.95rem;
         background-color: var(--color-bg);
         color: var(--color-text);
         transition: all 0.3s ease;
+    }
+
+    /* Prevent long placeholder text from running under the eye icon */
+    .input-container input {
+        padding-right: 2.6rem;
     }
 
     input:focus {
@@ -96,7 +101,7 @@
         transform: translateY(-50%);
         cursor: pointer;
         color: var(--color-text-muted);
-        font-size: 1.1rem;
+        font-size: 1rem;
         user-select: none;
     }
 
@@ -201,7 +206,7 @@
             <div class="field-group">
                 <label for="email">Email Address</label>
                 <div id="error2" class="error-message"></div>
-                <input type="email" id="email" name="email" placeholder="Enter your email address">
+                <input type="email" id="email" name="email" placeholder="you@example.com">
             </div>
         </div>
 
@@ -216,7 +221,7 @@
                 <label for="password">Password</label>
                 <div id="error4" class="error-message"></div>
                 <div class="input-container">
-                    <input type="password" id="password" name="password" placeholder="Enter your password">
+                    <input type="password" id="password" name="password" placeholder="Password">
                     <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
                 </div>
             </div>
@@ -225,7 +230,7 @@
                 <label for="confirm-password">Confirm Password</label>
                 <div id="error5" class="error-message"></div>
                 <div class="input-container">
-                    <input type="password" id="confirm-password" name="cPassword" placeholder="Re-enter your password">
+                    <input type="password" id="confirm-password" name="cPassword" placeholder="Confirm password">
                     <span class="toggle-password" onclick="togglePassword('confirm-password')">👁️</span>
                 </div>
             </div>
