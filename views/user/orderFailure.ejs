@@ -25,7 +25,7 @@
     margin-bottom: 1rem;
   }
   .status-icon.warning {
-    stroke: #ff3f6c;
+    stroke: #333333;
   }
   .section-title {
     font-size: 1.5rem;
@@ -74,13 +74,13 @@
     transition: all 0.3s ease;
   }
   .btn-modern.primary {
-    background: #ff3f6c;
+    background: #333333;
     color: #fff;
     border: none;
     cursor: pointer;
   }
   .btn-modern.primary:hover {
-    background: #e63258;
+    background: #1a1a1a;
   }
   .btn-modern.secondary {
     background: #f0f0f0;
@@ -174,10 +174,10 @@
           const verificationResult = await verificationResponse.json();
           
           if (verificationResult.success) {
-            Swal.fire({ title: 'Payment Successful!', text: 'Your order is confirmed.', icon: 'success', confirmButtonColor: '#FF3F6C' })
+            Swal.fire({ title: 'Payment Successful!', text: 'Your order is confirmed.', icon: 'success', confirmButtonColor: '#1a1a1a' })
               .then(() => window.location.href = '/orderConfirm');
           } else {
-            Swal.fire({ title: 'Payment Failed', text: verificationResult.message, icon: 'error', confirmButtonColor: '#FF3F6C' });
+            Swal.fire({ title: 'Payment Failed', text: verificationResult.message, icon: 'error', confirmButtonColor: '#1a1a1a' });
           }
         },
         prefill: {
@@ -185,13 +185,13 @@
           email: '<%= user.email %>',
           contact: '<%= user.phone %>'
         },
-        theme: { color: '#FF3F6C' }
+        theme: { color: '#1a1a1a' }
       };
       
       const rzp = new Razorpay(options);
       rzp.open();
     } catch (error) {
-      Swal.fire({ title: 'Error', text: error.message || 'An error occurred while retrying payment.', icon: 'error', confirmButtonColor: '#FF3F6C' });
+      Swal.fire({ title: 'Error', text: error.message || 'An error occurred while retrying payment.', icon: 'error', confirmButtonColor: '#1a1a1a' });
     }
   }
 </script>
