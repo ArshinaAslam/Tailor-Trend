@@ -2,13 +2,28 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
+  :root {
+    --color-bg: #f5f4f0;
+    --color-surface: #ffffff;
+    --color-text: #1a1a1a;
+    --color-text-muted: #888888;
+    --color-accent: #1a1a1a;
+    --color-accent-hover: #333333;
+    --color-badge: #b5895c;
+    --color-border: #e0e0e0;
+  }
+
+  body {
+    background-color: var(--color-bg);
+  }
+
   .cart-container {
     max-width: 1100px;
     margin: 50px auto;
     padding: 20px;
-    background: #ffffff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    background: var(--color-surface);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
   }
 
   .cart-wrapper {
@@ -19,10 +34,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 2px solid #eee;
+    border-bottom: 2px solid var(--color-border);
     padding-bottom: 15px;
     font-size: 22px;
     font-weight: bold;
+    color: var(--color-text);
   }
 
   .cart-table {
@@ -35,11 +51,12 @@
   .cart-table td {
     text-align: left;
     padding: 12px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
   }
 
   .cart-table th {
-    background: #f8f9fa;
+    background: var(--color-bg);
     font-weight: bold;
   }
 
@@ -57,7 +74,7 @@
     height: 60px;
     object-fit: cover;
     margin-right: 15px;
-    border-radius: 5px;
+    border-radius: 8px;
   }
 
   .quantity-control {
@@ -66,13 +83,18 @@
   }
 
   .quantity-control button {
-    background: #ff6b6b;
+    background: var(--color-accent-hover);
     color: white;
     border: none;
     padding: 5px 10px;
     cursor: pointer;
     font-size: 18px;
-    border-radius: 5px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .quantity-control button:hover {
+    background: var(--color-accent);
   }
 
   .quantity-control input {
@@ -80,9 +102,10 @@
     text-align: center;
     font-size: 16px;
     margin: 0 5px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
     padding: 5px;
+    color: var(--color-text);
   }
 
   .remove-btn {
@@ -93,26 +116,27 @@
   }
 
   .remove-btn i.fas.fa-trash {
-    color: #ff0000;
+    color: var(--color-text-muted);
     font-size: 1.2rem;
     transition: color 0.3s ease;
   }
 
   .remove-btn:hover i.fas.fa-trash {
-    color: #cc0000;
+    color: var(--color-badge);
   }
 
   .cart-summary {
     margin-top: 20px;
     padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
+    background: var(--color-bg);
+    border-radius: 12px;
     text-align: right;
     font-size: 18px;
   }
 
   .summary-details div {
     margin: 5px 0;
+    color: var(--color-text);
   }
 
   .total {
@@ -123,16 +147,17 @@
   .checkout-btn {
     display: inline-block;
     margin-top: 15px;
-    background: #ff3f6c;
+    background: var(--color-accent-hover);
     color: white;
     padding: 12px 20px;
     text-decoration: none;
     font-size: 18px;
-    border-radius: 5px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
   }
 
   .checkout-btn:hover {
-    background: #ff3f6c;
+    background: var(--color-accent);
   }
 
   .checkout-btn.disabled {
@@ -148,17 +173,18 @@
 
   .empty-cart-icon i {
     font-size: 60px;
-    color: #ddd;
+    color: var(--color-border);
   }
 
   .empty-cart-title {
     font-size: 24px;
     margin-top: 10px;
     font-weight: bold;
+    color: var(--color-text);
   }
 
   .empty-cart-message {
-    color: #888;
+    color: var(--color-text-muted);
     margin: 10px 0;
   }
 
@@ -166,15 +192,16 @@
     display: inline-block;
     margin-top: 10px;
     padding: 12px 20px;
-    background: #ff3f6c;
+    background: var(--color-accent-hover);
     color: white;
     text-decoration: none;
     font-size: 18px;
-    border-radius: 5px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
   }
 
   .start-shopping-btn:hover {
-    background: #ff3f6c;
+    background: var(--color-accent);
   }
 
   .pagination-container {
@@ -192,25 +219,25 @@
 
   .pagination-link {
     padding: 8px 16px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
     text-decoration: none;
-    color: #666;
+    color: var(--color-text);
     transition: all 0.3s ease;
   }
 
   .pagination-link:hover {
-    background-color: #f5f5f5;
+    background-color: var(--color-bg);
   }
 
   .pagination-link.active {
-    background-color: #ff3f6c;
+    background-color: var(--color-accent-hover);
     color: white;
-    border-color: #ff3f6c;
+    border-color: var(--color-accent-hover);
   }
 
   .product-unavailable {
-    color: red;
+    color: var(--color-badge);
     font-weight: bold;
   }
 
@@ -366,7 +393,7 @@
           text: hasZeroQuantity
             ? "One or more items in your cart are out of stock. Please remove them."
             : "One or more items in your cart have been blocked by the admin. Please remove them to proceed.",
-          confirmButtonColor: "#d33",
+          confirmButtonColor: "#1a1a1a",
         });
       });
     }
@@ -378,8 +405,8 @@
       text: "Do you really want to remove this item from your cart?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
+      confirmButtonColor: "#1a1a1a",
+      cancelButtonColor: "#888888",
       confirmButtonText: "Yes, remove it!",
     });
 
