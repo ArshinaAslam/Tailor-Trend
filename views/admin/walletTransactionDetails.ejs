@@ -1,93 +1,259 @@
 <%- include("../../views/partials/admin/header") %>
+<title>Transaction Details</title>
 
-<div class="container mx-auto px-4 py-8">
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
-        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-800">Transaction Details</h2>
-        </div>
+<style>
 
-        <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- User Details Section -->
-                <div class="bg-gray-100 rounded-lg p-4">
-                    <h3 class="text-lg font-semibold mb-4 text-gray-700">User Information</h3>
-                    <table class="w-full">
-                        <tr class="border-b">
-                            <td class="py-2 font-medium text-gray-600">Name:</td>
-                            <td class="py-2"><%= user.name %></td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="py-2 font-medium text-gray-600">Email:</td>
-                            <td class="py-2"><%= user.email %></td>
-                        </tr>
-                        <tr>
-                            <td class="py-2 font-medium text-gray-600">User ID:</td>
-                            <td class="py-2"><%= user._id %></td>
-                        </tr>
-                    </table>
-                </div>
+body {
+  background: var(--admin-bg-gradient);
+  font-family: 'Poppins', sans-serif;
+  color: var(--admin-text);
+  margin: 0;
+  padding: 0;
+}
 
-                <!-- Transaction Details Section -->
-                <div class="bg-gray-100 rounded-lg p-4">
-                    <h3 class="text-lg font-semibold mb-4 text-gray-700">Transaction Information</h3>
-                    <table class="w-full">
-                        <tr class="border-b">
-                            <td class="py-2 font-medium text-gray-600">Transaction ID:</td>
-                            <td class="py-2"><%= transaction.transactionId %></td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="py-2 font-medium text-gray-600">Date:</td>
-                            <td class="py-2"><%= transaction.date.toLocaleString() %></td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="py-2 font-medium text-gray-600">Type:</td>
-                            <td class="py-2">
-                                <span class="<%= transaction.type === 'credit' ? 'text-green-600' : 'text-red-600' %>">
-                                    <%= transaction.type.toUpperCase() %>
-                                </span>
-                            </td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="py-2 font-medium text-gray-600">Amount:</td>
-                            <td class="py-2 font-semibold">
-                                <%= transaction.type === 'credit' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2) %>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="py-2 font-medium text-gray-600">Description:</td>
-                            <td class="py-2"><%= transaction.description %></td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-            
-            
-            <% if (transaction.description.toLowerCase().includes('returned') || 
-                   transaction.description.toLowerCase().includes('cancelled')) { %>
-            <div class="mt-6 bg-gray-100 rounded-lg p-4">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-700">Related Order</h3>
-                   
-                    <a href="/admin/orders/<%= relatedOrder._id %>" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300">
-                        View Order Details
-                    </a>
-                </div>
-                <% if (relatedOrder) { %>
-                <table class="w-full">
-                    <tr class="border-b">
-                        <td class="py-2 font-medium text-gray-600">Order ID:</td>
-                        <td class="py-2"><%= relatedOrder.orderid %></td>
-                    </tr>
-                    <tr class="border-b">
-                        <td class="py-2 font-medium text-gray-600">Order Status:</td>
-                        <td class="py-2"><%= relatedOrder.status %></td>
-                    </tr>
-                </table>
-                <% } %>
-            </div>
-            <% } %>
-        </div>
+.dashboard-container {
+  padding: 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.content-header {
+  margin-bottom: 2rem;
+}
+
+.dashboard-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--admin-text);
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.detail-card {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  padding: 1.75rem;
+}
+
+.detail-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--admin-text);
+  margin: 0 0 1.25rem 0;
+  padding-bottom: 0.9rem;
+  border-bottom: 2px solid var(--admin-border);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.95rem;
+}
+
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.detail-table tr {
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.detail-table tr:last-child {
+  border-bottom: none;
+}
+
+.detail-table td {
+  padding: 0.85rem 0;
+  vertical-align: top;
+}
+
+.detail-table td:first-child {
+  color: var(--admin-text-muted);
+  font-weight: 600;
+  font-size: 0.85rem;
+  width: 40%;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.detail-table td:last-child {
+  color: var(--admin-text);
+  font-weight: 500;
+}
+
+.type-credit {
+  color: var(--admin-green);
+  font-weight: 700;
+}
+
+.type-debit {
+  color: var(--admin-red);
+  font-weight: 700;
+}
+
+.amount-value {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.related-order-card {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  padding: 1.75rem;
+}
+
+.related-order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 2px solid var(--admin-border);
+}
+
+.related-order-header h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--admin-text);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.btn-view-order {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.25rem;
+  background: var(--admin-accent);
+  color: #ffffff;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.btn-view-order:hover {
+  background: var(--admin-accent-hover);
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 1.5rem;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-table td:first-child {
+    width: 45%;
+  }
+
+  .related-order-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+</style>
+
+<div class="dashboard-container">
+  <div class="content-header">
+    <h2 class="dashboard-title">Transaction Details</h2>
+  </div>
+
+  <div class="detail-grid">
+    <!-- User Details Section -->
+    <div class="detail-card">
+      <h3 class="detail-card-title">User Information</h3>
+      <table class="detail-table">
+        <tr>
+          <td>Name</td>
+          <td><%= user.name %></td>
+        </tr>
+        <tr>
+          <td>Email</td>
+          <td><%= user.email %></td>
+        </tr>
+        <tr>
+          <td>User ID</td>
+          <td><%= user._id %></td>
+        </tr>
+      </table>
     </div>
+
+    <!-- Transaction Details Section -->
+    <div class="detail-card">
+      <h3 class="detail-card-title">Transaction Information</h3>
+      <table class="detail-table">
+        <tr>
+          <td>Transaction ID</td>
+          <td><%= transaction.transactionId %></td>
+        </tr>
+        <tr>
+          <td>Date</td>
+          <td><%= transaction.date.toLocaleString() %></td>
+        </tr>
+        <tr>
+          <td>Type</td>
+          <td>
+            <span class="<%= transaction.type === 'credit' ? 'type-credit' : 'type-debit' %>">
+              <%= transaction.type.toUpperCase() %>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td>Amount</td>
+          <td>
+            <span class="amount-value <%= transaction.type === 'credit' ? 'type-credit' : 'type-debit' %>">
+              <%= transaction.type === 'credit' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2) %>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td>Description</td>
+          <td><%= transaction.description %></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <% if (transaction.description.toLowerCase().includes('returned') ||
+         transaction.description.toLowerCase().includes('cancelled')) { %>
+  <div class="related-order-card">
+    <div class="related-order-header">
+      <h3>Related Order</h3>
+      <a href="/admin/orders/<%= relatedOrder._id %>" class="btn-view-order">
+        View Order Details
+      </a>
+    </div>
+    <% if (relatedOrder) { %>
+    <table class="detail-table">
+      <tr>
+        <td>Order ID</td>
+        <td><%= relatedOrder.orderid %></td>
+      </tr>
+      <tr>
+        <td>Order Status</td>
+        <td><%= relatedOrder.status %></td>
+      </tr>
+    </table>
+    <% } %>
+  </div>
+  <% } %>
 </div>
 
 <%- include("../../views/partials/admin/footer") %>
