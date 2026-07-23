@@ -59,7 +59,6 @@ const getOrders = async (req, res) => {
     if (isAjaxRequest) {
       return res.json({ 
         orders,
-        dOrderId : orders.orderid.toString().slice(-6),
         currentPage: page,
         totalPages: totalPages,
         totalOrders: totalOrders
