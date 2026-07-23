@@ -583,15 +583,17 @@ const performSearch = async (searchValue) => {
         
         const orderDate = order.createdOn ? new Date(order.createdOn).toLocaleDateString() : 'N/A';
         
-        const row = `<tr class="order-item">
-            <td data-label="Order ID">${order.orderid}</td>
-            <td data-label="Date">${orderDate}</td>
-            <td data-label="Total">₹${order.finalAmount.toFixed(2)}</td>
-            <td data-label="Status">${order.status}</td>
-            <td data-label="Actions">
-                <a href="/orderDetails?id=${order._id}" class="btn btn-sm btn-primary">View</a>
-            </td>
-        </tr>`;
+     const shortOrderId = order.orderid ? order.orderid.toString().slice(-6) : 'N/A';
+
+const row = `<tr class="order-item">
+    <td data-label="Order ID">#${shortOrderId}</td>
+    <td data-label="Date">${orderDate}</td>
+    <td data-label="Total">₹${order.finalAmount.toFixed(2)}</td>
+    <td data-label="Status">${order.status}</td>
+    <td data-label="Actions">
+        <a href="/orderDetails?id=${order._id}" class="btn btn-sm btn-primary">View</a>
+    </td>
+</tr>`;
         tableBody.innerHTML += row;
       });
     } else {
