@@ -1,85 +1,153 @@
 <%- include("../../views/partials/admin/header") %>
+<title>Edit Category</title>
 
-<head>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
-  <style>
-    .container {
-      max-width: 600px;
-      margin: auto;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-    }
-    .form-label {
-      margin-bottom: 8px;
-    }
-    .form-control {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    .d-grid {
-      margin-top: 20px;
-    }
-    .btn-primary, .btn-secondary {
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .btn-primary {
-      background-color: #007bff;
-      color: white;
-      border: none;
-    }
-    .btn-secondary {
-      background-color: #6c757d;
-      color: white;
-      border: none;
-    }
-    .btn-primary:hover {
-      background-color: #0056b3;
-    }
-    .btn-secondary:hover {
-      background-color: #545b62;
-    }
-    .error-message {
-      color: red;
-    }
-  </style>
-  <title>Edit Category</title>
-  <link rel="stylesheet" href="/css/style.css"> 
-</head>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
 
-<body>
-  <div class="container">
-    <h2 class="text-center">Edit Category</h2>
+<style>
+  body {
+    background: var(--admin-bg-gradient);
+    font-family: 'Poppins', sans-serif;
+    color: var(--admin-text);
+    margin: 0;
+    padding: 0;
+  }
+
+  .form-page {
+    padding: 3rem;
+    display: flex;
+    justify-content: center;
+  }
+
+  .form-card {
+    width: 100%;
+    max-width: 600px;
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    padding: 2.5rem;
+  }
+
+  .form-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--admin-text);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--admin-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background: var(--admin-surface-alt);
+    color: var(--admin-text);
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 3px var(--admin-accent-soft);
+  }
+
+  textarea.form-control {
+    min-height: 110px;
+    resize: vertical;
+  }
+
+  .d-grid {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.85rem 1.25rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    background: var(--admin-accent);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    background: var(--admin-accent-hover);
+  }
+
+  .btn-secondary {
+    background: var(--admin-surface-hover);
+    color: var(--admin-text);
+    border: 1px solid var(--admin-border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--admin-surface-alt);
+  }
+
+  .error-message {
+    color: var(--admin-red);
+    font-size: 0.8rem;
+    margin-top: -0.75rem;
+    margin-bottom: 1rem;
+    min-height: 1rem;
+  }
+</style>
+
+<div class="form-page">
+  <div class="form-card">
+    <h2 class="form-title">Edit Category</h2>
     <form id="editCategoryForm" method="post" onsubmit="return editFormSubmit(event)">
-      
+
       <input type="hidden" name="id" value="<%= category._id %>" />
-      
+
       <div class="mb-4">
         <label for="product_name" class="form-label">Name</label>
         <input type="text" name="name" placeholder="Enter category name" class="form-control" id="product_name" value="<%= category.name %>" />
         <div id="name-error" class="error-message"></div>
       </div>
-      
+
       <div class="mb-4">
         <label for="descriptionId" class="form-label">Description</label>
         <textarea placeholder="Enter category description" name="description" class="form-control" id="descriptionId"><%= category.description %></textarea>
         <div id="description-error" class="error-message"></div>
       </div>
-      
+
       <div class="d-grid">
-        <button class="btn btn-primary" type="submit">Update Category</button>
-        <a href="/admin/category" class="btn btn-secondary mt-3">Back</a>
+        <button class="btn-primary" type="submit">Update Category</button>
+        <a href="/admin/category" class="btn-secondary">Back</a>
       </div>
     </form>
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<%- include("../../views/partials/admin/footer") %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <script>
 
@@ -88,7 +156,7 @@ function editFormSubmit(event) {
     if (!validateForm()) {
         return false;
     }
-    
+
     const id = document.querySelector('input[name="id"]').value;
     const name = document.getElementById("product_name").value.trim();
     const description = document.getElementById("descriptionId").value.trim();
@@ -106,7 +174,9 @@ function editFormSubmit(event) {
             Swal.fire({
                 icon: "success",
                 title: "Success",
-                text: data.message
+                text: data.message,
+                background: '#2a2a2a',
+                color: '#ffffff'
             }).then(() => {
                 window.location.href = "/admin/category";
             });
@@ -114,7 +184,9 @@ function editFormSubmit(event) {
             Swal.fire({
                 icon: "error",
                 title: "Error",
-                text: data.error || "Failed to edit category"
+                text: data.error || "Failed to edit category",
+                background: '#2a2a2a',
+                color: '#ffffff'
             });
         }
     })
@@ -122,7 +194,9 @@ function editFormSubmit(event) {
         Swal.fire({
             icon: "error",
             title: "Oops",
-            text: "An unexpected error occurred"
+            text: "An unexpected error occurred",
+            background: '#2a2a2a',
+            color: '#ffffff'
         });
     });
     return false;
@@ -160,7 +234,7 @@ function displayErrorMessage(elementId, message) {
       errorElement.innerText = message;
       errorElement.style.display = "block";
     }
-    
+
     function clearErrorMessages() {
       document.querySelectorAll(".error-message").forEach(el => {
           el.innerText = "";
@@ -168,7 +242,3 @@ function displayErrorMessage(elementId, message) {
       });
     }
 </script>
-
-</body>
-
-<%- include("../../views/partials/admin/footer") %>

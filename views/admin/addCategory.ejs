@@ -1,67 +1,126 @@
 <%- include("../../views/partials/admin/header") %>
+<title>Add Category</title>
 
-<head>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
-  <style>
-    .container {
-      max-width: 600px;
-      margin: auto;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-    }
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
 
-    .form-label {
-      margin-bottom: 8px;
-    }
+<style>
+  body {
+    background: var(--admin-bg-gradient);
+    font-family: 'Poppins', sans-serif;
+    color: var(--admin-text);
+    margin: 0;
+    padding: 0;
+  }
 
-    .form-control {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
+  .form-page {
+    padding: 3rem;
+    display: flex;
+    justify-content: center;
+  }
 
-    .d-grid {
-      margin-top: 20px;
-    }
+  .form-card {
+    width: 100%;
+    max-width: 600px;
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    padding: 2.5rem;
+  }
 
-    .btn-primary, .btn-secondary {
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+  .form-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--admin-text);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
 
-    .btn-primary {
-      background-color: #007bff;
-      color: white;
-      border: none;
-    }
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--admin-text-muted);
+    font-size: 0.9rem;
+  }
 
-    .btn-secondary {
-      background-color: #6c757d;
-      color: white;
-      border: none;
-    }
+  .form-control {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    background: var(--admin-surface-alt);
+    color: var(--admin-text);
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
 
-    .btn-primary:hover {
-      background-color: #0056b3;
-    }
+  .form-control:focus {
+    outline: none;
+    border-color: var(--admin-accent);
+    box-shadow: 0 0 0 3px var(--admin-accent-soft);
+  }
 
-    .btn-secondary:hover {
-      background-color: #545b62;
-    }
+  textarea.form-control {
+    min-height: 110px;
+    resize: vertical;
+  }
 
-    .error-message {
-      color: red;
-    }
-  </style>
-</head>
+  .d-grid {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
 
-<body>
-  <div class="container">
-    <h2 class="text-center">Add Category</h2>
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.85rem 1.25rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary {
+    background: var(--admin-accent);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    background: var(--admin-accent-hover);
+  }
+
+  .btn-secondary {
+    background: var(--admin-surface-hover);
+    color: var(--admin-text);
+    border: 1px solid var(--admin-border);
+  }
+
+  .btn-secondary:hover {
+    background: var(--admin-surface-alt);
+  }
+
+  .error-message {
+    color: var(--admin-red);
+    font-size: 0.8rem;
+    margin-top: -0.75rem;
+    margin-bottom: 1rem;
+    min-height: 1rem;
+  }
+</style>
+
+<div class="form-page">
+  <div class="form-card">
+    <h2 class="form-title">Add Category</h2>
 
     <form method="post" action="/admin/addCategory" onsubmit="return handleFormSubmit(event)">
       <div class="mb-4">
@@ -77,91 +136,94 @@
       </div>
 
       <div class="d-grid">
-        <button class="btn btn-primary" type="submit">Create Category</button>
-        <a href="/admin/category" class="btn btn-secondary mt-3">Back</a>
+        <button class="btn-primary" type="submit">Create Category</button>
+        <a href="/admin/category" class="btn-secondary">Back</a>
       </div>
     </form>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-  <script>
-    function handleFormSubmit(event) {
-      event.preventDefault();
-      if (!validateForm()) {
-          return;
-      }
-
-      const name = document.getElementById("product_name").value.trim();
-      const description = document.getElementById("descriptionId").value.trim();
-
-      fetch('/admin/addCategory', {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ name, description })
-      })
-      .then(response => response.json())
-      .then(data => {
-          if (data.success) {
-              Swal.fire({
-                  icon: "success",
-                  title: "Success",
-                  text: data.message
-              }).then(() => {
-                  window.location.href = "/admin/addCategory";
-              });
-          } else {
-              throw new Error(data.error || "Failed to add category");
-          }
-      })
-      .catch(error => {
-          Swal.fire({
-              icon: "error",
-              title: "Oops",
-              text: error.message
-          });
-      });
-    }
-
-    function validateForm() {
-
-      clearErrorMessages();
-      const name = document.getElementById("product_name").value.trim();
-      const description = document.getElementById("descriptionId").value.trim();
-      let isValid = true;
-
-      if (name === "") {
-          displayErrorMessage("name-error", "Please enter a name");
-          isValid = false;
-      } else if (!/^[a-zA-Z\s]+$/.test(name)) {
-          displayErrorMessage("name-error", "Category name should contain only alphabets");
-          isValid = false;
-      }
-
-      if (description === "") {
-          displayErrorMessage("description-error", "Please enter a description");
-          isValid = false;
-      }
-
-      return isValid;
-    }
-
-    function displayErrorMessage(elementId, message) {
-      const errorElement = document.getElementById(elementId);
-      errorElement.innerText = message;
-      errorElement.style.display = "block";
-    }
-
-    function clearErrorMessages() {
-      document.querySelectorAll(".error-message").forEach(el => {
-          el.innerText = "";
-          el.style.display = "none";
-      });
-    }
-  </script>
-</body>
+</div>
 
 <%- include("../../views/partials/admin/footer") %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<script>
+  function handleFormSubmit(event) {
+    event.preventDefault();
+    if (!validateForm()) {
+        return;
+    }
+
+    const name = document.getElementById("product_name").value.trim();
+    const description = document.getElementById("descriptionId").value.trim();
+
+    fetch('/admin/addCategory', {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, description })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: data.message,
+                background: '#2a2a2a',
+                color: '#ffffff'
+            }).then(() => {
+                window.location.href = "/admin/addCategory";
+            });
+        } else {
+            throw new Error(data.error || "Failed to add category");
+        }
+    })
+    .catch(error => {
+        Swal.fire({
+            icon: "error",
+            title: "Oops",
+            text: error.message,
+            background: '#2a2a2a',
+            color: '#ffffff'
+        });
+    });
+  }
+
+  function validateForm() {
+
+    clearErrorMessages();
+    const name = document.getElementById("product_name").value.trim();
+    const description = document.getElementById("descriptionId").value.trim();
+    let isValid = true;
+
+    if (name === "") {
+        displayErrorMessage("name-error", "Please enter a name");
+        isValid = false;
+    } else if (!/^[a-zA-Z\s]+$/.test(name)) {
+        displayErrorMessage("name-error", "Category name should contain only alphabets");
+        isValid = false;
+    }
+
+    if (description === "") {
+        displayErrorMessage("description-error", "Please enter a description");
+        isValid = false;
+    }
+
+    return isValid;
+  }
+
+  function displayErrorMessage(elementId, message) {
+    const errorElement = document.getElementById(elementId);
+    errorElement.innerText = message;
+    errorElement.style.display = "block";
+  }
+
+  function clearErrorMessages() {
+    document.querySelectorAll(".error-message").forEach(el => {
+        el.innerText = "";
+        el.style.display = "none";
+    });
+  }
+</script>
