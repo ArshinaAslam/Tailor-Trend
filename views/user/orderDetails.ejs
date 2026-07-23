@@ -74,8 +74,9 @@ body {
 }
 
 .order-id {
+  font-family: monospace;
   color: var(--secondary);
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   margin-bottom: 1rem;
 }
 
@@ -401,7 +402,7 @@ button {
     <div class="card mt-4">
       <div class="card-header">
         <h2 class="content-title">Order Details</h2>
-        <p class="order-id">Order ID: <%= orders.orderid %>
+        <p class="order-id">Order ID: #<%= orders.orderid.toString().slice(-6) %></p>
         </p>
         
         <div class="order-status mt-2" id="orderStatus">
