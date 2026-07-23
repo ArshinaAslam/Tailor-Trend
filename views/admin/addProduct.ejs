@@ -1,505 +1,494 @@
-    <%- include("../../views/partials/admin/header") %>
+<%- include("../../views/partials/admin/header") %>
+<title>Add Product</title>
 
-    <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <style>
-   
-    body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #f5f7fa;
-    color: #333;
-    line-height: 1.6;
-    }
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    .content-main {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 30px;
-    background-color: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    display: flex;           /* Add this line */
-    flex-direction: column;  /* Add this line */
-    align-items: center;     /* Add this line */
+<style>
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--admin-bg-gradient);
+  color: var(--admin-text);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+.content-main {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .content-header {
-    text-align: center;      /* Add this line */
-    width: 100%;             /* Add this line */
+  text-align: center;
+  width: 100%;
 }
 
 .content-header h2 {
-    font-size: 28px;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 25px;
-    position: relative;
-    margin-left: 100px;
-    padding-bottom: 10px;
-    display: inline-block;   /* Add this line */
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--admin-text);
+  margin-bottom: 25px;
+  position: relative;
+  margin-left: 100px;
+  padding-bottom: 10px;
+  display: inline-block;
 }
 
 .content-header h2:after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;               /* Change from left: 0 to left: 50% */
-    transform: translateX(-50%);  /* Add this line */
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(to right, #3498db, #2ecc71);
-    border-radius: 3px;
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--admin-accent);
+  border-radius: 3px;
 }
 
-/* Adjust the form container width */
+/* Original form container width/position preserved */
 .col-lg-6 {
-    width: 100%;             /* Add this line */
-    max-width: 600px;        /* Add this line */
-    margin-left: 170px;
-
+  width: 100%;
+  max-width: 600px;
+  margin-left: 170px;
 }
 
-    
-    .card {
-    border: none;
-    border-radius: 14px;
-    background-color: #ffffff;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
-    margin-bottom: 25px;
-    transition: all 0.3s ease;
-    }
+.card {
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  background-color: var(--admin-surface-alt);
+  box-shadow: none;
+  margin-bottom: 25px;
+  transition: all 0.3s ease;
+}
 
-    .card:hover {
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
-    }
+.card:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
 
-    .card-header {
-    background-color: #f8fafc;
-    border-bottom: 1px solid #edf2f7;
-    padding: 18px 24px;
-    border-top-left-radius: 14px !important;
-    border-top-right-radius: 14px !important;
-    }
+.card-header {
+  background-color: var(--admin-surface-alt);
+  border-bottom: 1px solid var(--admin-border);
+  padding: 18px 24px;
+  border-top-left-radius: 14px !important;
+  border-top-right-radius: 14px !important;
+}
 
-    .card-header h4 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 500;
-    color: #2c3e50;
-    }
+.card-header h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--admin-text);
+}
 
-    .card-body {
-    padding: 28px;
-    }
+.card-body {
+  padding: 28px;
+}
 
-    
-    .form-label {
-    font-weight: 500;
-    color: #4b5563;
-    margin-bottom: 10px;
-    display: block;
-    font-size: 14px;
-    }
+.form-label {
+  font-weight: 600;
+  color: var(--admin-text-muted);
+  margin-bottom: 10px;
+  display: block;
+  font-size: 14px;
+}
 
-    .form-control, .form-select {
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    padding: 12px 16px;
-    font-size: 14px;
-    width: 100%;
-    transition: all 0.3s ease;
-    background-color: #f9fafb;
-    }
+.form-control, .form-select {
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  width: 100%;
+  transition: all 0.3s ease;
+  background-color: var(--admin-surface);
+  color: var(--admin-text);
+  box-sizing: border-box;
+}
 
-    .form-control:focus, .form-select:focus {
-    border-color: #3498db;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
-    background-color: #fff;
-    }
+.form-control:focus, .form-select:focus {
+  border-color: var(--admin-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--admin-accent-soft);
+  background-color: var(--admin-surface);
+}
 
-    .form-control::placeholder {
-    color: #9ca3af;
-    }
+.form-control::placeholder {
+  color: var(--admin-text-dim);
+}
 
-    textarea.form-control {
-    min-height: 120px;
-    resize: vertical;
-    }
+.form-select option {
+  background-color: var(--admin-surface);
+  color: var(--admin-text);
+}
 
-    
-    .error-message {
-    color: #ef4444;
-    font-size: 12px;
-    margin-top: 6px;
-    font-weight: 500;
-    display: block;
-    transition: all 0.3s ease;
-    }
+textarea.form-control {
+  min-height: 120px;
+  resize: vertical;
+}
 
-    
-    .thumbnails-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    padding: 15px;
-    min-height: 110px;
-    background-color: #f9fafb;
-    border: 1px dashed #cbd5e1;
-    border-radius: 12px;
-    align-items: center;
-    justify-content: flex-start;
-    }
+.error-message {
+  color: var(--admin-red);
+  font-size: 12px;
+  margin-top: 6px;
+  font-weight: 500;
+  display: block;
+  transition: all 0.3s ease;
+}
 
-    .thumbnail {
-    position: relative;
-    flex: 0 0 auto;
-    transition: all 0.2s ease;
-    }
+.thumbnails-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 15px;
+  min-height: 110px;
+  background-color: var(--admin-surface);
+  border: 1px dashed var(--admin-border);
+  border-radius: 12px;
+  align-items: center;
+  justify-content: flex-start;
+}
 
-    .thumbnail:hover {
-    transform: scale(1.05);
-    }
+.thumbnail {
+  position: relative;
+  flex: 0 0 auto;
+  transition: all 0.2s ease;
+}
 
-    .thumbnail img {
-    width: 90px;
-    height: 90px;
-    border-radius: 10px;
-    object-fit: cover;
-    border: 1px solid #e5e7eb;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-    }
+.thumbnail:hover {
+  transform: scale(1.05);
+}
 
-    .thumbnail:hover img {
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-    }
+.thumbnail img {
+  width: 90px;
+  height: 90px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--admin-border);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
 
-    .remove-icon {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: #ef4444;
-    color: white;
-    border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 12px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
+.thumbnail:hover img {
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+}
 
-    .remove-icon:hover {
-    background-color: #dc2626;
-    transform: scale(1.1);
-    }
+.remove-icon {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: var(--admin-red);
+  color: white;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
 
-   
-    .btn {
-    background: linear-gradient(to right, #3b82f6, #60a5fa);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 14px 28px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 3px 6px rgba(59, 130, 246, 0.2);
-    display: inline-block;
-    text-align: center;
-    text-decoration: none;
-    }
+.remove-icon:hover {
+  filter: brightness(1.15);
+  transform: scale(1.1);
+}
 
-    .btn:hover {
-    background: linear-gradient(to right, #2563eb, #3b82f6);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-    transform: translateY(-2px);
-    }
+.btn {
+  background: var(--admin-accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+}
 
-    .add-image-btn {
-    background: linear-gradient(to right, #10b981, #34d399);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 14px 28px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 3px 6px rgba(16, 185, 129, 0.2);
-    display: inline-block;
-    position: relative;
-    }
+.btn:hover {
+  background: var(--admin-accent-hover);
+  transform: translateY(-2px);
+}
 
-    .add-image-btn:hover {
-    background: linear-gradient(to right, #059669, #10b981);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    transform: translateY(-2px);
-    }
+.add-image-btn {
+  background: var(--admin-green);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 28px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+  position: relative;
+}
 
-    .add-image-btn:before {
-    content: '+';
-    margin-right: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    }
+.add-image-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
 
-   
-    .image-cropper {
-    display: none;
-    margin: 25px auto;
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
+.add-image-btn:before {
+  content: '+';
+  margin-right: 8px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.image-cropper {
+  display: none;
+  margin: 25px auto;
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  padding: 20px;
+  background-color: var(--admin-surface);
+  position: relative;
+  max-width: 520px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.image-cropper img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  display: block;
+}
+
+.save-button {
+  display: none;
+  margin: 15px auto;
+  padding: 12px 24px;
+  background: var(--admin-green);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  font-weight: 600;
+  width: 120px;
+}
+
+.save-button:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .content-main {
     padding: 20px;
-    background-color: #f8fafc;
-    position: relative;
-    max-width: 520px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
-    overflow: hidden;
-    }
+    margin: 20px 15px;
+  }
 
-    .image-cropper img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-    display: block;
-    }
+  .card-body {
+    padding: 20px;
+  }
 
-    .save-button {
-    display: none;
-    margin: 15px auto;
-    padding: 12px 24px;
-    background: linear-gradient(to right, #10b981, #34d399);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
-    font-weight: 500;
-    width: 120px;
-    box-shadow: 0 3px 6px rgba(16, 185, 129, 0.2);
-    }
+  .thumbnails-container {
+    padding: 10px;
+  }
 
-    .save-button:hover {
-    background: linear-gradient(to right, #059669, #10b981);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-    transform: translateY(-2px);
-    }
+  .form-control, .form-select {
+    padding: 10px 14px;
+  }
 
-   
-    @media (max-width: 768px) {
-    .content-main {
-        padding: 20px;
-        margin: 20px 15px;
-    }
-    
-    .card-body {
-        padding: 20px;
-    }
-    
-    .thumbnails-container {
-        padding: 10px;
-    }
-    
-    .form-control, .form-select {
-        padding: 10px 14px;
-    }
-    
-    .btn, .add-image-btn {
-        padding: 12px 20px;
-        width: 100%;
-    }
-    }
+  .btn, .add-image-btn {
+    padding: 12px 20px;
+    width: 100%;
+  }
+}
 
-   
-    .cropper-container {
-    border-radius: 12px;
-    overflow: hidden;
-    }
+.cropper-container {
+  border-radius: 12px;
+  overflow: hidden;
+}
 
-    .cropper-view-box {
-    outline: 1px solid #10b981;
-    outline-color: rgba(16, 185, 129, 0.75);
-    }
+.cropper-view-box {
+  outline: 1px solid var(--admin-green);
+  outline-color: rgba(16, 185, 129, 0.75);
+}
 
-    .cropper-point {
-    background-color: #10b981;
-    }
+.cropper-point {
+  background-color: var(--admin-green);
+}
 
-   
-    .row {
-    margin-bottom: 20px;
-    }
+.row {
+  margin-bottom: 20px;
+}
 
-    .col-lg-4 {
-    margin-bottom: 15px;
-    }
+.col-lg-4 {
+  margin-bottom: 15px;
+}
 
-    
-    .mb-4 {
-    margin-bottom: 25px;
-    }
-    </style>
-    </head>
+.mb-4 {
+  margin-bottom: 25px;
+}
+</style>
 
-    <body>
-    <section class="content-main">
-        <div class="row">
-        <div class="col-9">
-            <div class="content-header">
-            <h2 class="content-title">Add New Product</h2>
+<section class="content-main">
+  <div class="row">
+    <div class="col-9">
+      <div class="content-header">
+        <h2 class="content-title">Add New Product</h2>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card mb-4">
+        <div class="card-body">
+          <form method="POST" action="/admin/AddProducts" enctype="multipart/form-data" onsubmit="return validateForm()">
+            <!-- Product Information -->
+            <div class="mb-4">
+              <label for="product_name" class="form-label">Product Name</label>
+              <input type="text" placeholder="Type here" name="productName" class="form-control" id="product_name">
+              <div id="productName-error" class="error-message"></div>
             </div>
-        </div>
-        <div class="col-lg-6">
+
+            <div class="mb-4">
+              <label class="form-label">Full description</label>
+              <textarea placeholder="Type here" id="descriptionid" name="description" class="form-control" rows="4"></textarea>
+              <div id="description-error" class="error-message"></div>
+            </div>
+            <div class="row">
+              <div class="col-lg-4">
+              <div class="mb-4">
+                  <label class="form-label">Regular price</label>
+                  <input placeholder="$" name="regularPrice" type="text" class="form-control">
+                  <div id="regularPrice-error" class="error-message"></div>
+              </div>
+              </div>
+              <div class="col-lg-4">
+              <div class="mb-4">
+                  <label class="form-label">Sale price</label>
+                  <input placeholder="$" name="salePrice" type="text" class="form-control">
+                  <div id="salePrice-error" class="error-message"></div>
+              </div>
+              </div>
+
+          </div>
+          <div class="row">
+              <div class="col-lg-4">
+              <div class="mb-4">
+                  <label class="form-label">Color</label>
+                  <input name="color" type="text" class="form-control">
+                  <div id="color-error" class="error-message"></div>
+              </div>
+              </div>
+          </div>
+
+          <div class="row">
+              <div class="col-lg-4">
+                  <div class="mb-4">
+                      <label class="form-label">Size & Quantity</label>
+                      <div class="d-flex flex-column gap-2">
+                          S :<input type="number" placeholder="S" name="sizeQuantity[S]" class="form-control size-input" min="1" required>
+                          M :<input type="number" placeholder="M" name="sizeQuantity[M]" class="form-control size-input" min="1" required>
+                          L :<input type="number" placeholder="L" name="sizeQuantity[L]" class="form-control size-input" min="1" required>
+                          XL :<input type="number" placeholder="XL" name="sizeQuantity[XL]" class="form-control size-input" min="1" required>
+                          XXL :<input type="number" placeholder="XXL" name="sizeQuantity[XXL]" class="form-control size-input" min="1" required>
+                      </div>
+                      <div id="size-error" class="error-message"></div>
+                  </div>
+              </div>
+          </div>
+
             <div class="card mb-4">
-            <div class="card-body">
-                <form method="POST" action="/admin/AddProducts" enctype="multipart/form-data" onsubmit="return validateForm()">
-                <!-- Product Information -->
-                <div class="mb-4">
-                    <label for="product_name" class="form-label">Product Name</label>
-                    <input type="text" placeholder="Type here" name="productName" class="form-control" id="product_name">
-                    <div id="productName-error" class="error-message"></div>
-                </div>
-                
-                <div class="mb-4">
-                    <label class="form-label">Full description</label>
-                    <textarea placeholder="Type here" id="descriptionid" name="description" class="form-control" rows="4"></textarea>
-                    <div id="description-error" class="error-message"></div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-4">
-                    <div class="mb-4">
-                        <label class="form-label">Regular price</label>
-                        <input placeholder="$" name="regularPrice" type="text" class="form-control">
-                        <div id="regularPrice-error" class="error-message"></div>
-                    </div>
-                    </div>
-                    <div class="col-lg-4">
-                    <div class="mb-4">
-                        <label class="form-label">Sale price</label>
-                        <input placeholder="$" name="salePrice" type="text" class="form-control">
-                        <div id="salePrice-error" class="error-message"></div>
-                    </div>
-                    </div>
-                    
-                </div>
-                <div class="row">
-                    <div class="col-lg-4">
-                    <div class="mb-4">
-                        <label class="form-label">Color</label>
-                        <input name="color" type="text" class="form-control">
-                        <div id="color-error" class="error-message"></div>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-lg-4">
-                        <div class="mb-4">
-                            <label class="form-label">Size & Quantity</label>
-                            <div class="d-flex flex-column gap-2">
-                                S :<input type="number" placeholder="S" name="sizeQuantity[S]" class="form-control size-input" min="1" required>
-                                M :<input type="number" placeholder="M" name="sizeQuantity[M]" class="form-control size-input" min="1" required>
-                                L :<input type="number" placeholder="L" name="sizeQuantity[L]" class="form-control size-input" min="1" required>
-                                XL :<input type="number" placeholder="XL" name="sizeQuantity[XL]" class="form-control size-input" min="1" required>
-                                XXL :<input type="number" placeholder="XXL" name="sizeQuantity[XXL]" class="form-control size-input" min="1" required>
-                            </div>
-                            <div id="size-error" class="error-message"></div>
-                        </div>
-                    </div>
-                </div>
-                
-
-                <div class="card mb-4">
-                    <div class="card-body">
-                    <div class="row gx-2">
-                        <div class="col-sm-6 mb-3">
-                        <label class="form-label">Category</label>
-                        <select class="form-select" name="category">
-                            <option value="">Select Category</option>
-                            <% for (let i = 0; i < cat.length; i++){ %>
-                              <option value="<%=cat[i].name%>"><%=cat[i].name%></option>
-                            <% } %>
-                          </select>
-                        <div id="category-error" class="error-message"></div>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-              
-                <div class="card mb-2">
-                    <div class="card-header">
-                    <h4>Choose images</h4>
-                    </div>
-                    
-                    <div class="image-cropper" id="cropperContainer">
-                        <img id="imageToCrop" src="" alt="Image to Crop">
-                    </div>
-                    <button type="button" id="saveButton" class="save-button">Save</button>
-                    
-                    <div class="card-body">
-                    
-                    <div class="border row mb-3">
-                        <div id="addedImagesContainer" class="thumbnails-container"></div>
-                    </div>
-                    
-                    
-                    <div class="text-center">
-                        <button type="button" class="add-image-btn" onclick="document.getElementById('imageInput').click()">Add Image</button>
-                        <input type="file" id="imageInput" style="display: none;" accept="image/png, image/jpeg, image/jpg" onchange="handleImageUpload(event)">
-                        <div id="image-error" class="error-message"></div>
-                    </div>
-                    </div>
-                </div>
-                
-                <div>
-                    <button class="btn" type="button" onclick="validateAndSubmit()">Publish</button>
-
-                </div>
-                </form>
+              <div class="card-body">
+              <div class="row gx-2">
+                  <div class="col-sm-6 mb-3">
+                  <label class="form-label">Category</label>
+                  <select class="form-select" name="category">
+                      <option value="">Select Category</option>
+                      <% for (let i = 0; i < cat.length; i++){ %>
+                        <option value="<%=cat[i].name%>"><%=cat[i].name%></option>
+                      <% } %>
+                    </select>
+                  <div id="category-error" class="error-message"></div>
+                  </div>
+              </div>
+              </div>
             </div>
+
+            <div class="card mb-2">
+              <div class="card-header">
+              <h4>Choose images</h4>
+              </div>
+
+              <div class="image-cropper" id="cropperContainer">
+                  <img id="imageToCrop" src="" alt="Image to Crop">
+              </div>
+              <button type="button" id="saveButton" class="save-button">Save</button>
+
+              <div class="card-body">
+
+              <div class="border row mb-3">
+                  <div id="addedImagesContainer" class="thumbnails-container"></div>
+              </div>
+
+              <div class="text-center">
+                  <button type="button" class="add-image-btn" onclick="document.getElementById('imageInput').click()">Add Image</button>
+                  <input type="file" id="imageInput" style="display: none;" accept="image/png, image/jpeg, image/jpg" onchange="handleImageUpload(event)">
+                  <div id="image-error" class="error-message"></div>
+              </div>
+              </div>
             </div>
+
+            <div>
+              <button class="btn" type="button" onclick="validateAndSubmit()">Publish</button>
+            </div>
+          </form>
         </div>
-        </div>
-    </section>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js" integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
- 
+      </div>
+    </div>
+  </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js" integrity="sha512-JyCZjCOZoyeQZSd5+YEAcFgz2fowJ1F1hyJOXgtKu4llIa0KneLcidn5bwfutiehUTiOuK87A986BZJMko0eWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <script>
 function validateAndSubmit() {
     if (validateForm()) {
         const form = document.forms[0];
         const formData = new FormData(form);
 
-      
+
         for (const pair of formData.entries()) {
             if (pair[0] === 'sizeQuantity[]') {
                 formData.delete(pair[0]);
             }
         }
 
-       
+
         const sizeInputs = document.querySelectorAll('input[name^="sizeQuantity"]');
         sizeInputs.forEach(input => {
-            const size = input.placeholder; 
+            const size = input.placeholder;
             const quantity = input.value.trim();
             if (quantity !== "" && parseInt(quantity) > 0) {
                 formData.append('sizeQuantity[]', JSON.stringify({ size, quantity: parseInt(quantity) }));
             }
         });
 
-       
+
         fetch('/admin/AddProducts', {
             method: 'POST',
             body: formData,
@@ -519,15 +508,19 @@ function validateAndSubmit() {
                     title: 'Success!',
                     text: data.message,
                     showConfirmButton: false,
-                    timer: 2000
+                    timer: 2000,
+                    background: '#2a2a2a',
+                    color: '#ffffff'
                 }).then(() => {
-                    window.location.href = '/admin/products'; 
+                    window.location.href = '/admin/products';
                 });
             } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Oops...',
-                    text: data.message || 'Something went wrong'
+                    text: data.message || 'Something went wrong',
+                    background: '#2a2a2a',
+                    color: '#ffffff'
                 });
             }
         })
@@ -536,7 +529,9 @@ function validateAndSubmit() {
             Swal.fire({
                 icon: 'error',
                 title: 'Error!',
-                text: error.message || 'Something went wrong. Please try again later.'
+                text: error.message || 'Something went wrong. Please try again later.',
+                background: '#2a2a2a',
+                color: '#ffffff'
             });
         });
     }
@@ -547,14 +542,14 @@ function handleImageUpload(event) {
     if (file) {
         const reader = new FileReader();
         reader.onload = function (e) {
-           
+
             const cropperContainer = document.getElementById('cropperContainer');
             const saveButton = document.getElementById('saveButton');
             cropperContainer.style.display = 'block';
             saveButton.style.display = 'block';
             document.getElementById('imageToCrop').src = e.target.result;
 
-           
+
             if (cropper) {
                 cropper.destroy();
             }
@@ -567,13 +562,13 @@ function handleImageUpload(event) {
                 zoomable: true,
             });
 
-            
+
             document.getElementById('saveButton').addEventListener(
                 'click',
                 function () {
                     const croppedCanvas = cropper.getCroppedCanvas();
 
-                   
+
                     const MAX_WIDTH = 500;
                     const MAX_HEIGHT = 500;
                     let width = croppedCanvas.width;
@@ -591,26 +586,26 @@ function handleImageUpload(event) {
                         }
                     }
 
-                   
+
                     const resizedCanvas = document.createElement('canvas');
                     resizedCanvas.width = width;
                     resizedCanvas.height = height;
                     const ctx = resizedCanvas.getContext('2d');
                     ctx.drawImage(croppedCanvas, 0, 0, width, height);
 
-                   
+
                     resizedCanvas.toBlob(
                         (blob) => {
                             const reader2 = new FileReader();
                             reader2.onloadend = function () {
-                               
+
                                 const hiddenInput = document.createElement('input');
                                 hiddenInput.type = 'hidden';
                                 hiddenInput.name = 'images';
                                 hiddenInput.value = reader2.result;
                                 document.forms[0].appendChild(hiddenInput);
 
-                              
+
                                 const thumbnail = document.createElement('div');
                                 thumbnail.classList.add('thumbnail');
                                 const thumbImg = document.createElement('img');
@@ -622,7 +617,7 @@ function handleImageUpload(event) {
                                 removeIcon.addEventListener('click', function () {
                                     thumbnail.remove();
 
-                                    
+
                                     const inputs = document.getElementsByName('images');
                                     for (let i = 0; i < inputs.length; i++) {
                                         if (inputs[i].value === reader2.result) {
@@ -635,7 +630,7 @@ function handleImageUpload(event) {
                                 thumbnail.appendChild(removeIcon);
                                 document.getElementById('addedImagesContainer').appendChild(thumbnail);
 
-                               
+
                                 cropper.destroy();
                                 cropperContainer.style.display = 'none';
                                 saveButton.style.display = 'none';
@@ -643,7 +638,7 @@ function handleImageUpload(event) {
                             reader2.readAsDataURL(blob);
                         },
                         'image/jpeg',
-                        0.8 
+                        0.8
                     );
                 },
                 { once: true }
@@ -652,7 +647,7 @@ function handleImageUpload(event) {
         reader.readAsDataURL(file);
     }
 }
-    
+
 function validateForm() {
     clearErrorMessages();
 
@@ -668,7 +663,7 @@ function validateForm() {
 
     let sizeSelected = false;
     let isValid = true;
-    
+
     if (name === "") {
         showErrorMessage('productName-error', 'Product Name is required.');
         isValid = false;
@@ -713,9 +708,6 @@ function validateForm() {
         isValid = false;
     }
 
-   
-   
-    
     let hasNegativeQuantity = false;
     sizeInputs.forEach(input => {
         const quantity = input.value.trim();
@@ -762,15 +754,15 @@ function setEmptySizeInputsToZero() {
 document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById("submitBtn")) {
         document.getElementById("submitBtn").addEventListener("click", function () {
-            let inputs = document.querySelectorAll(".form-control"); 
+            let inputs = document.querySelectorAll(".form-control");
             let errorDiv = document.getElementById("size-error");
             let isValid = false;
             let quantities = {};
 
             inputs.forEach(input => {
-                let size = input.placeholder; 
+                let size = input.placeholder;
                 let quantity = input.value.trim();
-                
+
                 if (quantity !== "" && parseInt(quantity) > 0) {
                     isValid = true;
                     quantities[size] = parseInt(quantity);
