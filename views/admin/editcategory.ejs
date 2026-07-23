@@ -227,18 +227,16 @@ function validateForm() {
     return isValid;
 }
 
-
-
 function displayErrorMessage(elementId, message) {
-      const errorElement = document.getElementById(elementId);
-      errorElement.innerText = message;
-      errorElement.style.display = "block";
-    }
+    const errorElement = document.getElementById(elementId);
+    errorElement.innerText = message;
+    errorElement.style.display = "block";
+}
 
-    function clearErrorMessages() {
-      document.querySelectorAll(".error-message").forEach(el => {
-          el.innerText = "";
-          el.style.display = "none";
-      });
-    }
+function clearErrorMessages() {
+    document.querySelectorAll(".error-message").forEach(el => {
+        el.innerText = "";
+        el.style.display = "none";
+    });
+}
 </script>
