@@ -230,8 +230,9 @@ body {
       </table>
     </div>
   </div>
+  
 
-  <% if (transaction.description.toLowerCase().includes('returned') ||
+<% if (transaction.description.toLowerCase().includes('returned') ||
          transaction.description.toLowerCase().includes('cancelled')) { %>
   <div class="related-order-card">
     <div class="related-order-header">
@@ -244,7 +245,7 @@ body {
     <table class="detail-table">
       <tr>
         <td>Order ID</td>
-        <td><%= relatedOrder.orderid %></td>
+        <td>#<%= relatedOrder.orderid.toString().slice(-6) %></td>
       </tr>
       <tr>
         <td>Order Status</td>
