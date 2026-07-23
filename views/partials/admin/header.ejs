@@ -126,20 +126,21 @@
         min-height: calc(100vh - 60px);
       }
 
-      header {
-        position: fixed;
-        top: 0;
-        left: 250px;
-        right: 0;
-        height: 60px;
-        background-color: var(--admin-surface);
-        border-bottom: 1px solid var(--admin-border);
-        z-index: 20;
-        display: flex;
-        align-items: center;
-        padding: 0 20px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      }
+     header {
+    position: fixed;
+    top: 0;
+    left: 250px;
+    right: 0;
+    height: 60px;
+    background-color: var(--admin-surface);
+    border-bottom: 1px solid var(--admin-border);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
 
       #dropdownToggle {
         background-color: var(--admin-surface-hover);
@@ -239,7 +240,7 @@
     <!-- Main Content -->
     <main>
       <!-- Header -->
-   <header class="navbar fixed top-0 left-0 w-full ml-[250px] py-2 px-4 flex items-center shadow-md z-50 transition-all duration-300 md:ml-250px">
+   <header class="navbar py-2 px-4 flex items-center shadow-md">
     <!-- Dropdown Container -->
     <div class="relative">
         <button id="dropdownToggle" class="font-medium px-4 py-2 rounded-md shadow transition">
