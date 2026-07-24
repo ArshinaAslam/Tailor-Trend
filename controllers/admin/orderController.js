@@ -192,6 +192,17 @@ const updateOrderStatus = async (req, res) => {
         message: "Order not found",
       });
     }
+
+    // 🔒 Block status changes if online payment was never completed
+    const isOnlinePayment = order.paymentMethod !== 'COD';
+    const paymentNotCompleted = isOnlinePayment && !order.paymentId;
+
+    if (paymentNotCompleted) {
+      return res.status(Status.BAD_REQUEST).json({
+        success: false,
+        message: "Cannot update order status — payment has not been completed for this order",
+      });
+    }
     
     const itemIndex = order.orderitems.findIndex(
       item => 

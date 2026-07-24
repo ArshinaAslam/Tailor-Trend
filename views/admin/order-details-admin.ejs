@@ -282,63 +282,85 @@
     </div>
 
     <div class="order-items">
-    <h2>Order Items</h2>
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Image</th>
-                <th>Product Name</th>
-                <th>Size</th>
-                <th>Unit Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Return Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% const paymentNotConfirmed = order.paymentMethod !== 'COD' && !order.paymentId; %>
-            <% order.orderitems.forEach(item=> { %>
+        <h2>Order Items</h2>
+        <table class="data-table">
+            <thead>
                 <tr>
-                    <td>
-                        <img src="<%= item.productId.productImage[0] %>"
-                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" />
-                    </td>
-                    <td><%= item.productId.productName %></td>
-                    <td><%= item.size %></td>
-                    <td>₹<%= item.price %></td>
-                    <td><%= item.quantity %></td>
-                    <td>₹<%= (parseInt(item.price) * parseInt(item.quantity)).toLocaleString() %></td>
-                    <td>
-                        <select id="status-<%= order._id %>-<%= item.productId._id %>"
-                            onchange="updateItemStatus('<%= order._id %>', '<%= item.productId._id %>', '<%= item.size %>')"
-                            <%=item.status==='Delivered' || item.status==='Returned' ? 'disabled' : '' ||
-                            item.status==='Cancelled' ? 'disabled' : '' %>>
-                            <option value="Pending" <%=item.status==='Pending' ? 'selected' : '' %>>Pending</option>
-                            <option value="Processing" <%=item.status==='Processing' ? 'selected' : '' %>>Processing</option>
-                            <option value="Shipped" <%=item.status==='Shipped' ? 'selected' : '' %>>Shipped</option>
-                            <option value="Delivered" <%=item.status==='Delivered' ? 'selected' : '' %> <%= paymentNotConfirmed ? 'disabled' : '' %>>
-                                Delivered<%= paymentNotConfirmed ? ' (payment pending)' : '' %>
-                            </option>
-                            <option value="Cancelled" <%=item.status==='Cancelled' ? 'selected' : '' %>>Cancelled</option>
-                            <% if (item.status==='Return requested' ) { %>
-                                <option value="Return requested" selected>Return requested</option>
-                            <% } %>
-                        </select>
-                        <% if (paymentNotConfirmed) { %>
-                            <div style="font-size: 0.7rem; color: var(--admin-red); margin-top: 0.3rem;">
-                                Payment not verified
-                            </div>
-                        <% } %>
-                    </td>
-                    <td>
-                        <!-- unchanged -->
-                    </td>
+                    <th>Image</th>
+                    <th>Product Name</th>
+                    <th>Size</th>
+                    <th>Unit Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Return Details</th>
                 </tr>
-            <% }) %>
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                <% const paymentNotCompleted = order.paymentMethod !== 'COD' && !order.paymentId; %>
+                <% order.orderitems.forEach(item=> { %>
+                    <tr>
+                        <td>
+                            <img src="<%= item.productId.productImage[0] %>"
+                                style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" />
+                        </td>
+                        <td><%= item.productId.productName %></td>
+                        <td><%= item.size %></td>
+                        <td>₹<%= item.price %></td>
+                        <td><%= item.quantity %></td>
+                        <td>₹<%= (parseInt(item.price) * parseInt(item.quantity)).toLocaleString() %></td>
+                        <td>
+                            <% if (paymentNotCompleted) { %>
+                                <span class="status-badge" style="background-color: var(--admin-red);">
+                                    Payment Pending
+                                </span>
+                            <% } else { %>
+                                <select id="status-<%= order._id %>-<%= item.productId._id %>"
+                                    onchange="updateItemStatus('<%= order._id %>', '<%= item.productId._id %>', '<%= item.size %>')"
+                                    <%=item.status==='Delivered' || item.status==='Returned' ? 'disabled' : '' ||
+                                    item.status==='Cancelled' ? 'disabled' : '' %>>
+                                    <option value="Pending" <%=item.status==='Pending' ? 'selected' : '' %>>Pending</option>
+                                    <option value="Processing" <%=item.status==='Processing' ? 'selected' : '' %>>Processing</option>
+                                    <option value="Shipped" <%=item.status==='Shipped' ? 'selected' : '' %>>Shipped</option>
+                                    <option value="Delivered" <%=item.status==='Delivered' ? 'selected' : '' %>>Delivered</option>
+                                    <option value="Cancelled" <%=item.status==='Cancelled' ? 'selected' : '' %>>Cancelled</option>
+                                    <% if (item.status==='Return requested' ) { %>
+                                        <option value="Return requested" selected>Return requested</option>
+                                    <% } %>
+                                </select>
+                            <% } %>
+                        </td>
+                        <td>
+                            <% if (item.status==='Return requested' && item.returnRequest.status==='pending' ) { %>
+                                <div class="return-request-section">
+                                    <strong>Return Reason:</strong> <%= item.returnRequest.reason %><br>
+                                    <strong>Request Date:</strong> <%= new Date(item.returnRequest.requestedAt).toLocaleDateString() %>
+                                    <div class="return-actions">
+                                        <button class="approve-return-btn"
+                                            onclick="handleReturn('<%= order._id %>', 'Approved','<%= item.productId._id %>','<%= item.size %>')">
+                                            Approve
+                                        </button>
+                                        <button class="reject-return-btn"
+                                            onclick="handleReturn('<%= order._id %>', 'Rejected','<%= item.productId._id %>','<%= item.size %>')">
+                                            Reject
+                                        </button>
+                                    </div>
+                                </div>
+                            <% } else if (item.status==='Returned' ) { %>
+                                <span class="status-badge" style="background-color: var(--admin-green);">
+                                    Return request approved
+                                </span>
+                            <% } else if (item.returnRequest && item.returnRequest.status==='rejected' ) { %>
+                                <span class="status-badge" style="background-color: var(--admin-red);">
+                                    Return request rejected
+                                </span>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
