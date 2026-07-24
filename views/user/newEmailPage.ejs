@@ -47,23 +47,32 @@
     }
 
     .btn-primary-modern {
-        background: #333333;
-        border: none;
-        border-radius: 8px;
-        padding: 0.875rem 1.25rem;
-        font-size: 1rem;
-        font-weight: 600;
+        background-color: #333333 !important;
+        background-image: none !important;
+        border: none !important;
+        border-radius: 10px !important;
+        padding: 0.875rem 1.25rem !important;
+        font-size: 1rem !important;
+        font-weight: 600 !important;
         height: 48px;
-        transition: all 0.3s ease;
+        transition: all 0.3s ease !important;
         letter-spacing: 0.5px;
         width: 100%;
-        color: #ffffff;
+        color: #ffffff !important;
+        cursor: pointer;
     }
 
-    .btn-primary-modern:hover {
-        background: #1a1a1a;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    .btn-primary-modern:hover,
+    .btn-primary-modern:focus,
+    .btn-primary-modern:active {
+        background-color: #1a1a1a !important;
+        color: #ffffff !important;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .btn-primary-modern:active {
+        transform: translateY(0);
     }
 
     .error-message {
